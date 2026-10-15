@@ -21,9 +21,9 @@ A personal coursework repository for an embedded-development course (C/C++, Plat
 - [ ] A scaffolding skill creates a new homework from a freeform description, in one of two explicit modes: `guide` (teaches, stops, never writes homework logic unprompted) or `auto` (one-shot, no questions)
 - [ ] Every homework ships a wiring artifact generated from ONE canonical `diagram.json`: a rendered SVG image, a pin-connection table, and a Mermaid overview
 - [ ] Wiring artifacts validate offline in pre-commit (`wokwi-cli lint --warnings-as-errors --offline`), and the same file drives local simulation
-- [ ] `shared/` holds reusable modules as real PlatformIO libraries (each with `library.json`), consumed per homework via `lib_deps = Name=symlink://…`
+- [ ] `shared/lib/` holds reusable modules as real PlatformIO libraries (each with `library.json`), consumed per homework via `lib_deps = Name=symlink://…`
 - [ ] Shared code keeps a hardware-abstraction seam so it survives the later migration from Arduino core to ESP-IDF
-- [ ] Pure logic in `shared/` is unit-tested on the host via `platform = native`, with no hardware attached
+- [ ] Pure logic in `shared/lib/` is unit-tested on the host via `platform = native`, with no hardware attached
 - [ ] Static checks are pinned once and enforced: clang-format, clang-tidy, cppcheck, compiler warnings
 - [ ] Pre-commit runs fast checks; pre-push builds only the changed homework projects; CI builds changed projects and lints everything
 - [ ] Agent rules are a SHORT `AGENTS.md` plus a few per-topic references and a few skills — deliberately minimal
@@ -87,6 +87,15 @@ A personal coursework repository for an embedded-development course (C/C++, Plat
 | No `-Werror` initially | The Arduino framework's own headers are not under the owner's control | — Pending |
 | Host unit tests (`platform = native`) for pure logic | Free, offline, milliseconds — the highest value per unit of effort, and it forces the hardware seam that the IDF migration also needs | — Pending |
 | Commit `.planning/` to the public repository | The reasoning behind the work is part of what the repository documents; a public portfolio benefits from visible process | — Pending |
+
+## Traps for Later Phases
+
+Obligations that outlive Phase 1. They live here rather than in a phase context file because every phase's `load_prior_context` reads this document, whereas a phase context file reaches only one phase.
+
+- **The shared-library folder is `shared/lib/`, singular (D-24).** A surviving `shared/libs/` reference in a dated research file is history, not instruction, and the file agents read every session was corrected in Phase 1. Creating the plural puts every module outside the frozen layout and breaks the `lib_deps = <name>=symlink://../../shared/lib/<name>` path arithmetic, because every shared-library path is relative to the project.
+- **`homeworks/project-baseline/` must be deliberately retired before the Phase 8 README index is written (D-10).** It is Phase 1's build proof and Phase 2's acceptance vehicle, not a course homework; left in place it appears in the index as an unexplained assignment.
+- **The repo-wide sweep fails by default when it matches zero homework projects (D-13).** A green sweep that built nothing is impossible by construction. The single escape hatch is the named `--allow-empty` flag, never a silent bypass, and Phase 6's CI never passes it.
+- **PlatformIO Core is installed but is not on the interactive PATH (D-09).** `pio` resolves only inside the VS Code integrated terminal; anything that shells out to it must resolve the binary explicitly or print the `export PATH="$HOME/.platformio/penv/bin:$PATH"` remedy. The same remedy appears in `README.md`.
 
 ## Evolution
 
