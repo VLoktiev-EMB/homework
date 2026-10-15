@@ -5,10 +5,10 @@ current_phase: 01
 current_phase_name: Repository Skeleton and Project Layout
 status: verifying
 stopped_at: Completed phase 01 wave 1 (01-01, 01-02, 01-03)
-last_updated: "2026-10-15T13:00:36.557Z"
+last_updated: "2026-10-15T13:13:03.602Z"
 last_activity: 2026-10-15
 last_activity_desc: Phase 01 execution started
-state_head: bf1ef610ba08cf9ed5c8a9a470e50173f1e7310f
+state_head: f35f300fa0b7daaae8ceb35494af1a992ab22094
 progress:
   total_phases: 8
   completed_phases: 0
@@ -96,6 +96,8 @@ Recent decisions affecting current work:
 - [Phase 01]: The build was invoked through the absolute PlatformIO binary rather than the plan's `PATH="$HOME/.platformio/penv/bin:$PATH" pio` prefix, because the worktree isolation guard refuses a command whose first word is a `VAR=value` assignment. It is the same resolved binary; the plan itself records the absolute path as equivalent.
 - [Phase 01]: The phase log is the sanctioned repair for its own untracked entry. The generated state file beside it is closed by an ignore rule instead, because it is timestamped machine state rewritten on every transition — committing it would add a churning line to a history a course instructor reads.
 - [Phase 01]: `.planning/milestone.lock` is recorded as a known fourth machine-local GSD artifact that no Phase 1 plan named and no pattern matches. It belongs to plan 01-02's ignore file, so editing `.gitignore` here would break requirement traceability; it is recorded instead.
+- [Phase 01]: Owner decision after gaps_found: ACCEPT THE OVERRIDE for roadmap criterion 2(b). The literal criterion (a project one level deeper breaks the build) is unobservable in Phase 1 because platformio.ini declares no lib_deps, so nothing fails to resolve; a copy of the baseline at homeworks/project-baseline/deeper/ builds successfully (measured, exit 0). Record in ROADMAP.md that the sweep's named-rule detector (DEPTH RULE VIOLATED, exit 1, raised before any child process) satisfies the criterion's INTENT as a documented, deliberate deviation, with the reason and the Phase 3 trigger that would make the literal form observable.
+- [Phase 01]: Owner decision after gaps_found: FIX gap 2 now via a gap-closure plan, not by leaving it as recorded debt. .planning/milestone.lock is untracked and matches no ignore pattern (git check-ignore exits 1), so git status --porcelain is never empty and both criterion 3 and plan 01-05's own must-have remain unmet. Add a .planning/*.lock rule to the root .gitignore. This edit belongs to plan 01-02, so it must go through a gap_closure plan to keep requirement traceability intact. Independently confirmed as WR-09 by the phase code review.
 
 ### Pending Todos
 
