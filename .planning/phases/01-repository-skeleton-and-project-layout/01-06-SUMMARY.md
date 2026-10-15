@@ -22,7 +22,9 @@ actuals:
   # `tokens` is chars/4 over the realized diff (#2632), on the same estimateTokens
   # scale as the plan's `estimate`, never a harness token count: 37,993 characters
   # (this summary 30,836 + tools/tests/ignore-rules.test.mjs 6,801 + the 356
-  # characters the .gitignore diff adds) -> 9,498.
+  # characters the .gitignore diff adds) -> 9,498. The snapshot is taken at 282dcbe,
+  # this plan's second task commit, so the figure covers what shipped and not the
+  # metadata lines written after it.
   #
   # `commits` is MEASURED, never narrated (#3968). The on-disk ledger could not be
   # persisted — `$(git rev-parse --git-dir)` resolves to the SHARED administrative
