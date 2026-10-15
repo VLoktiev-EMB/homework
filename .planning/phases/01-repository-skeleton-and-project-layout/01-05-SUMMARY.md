@@ -13,13 +13,15 @@ provides:
 affects: ["phase 2", "phase 6", "phase 8"]
 
 actuals:
-  tokens: 6200
-  tasks: 1
-  commits: 1
+  tokens: 7500
+  tasks: 2
+  commits: 3
   plan_head_before: 22a723e50041a1dd0f348153881b330573cb08e8
-  # plan_head_after and the final commit count are measured and written in this
-  # plan's closing commit — the one that also appends the two deferred manual
-  # observations. Measured, never narrated (#3968).
+  plan_head_after: pending-measurement
+  # `commits` is MEASURED as `git rev-list --count <plan_head_before>..HEAD`, never
+  # narrated (#3968); `tokens` is chars/4 over the realized diff. Both are re-measured
+  # and finalized by the closing commit that carries this file's last revision, which
+  # also replaces the plan_head_after placeholder above.
 
 tech-stack:
   added: []
@@ -123,10 +125,10 @@ metrics:
 
 ## Performance
 
-- **Duration:** 3 min
+- **Duration:** 6 min
 - **Started:** 2026-10-15T12:55:39Z
-- **Completed:** 2026-10-15T12:58:00Z
-- **Tasks:** 1 of 2 in this commit (task 2 appends the deferred observations and commits again)
+- **Completed:** 2026-10-15T13:01:30Z
+- **Tasks:** 2
 - **Files modified:** 1 created
 
 ## Accomplishments
@@ -140,9 +142,12 @@ metrics:
 
 ## Task Commits
 
-1. **Task 1: The acceptance run — build once, prove the depth rule, leave the tree clean** — the commit carrying this revision of the phase log (docs)
+Each task was committed atomically, and both touch only this phase log:
 
-**Plan metadata:** the closing commit of this plan, which appends the two deferred manual observations to this file.
+1. **Task 1: The acceptance run — build once, prove the depth rule, leave the tree clean** — `926db18` (docs)
+2. **Task 2: Record the two non-automatable observations as deferred** — the commit carrying this revision of the phase log (docs)
+
+**Plan metadata:** the closing commit of this plan, which finalizes the `actuals` block above with the measured commit count and the closing SHA.
 
 ---
 
@@ -360,11 +365,75 @@ The reason the second half is enforced by the detector rather than by a build fa
 
 ## 11. The closing `git status`, with this log committed
 
-*(Recorded in the closing commit of this plan — see the appended section.)*
+The phase log is a new, unignored file under a tracked directory, so the reading that matters is the one taken **after** it was committed — not the one taken between the write and the commit, which would have failed over the log rather than over criterion 3.
+
+With this log committed at `926db18`:
+
+```
+$ git status --porcelain
+(no output)
+[exit=0]
+```
+
+**Empty.** Both clean-tree readings this plan asserts are therefore empty — the one at step 6, with the log not yet written (§8), and this one, taken after the log was written **and committed**.
+
+`926db18` is the revision a human must begin the deferred editor session from (§12): it is the last commit in which every tracked file is committed and nothing is untracked.
 
 ## 12. Manual observations — DEFERRED to `/gsd-verify-work 1`
 
-*(Recorded in the closing commit of this plan — see the appended section.)*
+Two halves of two success criteria cannot be automated, because no agent can see what a VS Code window renders and no agent can perform a human editor session. Per this phase's verification policy (`workflow.human_verify_mode: end-of-phase`, D-20) they are **deferred to end-of-phase verification** rather than pausing the plan, and they are recorded here with their exact procedure and an **explicitly unfilled output slot** for each. Nothing in this section is an observation that was made; every slot below is empty because the observation has not happened yet. This is deliberate — a plausible-sounding invented observation would enter the phase log as evidence and be read as fact by every later phase.
+
+**Timing rule that governs both observations, stated before either procedure:** `git status --porcelain` must be run and its output copied down **before** the results are written into this log. This log is itself a tracked file; appending to it dirties the tree, so a reading taken after the append would fail over the log rather than over the editor session it is meant to test. Record the reading first, then bring it here.
+
+### Observation 1 — criterion 1's manual half
+
+**What must be opened:** the committed workspace file, `homework.code-workspace`, at the repository root — in VS Code, as a workspace (File → Open Workspace from File…), from a checkout that has not been modified since `926db18`. Not the folder; the workspace file. It is generated and must never be hand-edited.
+
+**What must be seen:**
+
+- that the window shows **exactly three top-level roots**, named for (1) the repository root, (2) the shared-library tree and (3) the baseline project — as VS Code renders them, the expected names being `root`, `shared` and `project-baseline`;
+- that the shared-library root resolves to a real directory rather than showing an unresolved-path marker — `shared/` holds the tracked file `shared/lib/README.md`, which is what guarantees the directory exists after a fresh clone and therefore what makes the root resolve;
+- that no second window and no second workspace file is needed, and that the editor does not report the workspace file as stale.
+
+**Record verbatim:** the three root names exactly as VS Code displays them, and whether any root showed an error or unresolved-path marker.
+
+**Unfilled output slot — Observation 1:**
+
+```
+root names as rendered: ______________________
+                        ______________________
+                        ______________________
+unresolved-path marker on the shared-library root (yes/no): ______
+stale-workspace warning shown (yes/no): ______
+```
+
+### Observation 2 — criterion 3's editor half
+
+**What must be done:** within that same workspace session, open and save at least one **tracked** file in each of the three roots — a plan or documentation file under `.planning/`, a file under the shared-library tree, and one of the baseline project's files — then let the editor settle (allow format-on-save and final-newline insertion to run to completion).
+
+**The exact command, and its timing:** run
+
+```
+git status --porcelain
+```
+
+from the repository root **after** the editor has settled and **before** these observations are written into this log. This is the half of criterion 3 that a build cannot exercise: it is the editor session, with format-on-save and final-newline insertion enabled, that is the plausible source of an unexpected modification. It must still print nothing.
+
+**Unfilled output slot — Observation 2:**
+
+```
+$ git status --porcelain
+______________________
+
+[exit=______]
+```
+
+### What each observation covers, and what this plan already verified
+
+- **Observation 1 covers criterion 1's manual half** — that opening the committed workspace file shows the three top-level roots. The **automated half** of criterion 1 was verified in this plan at task 1: `node tools/generate-workspace.mjs --check` printed `homework.code-workspace is up to date` and exited 0 (§5), proving the committed file still agrees byte-for-byte with the filesystem.
+- **Observation 2 covers criterion 3's editor half** — that `git status` stays clean across an editor session. The **build half** of criterion 3 was verified in this plan at task 1: `git status --porcelain` was empty after a full `pio run` and a `-t compiledb` run (§3, §8), and empty again after this log was committed (§11).
+
+**If either observation fails, record exactly what was seen** — which root was missing, which path appeared as modified, and the editor's own message — rather than retrying until it passes. A recorded failure with its evidence is worth more to the next phase than a repeated attempt that produces a clean log.
 
 ## Known deviations, issues and environment constraints
 
