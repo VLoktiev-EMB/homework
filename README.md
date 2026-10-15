@@ -1,1 +1,100 @@
 # homework
+
+A personal coursework repository for an embedded-development course (C/C++, PlatformIO,
+ESP32-S3-DevKitC-1). Each homework is its own self-contained PlatformIO project under
+`homeworks/`, reusable code lives in a shared library tree, and the whole repository opens as one
+VS Code workspace. The repository is public, and the course instructor reviews the homework
+through it.
+
+The core value: a homework written in week three must still compile, explain its own wiring and be
+demoable in week forty — without its owner reconstructing anything from memory.
+
+## The workspace file
+
+`homework.code-workspace` is a VS Code multi-root workspace that lists the repository root, the
+shared library tree, and one folder per homework. It is **generated from the filesystem** and
+committed. Open it the normal way:
+
+1. Open VS Code.
+2. Choose **File → Open Workspace from File...**
+3. Select `homework.code-workspace`.
+
+Do not hand-edit it. The folder list is derived from what is on disk, so a manual edit is lost the
+next time the file is regenerated — and a stale file silently hides a homework from the Explorer.
+Regenerate it after adding or removing a homework, and check it for drift before committing:
+
+```bash
+node tools/generate-workspace.mjs          # regenerate the workspace file
+node tools/generate-workspace.mjs --check  # exit non-zero if the committed file is stale
+```
+
+## Repository structure
+
+```text
+homework/
+├── .editorconfig                 # cross-editor whitespace and encoding rules
+├── .gitattributes                # EOL normalization and binary/generated-file marks
+├── .gitignore                    # build output, caches, editor state and secrets
+├── .vscode/                      # committed editor settings and recommended extensions
+├── .planning/                    # roadmap, requirements and phase history
+├── AGENTS.md                     # repository conventions — the single source of truth
+├── LICENSE                       # Apache-2.0
+├── README.md                     # this file
+├── homework.code-workspace       # generated — see above
+├── tools/                        # repo-owned scripts
+│   ├── generate-workspace.mjs    # writes homework.code-workspace, or checks it
+│   ├── sweep-homeworks.mjs       # validates ids and builds every homework
+│   ├── lib/                      # discovery and id-grammar helpers
+│   └── tests/                    # host tests for the scripts above
+├── shared/
+│   └── lib/                      # reusable PlatformIO libraries
+└── homeworks/
+    └── project-baseline/         # the build-proof project — not a course homework
+```
+
+## Prerequisites
+
+| Tool | Purpose |
+| :--- | :--- |
+| **VS Code** with the **PlatformIO IDE** extension | Editor integration, and PlatformIO Core itself |
+| **PlatformIO Core** (`pio`) | Build, upload, monitor and test |
+| **git** | Version control |
+| **Node.js** | Runs the scripts in `tools/` |
+
+### These tools are installed but not on `PATH`
+
+The PlatformIO IDE extension installs PlatformIO Core into a virtualenv at `~/.platformio/penv/`
+and adds it only to VS Code's *integrated* terminal. That is why `pio` works inside the editor but
+reports `command not found` in an external shell. To use it everywhere, add it to your shell
+profile, or put it on the path of the current shell with:
+
+```bash
+export PATH="$HOME/.platformio/penv/bin:$PATH"
+```
+
+## Building a homework
+
+Every homework builds from the repository root with one command, in the project-directory form:
+
+```bash
+pio run -d homeworks/<id>
+```
+
+`<id>` is the homework's folder name. Append `--target upload` to flash the board, and
+`pio device monitor -d homeworks/<id>` to watch the serial output. Environment names are
+project-scoped, so address a project by its directory rather than by an environment flag.
+
+## What counts as a homework
+
+A homework is a directory directly under `homeworks/` whose name matches the frozen id grammar —
+`m01-l03-<slug>` for a lesson, `project-<slug>` for a course project — and which contains a
+`platformio.ini`.
+
+## Conventions
+
+[`AGENTS.md`](AGENTS.md) is the single source of truth for repository rules. The shared-library
+conventions live in [`shared/lib/README.md`](shared/lib/README.md).
+
+## License
+
+Licensed under the Apache License 2.0 — see [LICENSE](LICENSE).
