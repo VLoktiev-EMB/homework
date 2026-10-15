@@ -1,0 +1,32 @@
+# .editorconfig — text-level rules ONLY. C/C++ formatting is .clang-format's
+# (Phase 5); rulers and formatters are .vscode/settings.json's. One owner per rule.
+#
+# Only the nine properties the EditorConfig specification defines are used here.
+# An unknown key is accepted by parsers and IGNORED by plugins, so it fails
+# silently — do not add `max_line_length` or `trim_final_newlines`.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{md,markdown}]
+indent_size = 2
+# Two trailing spaces are a Markdown hard line break; never strip them.
+trim_trailing_whitespace = false
+
+[*.{json,jsonc,yml,yaml,ini,cfg,properties}]
+indent_size = 2
+
+[*.{c,h,cpp,hpp,cc,ixx}]
+indent_size = 4
+
+[*.{sh,bash}]
+indent_size = 2
+
+[Makefile]
+indent_style = tab

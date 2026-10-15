@@ -1,0 +1,40 @@
+# .gitattributes — index-level normalization ONLY. The editor-level EOL rule is
+# .editorconfig's; this file governs what git stores and checks out.
+
+# Normalize every text file to LF in the repository, whatever the contributor's OS.
+* text=auto eol=lf
+
+# Explicit text types — defensive, so binary detection can never misfire.
+*.c     text
+*.h     text
+*.cpp   text
+*.hpp   text
+*.cc    text
+*.ini   text
+*.json  text
+*.jsonc text
+*.yml   text
+*.yaml  text
+*.md    text
+*.txt   text
+*.mjs   text
+*.sh    text
+# SVG is TEXT: generating it (Phase 4) only produces a readable diff if git treats
+# it as text. Never mark it binary.
+*.svg   text
+
+# Binary assets: never normalize, never diff as text.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.pdf   binary
+*.zip   binary
+*.tar   binary
+
+# Generated firmware artifacts: keep them out of diffs and out of language stats.
+# linguist-* are GitHub Linguist conventions, not core git attributes.
+*.bin   binary -diff -merge linguist-generated=true
+*.elf   binary -diff -merge linguist-generated=true
+*.hex   binary -diff -merge linguist-generated=true
+*.map   binary -diff -merge linguist-generated=true
