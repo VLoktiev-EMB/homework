@@ -41,7 +41,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. `git status` stays clean across a full build and an editor session: `.pio/`, `compile_commands.json` and generated editor state never appear as untracked or modified.
   4. Running a repo-wide sweep script in a tree where it matches zero homework projects exits non-zero with a readable message instead of reporting success.
 
-**Plans:** 5/5 plans executed
+**Plans:** 5 executed, 2 gap-closure planned
 Plans:
 **Wave 1**
 - [x] 01-01-PLAN.md — The walking skeleton: discovery, the generated workspace file, and the one-command build
@@ -53,6 +53,12 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [x] 01-05-PLAN.md — The acceptance run: build once, prove the depth rule, leave the tree clean
+
+**Wave 4** *(gap closure — blocked on Waves 1–3)*
+- [ ] 01-06-PLAN.md — Close the un-ignored GSD lock file by rule, gate the ignore contract against regression, and measure the depth rule's build-failure mechanism on a two-arm fixture
+
+**Wave 5** *(gap closure — blocked on Wave 4; contains a human-ratification checkpoint)*
+- [ ] 01-07-PLAN.md — Ratify and record the discharge of criterion 2's second conjunct: an accepted override naming the rule-naming detector, or a tracked deferral to Phase 3
 
 ### Phase 2: Board and Environment Baseline (N16R8 Acceptance Gate)
 
