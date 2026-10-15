@@ -9,10 +9,10 @@ The first milestone proves the whole loop on one real homework. Scope below was 
 
 ### Repository & workspace
 
-- [ ] **REPO-01**: The repository opens as ONE VS Code workspace listing the repo root, `shared/`, and one folder per homework
-- [ ] **REPO-02**: Each homework lives at `homeworks/<module>-<lesson>-<slug>/` as a self-contained PlatformIO project, buildable from the root with `pio run -d homeworks/<id>`
-- [ ] **REPO-03**: Every homework sits exactly one directory level below `homeworks/`, because every shared-library path in `lib_deps` is relative to the project
-- [ ] **REPO-04**: Machine-generated and machine-local artifacts (`.pio/`, `compile_commands.json`) are gitignored, never committed
+- [x] **REPO-01**: The repository opens as ONE VS Code workspace listing the repo root, `shared/`, and one folder per homework
+- [x] **REPO-02**: Each homework lives at `homeworks/<module>-<lesson>-<slug>/` as a self-contained PlatformIO project, buildable from the root with `pio run -d homeworks/<id>`
+- [x] **REPO-03**: Every homework sits exactly one directory level below `homeworks/`, because every shared-library path in `lib_deps` is relative to the project
+- [x] **REPO-04**: Machine-generated and machine-local artifacts (`.pio/`, `compile_commands.json`) are gitignored, never committed
 
 ### Board facts & pin safety
 
@@ -114,10 +114,10 @@ Which phases cover which requirements. Populated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REPO-01 | Phase 1 | In Progress |
-| REPO-02 | Phase 1 | In Progress |
-| REPO-03 | Phase 1 | In Progress |
-| REPO-04 | Phase 1 | In Progress |
+| REPO-01 | Phase 1 | Complete |
+| REPO-02 | Phase 1 | Complete |
+| REPO-03 | Phase 1 | Complete |
+| REPO-04 | Phase 1 | Complete |
 | HW-01 | Phase 2 | Pending |
 | HW-02 | Phase 4 | Pending |
 | HW-03 | Phase 4 | Pending |

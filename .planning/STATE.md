@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 01
 current_phase_name: Repository Skeleton and Project Layout
-status: executing
+status: verifying
 stopped_at: Completed phase 01 wave 1 (01-01, 01-02, 01-03)
-last_updated: "2026-10-15T12:53:45.217Z"
+last_updated: "2026-10-15T13:00:36.557Z"
 last_activity: 2026-10-15
 last_activity_desc: Phase 01 execution started
-state_head: dbeab79d8ca1bc5799240e1ce4dcd55e6c77ffff
+state_head: bf1ef610ba08cf9ed5c8a9a470e50173f1e7310f
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 5
-  completed_plans: 4
+  completed_plans: 5
 ---
 
 # Project State
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-15)
 
 Phase: 01 (Repository Skeleton and Project Layout) — EXECUTING
 Plan: 5 of 5
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-10-15 — Phase 01 execution started
 
 Progress: [░░░░░░░░░░] 0%
@@ -60,6 +60,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01 P02 | 3min | 3 tasks | 5 files |
 | Phase 01 P03 | 2min | 2 tasks | 3 files |
 | Phase 01 P04 | 5min | 2 tasks | 3 files |
+| Phase 01 P05 | unknown | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -91,6 +92,10 @@ Recent decisions affecting current work:
 - [Phase 01]: The expected id pattern is compared as a literal string, not interpolated into a RegExp. `ID_PATTERN_TEXT` spells the grammar for humans; feeding it to `new RegExp` asserts a different, slightly wrong language (the `-` before `[a-z0-9]+` becomes a range in one reading). The test asserts `stderr.includes("Expected: " + ID_PATTERN_TEXT)`.
 - [Phase 01]: The full nine-case suite is task 2's deliverable while the RED commit held five high-level contract cases — the same split plan 01-01 used for the same reason: the tracer carries `tdd="true"` and the plan assigns the exhaustive suite to the second task.
 - [Phase 01]: `REQUIREMENTS.md` was deliberately not modified. REPO-02 and REPO-03 are both declared by plan 01-05 as well, so the shared-ID gate forbids marking either complete until 01-05 produces its SUMMARY.
+- [Phase 01]: The acceptance run's two clean-tree readings are taken at the plan's own two points — before the log exists and after it is committed — and neither reading is replaced by a reading taken between the log's write and its commit.
+- [Phase 01]: The build was invoked through the absolute PlatformIO binary rather than the plan's `PATH="$HOME/.platformio/penv/bin:$PATH" pio` prefix, because the worktree isolation guard refuses a command whose first word is a `VAR=value` assignment. It is the same resolved binary; the plan itself records the absolute path as equivalent.
+- [Phase 01]: The phase log is the sanctioned repair for its own untracked entry. The generated state file beside it is closed by an ignore rule instead, because it is timestamped machine state rewritten on every transition — committing it would add a churning line to a history a course instructor reads.
+- [Phase 01]: `.planning/milestone.lock` is recorded as a known fourth machine-local GSD artifact that no Phase 1 plan named and no pattern matches. It belongs to plan 01-02's ignore file, so editing `.gitignore` here would break requirement traceability; it is recorded instead.
 
 ### Pending Todos
 
@@ -124,6 +129,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-15T12:53:45.200Z
+Last session: 2026-10-15T13:00:36.542Z
 Stopped at: Completed phase 01 wave 1 (01-01, 01-02, 01-03)
 Resume file: None
