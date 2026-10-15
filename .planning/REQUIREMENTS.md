@@ -114,10 +114,10 @@ Which phases cover which requirements. Populated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REPO-01 | Phase 1 | Pending |
-| REPO-02 | Phase 1 | Pending |
-| REPO-03 | Phase 1 | Pending |
-| REPO-04 | Phase 1 | Pending |
+| REPO-01 | Phase 1 | In Progress |
+| REPO-02 | Phase 1 | In Progress |
+| REPO-03 | Phase 1 | In Progress |
+| REPO-04 | Phase 1 | In Progress |
 | HW-01 | Phase 2 | Pending |
 | HW-02 | Phase 4 | Pending |
 | HW-03 | Phase 4 | Pending |
