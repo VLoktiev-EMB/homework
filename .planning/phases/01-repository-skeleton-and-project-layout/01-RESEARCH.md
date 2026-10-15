@@ -308,7 +308,7 @@ Measured: running the generator twice produced a byte-identical file (`diff` emp
 | **Live service config** | **None.** No external service holds repository configuration — no CI provider configured, no n8n/Datadog/Tailscale/Cloudflare surface, no Wokwi token. Confirmed by the absence of `.github/workflows/` (Phase 6) and any credential file. | None. |
 | **OS-registered state** | **None.** No launchd plist, systemd unit, Task Scheduler entry or pm2 process references this repository. Nothing is registered at the OS level. | None. |
 | **Secrets / env vars** | **One item, and it is the phase's real migration.** `~/.config/git/ignore` contains exactly one line — `**/.claude/settings.local.json` — so that file is ignored **only on this machine**. A fresh clone shows it as untracked, which is the state criterion 3 forbids. No secret values are involved; this is ignore-rule state, not credential state. | **Code edit:** add `.claude/settings.local.json` to the repo `.gitignore` (D-17). The machine-local rule may then stay as harmless duplication or be removed; removing it is what proves the repository is self-contained. |
-| **Build artifacts** | `homeworks/project-baseline/.pio/` and `homeworks/project-baseline/compile_commands.json` (1,188,872 bytes after a build) — neither exists yet, so neither is currently untracked; they appear the moment the phase builds the baseline. The `vl/init` scaffold exists as **git objects only** (`origin/vl/init`), not working-tree state, so it cannot leak into `git status`. | **Code edit:** the `.gitignore` entries. Nothing to migrate. |
+| **Build artifacts** | `homeworks/project-baseline/.pio/` and `homeworks/project-baseline/compile_commands.json` (1,188,872 bytes after a build) — neither exists yet, so neither is currently untracked; they appear the moment the phase builds the baseline. **Also, and already untracked right now:** `.planning/research/.cache/` (12 KB, 5 JSON digests), written by the GSD research seam *inside* the tracked `.planning/research/` tree while this phase was researched. The `vl/init` scaffold exists as **git objects only** (`origin/vl/init`), not working-tree state, so it cannot leak into `git status`. | **Code edit:** the `.gitignore` entries — including `.planning/research/.cache/`, which is needed *today*: `git status --porcelain` already reports it as untracked. Nothing to migrate. |
 
 **The canonical question — after every file in the repo is updated, what runtime systems still have the old string cached, stored, or registered?** Answer: nothing but the machine-local git excludes file. The `shared/libs` → `shared/lib` correction (D-24) touches only two committed Markdown files; no runtime, datastore or service has ever stored that path.
 
@@ -829,6 +829,13 @@ include/secrets.h
 *.bak
 *.orig
 *.rej
+
+# --- GSD research cache ----------------------------------------------------
+# The research seam writes machine-local digest files here (observed: 12 KB,
+# 5 JSON files, created while researching this phase). It sits INSIDE the
+# tracked .planning/research/ tree, so without this line `git status` is dirty
+# on a fresh research run — the exact state criterion 3 forbids.
+.planning/research/.cache/
 ```
 
 **Validated against a realistic tree.** Staged: `.editorconfig`, `.gitattributes`, `.gitignore`, `.planning/PROJECT.md`, `.vscode/extensions.json`, `.vscode/settings.json`, `AGENTS.md`, `homework.code-workspace`, `homeworks/project-baseline/{platformio.ini,src/main.cpp,include/board_pins.h}`, `LICENSE`, `README.md`, `shared/lib/**`, `tools/**`. Ignored: `homeworks/project-baseline/.pio/`, `homeworks/project-baseline/compile_commands.json`, `.vscode/c_cpp_properties.json`, `.vscode/launch.json`, `.claude/settings.local.json`, `.DS_Store`. And `git check-ignore -q` confirms `.claude/skills/new-homework/SKILL.md` is **not** ignored, so Phase 7 is safe.
@@ -1036,6 +1043,8 @@ Quoting the glob is required: unquoted, the shell would expand it (and in zsh, e
 - **Per task commit:** `node --test "tools/**/*.test.mjs"` — measured at ~35 ms, so there is no reason to run it less often.
 - **Per wave merge:** the same command plus `node tools/generate-workspace.mjs --check` and `node tools/sweep-homeworks.mjs --list`.
 - **Phase gate:** the full suite green, `--check` green, `pio run -d homeworks/project-baseline` exit 0, `git status --porcelain` empty, and the two recorded manual observations (workspace opens correctly; clean tree after build + editor session).
+
+**Baseline for the clean-tree assertion, measured right now (before Phase 1 writes anything):** `git status --porcelain` already reports two untracked entries — `?? .DS_Store` and `?? .planning/research/.cache/`. Criterion 3 is therefore **false today**, and both entries are covered by `.gitignore` patterns proposed above. This is useful twice over: it proves the assertion has something real to catch, and it gives the phase a pre-existing failure to close rather than a vacuously green check.
 
 ### Wave 0 Gaps
 
