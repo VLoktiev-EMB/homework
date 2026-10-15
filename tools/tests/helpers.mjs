@@ -9,11 +9,9 @@ import { tmpdir } from "node:os";
 import { dirname, join, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
-/** Absolute path of the repository's own `tools/` directory. */
-export const TOOLS_DIR = join(dirname(fileURLToPath(import.meta.url)), "..");
-
-/** Absolute path of the repository's own root. */
-export const REPO_ROOT = join(TOOLS_DIR, "..");
+// Read-only: the tool tree under test is copied INTO a fixture; no fixture is
+// ever built here, and no test asserts against the repository's own root.
+const TOOLS_DIR = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const created = [];
 
