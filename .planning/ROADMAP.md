@@ -63,7 +63,7 @@ Plans:
 - [x] 01-06-PLAN.md — Close the un-ignored GSD lock file by rule, gate the ignore contract against regression, and measure the depth rule's build-failure mechanism on a two-arm fixture
 
 **Wave 5** *(gap closure — blocked on Wave 4)*
-- [ ] 01-07-PLAN.md — Record the owner's accepted override for criterion 2's second conjunct, with the Phase 3 trigger that makes the literal mechanism observable
+- [x] 01-07-PLAN.md — Record the owner's accepted override for criterion 2's second conjunct, with the Phase 3 trigger that makes the literal mechanism observable
 
 ### Phase 2: Board and Environment Baseline (N16R8 Acceptance Gate)
 
@@ -176,7 +176,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Repository Skeleton and Project Layout | 6/7 | In Progress | - |
+| 1. Repository Skeleton and Project Layout | 7/7 | In Progress | - |
 | 2. Board and Environment Baseline (N16R8 Acceptance Gate) | 0/TBD | Not started | - |
 | 3. Shared Libraries and the Hardware Seam | 0/TBD | Not started | - |
 | 4. Wiring Pipeline and Pin Safety | 0/TBD | Not started | - |
