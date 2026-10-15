@@ -57,8 +57,8 @@ Plans:
 **Wave 4** *(gap closure — blocked on Waves 1–3)*
 - [ ] 01-06-PLAN.md — Close the un-ignored GSD lock file by rule, gate the ignore contract against regression, and measure the depth rule's build-failure mechanism on a two-arm fixture
 
-**Wave 5** *(gap closure — blocked on Wave 4; contains a human-ratification checkpoint)*
-- [ ] 01-07-PLAN.md — Ratify and record the discharge of criterion 2's second conjunct: an accepted override naming the rule-naming detector, or a tracked deferral to Phase 3
+**Wave 5** *(gap closure — blocked on Wave 4)*
+- [ ] 01-07-PLAN.md — Record the owner's accepted override for criterion 2's second conjunct, with the Phase 3 trigger that makes the literal mechanism observable
 
 ### Phase 2: Board and Environment Baseline (N16R8 Acceptance Gate)
 
