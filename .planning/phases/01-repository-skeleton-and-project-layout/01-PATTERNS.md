@@ -110,14 +110,14 @@ Two-space indent, one key per line, LF, exactly one trailing `\n`, **no comments
 - **`sdkconfig.*` must be followed by `!sdkconfig.defaults`** — Pitfall 9, measured. `sdkconfig.defaults` is hand-authored input (`espidf.py:138`) and a blanket glob silently uncommits it.
 - **Never a bare `.claude/` rule** — verified `git check-ignore -q .claude/skills/new-homework/SKILL.md` exits 1 (not ignored), so Phase 7's symlinked skills stay trackable.
 - **`include/secrets.h`** is listed separately from `secrets.h` — nested includes do not match the bare name in every case the RESEARCH list covers.
-- **`.planning/research/.cache/`** must be present. This is the one line that fixes a **currently-failing** criterion: `git status --porcelain` reports `?? .planning/research/.cache/` **today** (re-verified 2026-10-15).
+- **`.planning/research/.cache/`** must be present. This is one of the lines that fixes a **currently-failing** criterion: `git status --porcelain` reports `?? .planning/research/.cache/` **today** (re-verified 2026-10-15). The same criterion's third live entry is closed by the exact-path rule for `.planning/state.json` — GSD's generated state file, timestamped and rewritten on every state transition, so it is ignored rather than committed, and it is named as a full path because a glob over the planning directory would swallow the tracked planning data beside it (`.planning/config.json` is committed today).
 - The file opens with a header comment recording the escape hatch: a `!` negation on its **own line**, never `git add -f`.
 
 **Must NOT copy from the scaffold** (`origin/vl/init:.gitignore`):
 - **`.vscode/*` plus `!` negations.** D-18 names the generated files individually instead, so a *future* generated file is ignored by default rather than committed by accident. The scaffold's negation block also force-tracked `.vscode/launch.json`, which D-18 ignores.
 - **`build/` and `build-*/`** — RESEARCH deliberately omits them (lines 843): PlatformIO's output already lives in `.pio/build/`, so a top-level `build/` only risks silently ignoring a directory someone names `build` on purpose.
 - **`.pio/build/`** — redundant once `.pio/` is present.
-- Missing entirely from the scaffold: `sdkconfig` handling, `.env` / `.env.*`, `.claude/worktrees/`, `.claude/agent-memory-local/`, `CLAUDE.local.md`, `.planning/research/.cache/`.
+- Missing entirely from the scaffold: `sdkconfig` handling, `.env` / `.env.*`, `.claude/worktrees/`, `.claude/agent-memory-local/`, `CLAUDE.local.md`, `.planning/research/.cache/`, `.planning/state.json`.
 - Extra in the scaffold and not carried forward: `.gemini/`, `docs/superpowers/`, `*.ko`, `*.ilk`, `*.exp`, `*.su`, `*.idb`, `*.lai`, `*.app`.
 
 > ⚠️ **`.DS_Store` is required for a currently-real failure.** `git status --porcelain` reports `?? .DS_Store` at the repo root **today**.
