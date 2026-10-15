@@ -951,27 +951,27 @@ indent_style = tab
 
 **No assumption in this table affects a compliance, retention, security or performance requirement.** The security-relevant findings (Pitfalls 3 and 5, and the Runtime State Inventory secrets row) are all backed by measurements recorded above.
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should the sweep keep `--list` and the build loop in one script, or split them?**
    - What we know: Phase 6's CI needs the discovery half as a matrix; the local/pre-push gate needs the build half. Both were implemented in one script and both work.
    - What's unclear: whether one flag-driven script or two scripts reads better a year from now. D-09 says one *folder*, not one file.
-   - Recommendation: keep one script with `--list` — it shares the zero-match and validation logic, which is the part that must never diverge. If it grows past ~150 lines, split at the `discover.mjs` boundary, which is already the seam.
+   - Recommendation: keep one script with `--list` — it shares the zero-match and validation logic, which is the part that must never diverge. If it grows past ~150 lines, split at the `discover.mjs` boundary, which is already the seam. — **RESOLVED:** adopted as recommended; one flag-driven script with `--list`, `--allow-empty` and `--root <dir>` is what plan 01-04 task 1 builds, and the root override is what keeps its failure-path tests off the repository root (D-09, T-1-16).
 
 2. **How should the drift check be wired into a gate — `--check`, or `git diff --exit-code`?**
    - What we know: both detect drift; `--check` gives a better message and works outside git; the git-diff form also catches a *deleted* untracked-but-should-exist file.
    - What's unclear: which one Phase 6's pre-commit hook should own. D-20 keeps this phase's automation minimal.
-   - Recommendation: `--check` is the mechanism; Phase 6 decides the gate. Do not add a hook in Phase 1.
+   - Recommendation: `--check` is the mechanism; Phase 6 decides the gate. Do not add a hook in Phase 1. — **RESOLVED:** `--check` is the mechanism, implemented by plan 01-01 task 1 and re-run as step 1 of the acceptance sequence in plan 01-05; no hook is added in Phase 1 (D-01, D-20).
 
 3. **Is `.claude/settings.local.json` duplication between `~/.config/git/ignore` and the repo file acceptable?**
    - What we know: the machine-local rule exists today; D-17 moves it into the repository. Verified the file is currently ignored only machine-locally.
    - What's unclear: whether to delete the machine-local line as part of this phase.
-   - Recommendation: add the repo rule (required) and leave the machine-local one alone (harmless, and removing it is outside this phase's stated boundary). The verification that matters is that a fresh clone with no machine-local rules keeps `git status` clean — testable with `GIT_CONFIG_GLOBAL=/dev/null git status --porcelain`.
+   - Recommendation: add the repo rule (required) and leave the machine-local one alone (harmless, and removing it is outside this phase's stated boundary). The verification that matters is that a fresh clone with no machine-local rules keeps `git status` clean. — **MEASURED 2026-10-15 (revision pass):** `GIT_CONFIG_GLOBAL=/dev/null` does **not** reproduce that case, because `~/.config/git/ignore` is git's built-in default for `core.excludesFile` rather than content of a config file, so the rule still applies; `XDG_CONFIG_HOME=<nonexistent>` is what disables it (`git check-ignore -v` then exits 1). — **RESOLVED:** plan 01-02 task 1 adds the repo rule and asserts that `git check-ignore -v` names the repository's own `.gitignore` as the matching source for that path — decisive in this environment, where the machine-local rule matches the same path and a bare existence check cannot tell the two apart.
 
 4. **Does `README.md` need to state the homework definition explicitly?**
    - What we know: Pitfall 8 shows the generator and the sweep can diverge on "what is a homework". Both now share one implementation.
    - What's unclear: whether the definition belongs in the README, in `shared/lib/README.md`, or only in the tool source.
-   - Recommendation: state it in `README.md` in one sentence — the Phase 7 skill and a human reader both need it, and it costs one line.
+   - Recommendation: state it in `README.md` in one sentence — the Phase 7 skill and a human reader both need it, and it costs one line. — **RESOLVED:** stated in `README.md` by plan 01-03 task 2, whose verify asserts the `platformio.ini` clause is present, so the definition is machine-checked rather than merely recommended (D-26).
 
 ## Environment Availability
 
