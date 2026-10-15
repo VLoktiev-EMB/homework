@@ -38,7 +38,15 @@ findings:
   - id: WR-08
     severity: warning
     disposition: open
-    title: "A test silently requires a working PlatformIO installation, with no skip guard"
+    title: "A test requires a working PlatformIO installation, with no skip guard"
+  - id: WR-10
+    severity: warning
+    disposition: open
+    title: "The \"no tracked path is hidden\" guard is not hermetic — a machine-local exclude makes it red and the message blames the repository's own rule"
+  - id: WR-11
+    severity: warning
+    disposition: open
+    title: "The inline-comment guard rejects a valid escaped-hash pattern"
   - id: IN-01
     severity: info
     disposition: open
@@ -66,14 +74,18 @@ findings:
   - id: IN-07
     severity: info
     disposition: open
-    title: "The new ignore-contract test cannot tell \"git could not run\" from \"the rule was widened\""
+    title: "The ignore-contract test cannot tell \"git could not run\" from \"the rule was widened\""
+  - id: IN-08
+    severity: info
+    disposition: open
+    title: "Unknown flags are silently ignored, and the mutating path is the default"
   - id: WR-09
     severity: warning
     disposition: open
     title: "`.planning/milestone.lock` is untracked and unignored — the tree is dirty, which the `.gitignore` section above it exists to prevent"
-open: 17
-total: 17
-recorded: 2026-10-15T14:58:20.383Z
+open: 20
+total: 20
+recorded: 2026-10-15T15:06:11.165Z
 ---
 
 # Phase 01: Code Review Disposition
@@ -89,6 +101,8 @@ recorded: 2026-10-15T14:58:20.383Z
 | WR-06 | warning | open | - |
 | WR-07 | warning | open | - |
 | WR-08 | warning | open | - |
+| WR-10 | warning | open | - |
+| WR-11 | warning | open | - |
 | IN-01 | info | open | - |
 | IN-02 | info | open | - |
 | IN-03 | info | open | - |
@@ -96,6 +110,7 @@ recorded: 2026-10-15T14:58:20.383Z
 | IN-05 | info | open | - |
 | IN-06 | info | open | - |
 | IN-07 | info | open | - |
+| IN-08 | info | open | - |
 | WR-09 | warning | open | - (not in the current review) |
 
 Dispositions: `open` (recorded, not yet triaged), `fixed`, `skipped`, `deferred`.
