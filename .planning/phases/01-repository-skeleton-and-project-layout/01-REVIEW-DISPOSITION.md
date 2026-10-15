@@ -6,7 +6,7 @@ findings:
   - id: CR-01
     severity: critical
     disposition: open
-    title: "The entry-point guard fails open — `--check` exits 0 without checking when the script is reached through a symlink"
+    title: "The entry-point guard fails open — `--check` exits 0 without checking when the script path carries a symlink"
   - id: WR-01
     severity: warning
     disposition: open
@@ -39,10 +39,6 @@ findings:
     severity: warning
     disposition: open
     title: "A test silently requires a working PlatformIO installation, with no skip guard"
-  - id: WR-09
-    severity: warning
-    disposition: open
-    title: "`.planning/milestone.lock` is untracked and unignored — the tree is dirty, which the `.gitignore` section above it exists to prevent"
   - id: IN-01
     severity: info
     disposition: open
@@ -67,9 +63,17 @@ findings:
     severity: info
     disposition: open
     title: "Nested workspace roots may prevent the root `.vscode/settings.json` from reaching homework files"
-open: 16
-total: 16
-recorded: 2026-10-15T13:05:57.513Z
+  - id: IN-07
+    severity: info
+    disposition: open
+    title: "The new ignore-contract test cannot tell \"git could not run\" from \"the rule was widened\""
+  - id: WR-09
+    severity: warning
+    disposition: open
+    title: "`.planning/milestone.lock` is untracked and unignored — the tree is dirty, which the `.gitignore` section above it exists to prevent"
+open: 17
+total: 17
+recorded: 2026-10-15T14:58:20.383Z
 ---
 
 # Phase 01: Code Review Disposition
@@ -85,13 +89,14 @@ recorded: 2026-10-15T13:05:57.513Z
 | WR-06 | warning | open | - |
 | WR-07 | warning | open | - |
 | WR-08 | warning | open | - |
-| WR-09 | warning | open | - |
 | IN-01 | info | open | - |
 | IN-02 | info | open | - |
 | IN-03 | info | open | - |
 | IN-04 | info | open | - |
 | IN-05 | info | open | - |
 | IN-06 | info | open | - |
+| IN-07 | info | open | - |
+| WR-09 | warning | open | - (not in the current review) |
 
 Dispositions: `open` (recorded, not yet triaged), `fixed`, `skipped`, `deferred`.
 Set `deferred` by hand and put the reason in the Source cell; both are preserved. A `|` in the reason is kept as prose and escaped on the next run.
