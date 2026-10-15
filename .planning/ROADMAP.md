@@ -41,6 +41,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. `git status` stays clean across a full build and an editor session: `.pio/`, `compile_commands.json` and generated editor state never appear as untracked or modified.
   4. Running a repo-wide sweep script in a tree where it matches zero homework projects exits non-zero with a readable message instead of reporting success.
 
+> **Verification discharge (criterion 2, second conjunct):** Accepted override, recorded **2026-10-15** (the owner's decision commit `bf60cca`, "docs(phase-01): record owner decisions on the two verification gaps"). The second conjunct of criterion 2 above is **deliberately deviated from**: the roadmap wording stays exactly as written, and the sanctioned discharge is the sweep's named-rule detector — the `DEPTH RULE VIOLATED` banner, exit 1, raised before any child process exists. The detector is named that precisely because the sweep carries two named-rule detectors (`DEPTH RULE VIOLATED` and `MALFORMED HOMEWORK ID`) and only the depth one stands in for the build failure.
+> **Reason, in the owner's own terms:** the literal criterion is unobservable in Phase 1 because `homeworks/project-baseline/platformio.ini` declares no `lib_deps`, so nothing resolves relative to the project directory and nothing fails to resolve. A copy of the baseline placed at `homeworks/project-baseline/deeper/` builds successfully — measured, exit 0 — so no build-failure demonstration exists to make.
+> **Measured evidence (plan 01-06, two arms on a throwaway fixture outside the repository):** with one shared-library dependency declared in the form `lib_deps = probelib=symlink://../../shared/lib/probelib`, the project at exactly one level below `homeworks/` builds (arm A: exit 0, `probelib@0.1.0 has been installed!`) and the same project one level deeper fails to resolve (arm B: exit 1, PlatformIO's own `PackageException: Can not create a symbolic link for ../../shared/lib/probelib, not a directory`). The depth boundary is therefore real and measured; what the committed baseline lacks is the dependency that would exhibit it.
+> **Trigger that retires the substitute:** Phase 3 success criterion 5 below makes the literal mechanism observable on the committed tree — once a homework declares `lib_deps = <name>=symlink://../../shared/lib/<name>`, moving that homework one level deeper fails to resolve the shared-library symlink dependency. Until then the named-rule detector is the discharge, and it is never relaxed to manufacture a green result.
+
 **Plans:** 5 executed, 2 gap-closure planned
 Plans:
 **Wave 1**
@@ -86,6 +91,7 @@ Plans:
   2. Editing a shared library's source is picked up by the next homework build with no reinstall and no stale copy — a change to shared code visibly changes the firmware.
   3. A framework include (`Arduino.h`, `esp_*`, `driver/`, `freertos/`) planted anywhere under `shared/lib` is named by the seam check, which exits non-zero on it.
   4. No `lib_extra_dirs` or `globallib_dir` reference survives anywhere in the repository.
+  5. Once a homework declares `lib_deps = <name>=symlink://../../shared/lib/<name>`, moving that homework one level deeper makes its build fail to resolve the shared-library symlink dependency — PlatformIO's Library Manager resolves a `symlink://` path relative to the project directory, so the same relative path no longer reaches `shared/lib/` from a deeper folder. This is the observable build-failure half of the one-level depth rule that Phase 1 could enforce only by name, and one command (`pio run -d <deeper copy of the project>`) settles it: the failure arrives at library installation, before any translation unit is compiled.
 
 **Plans:** TBD
 

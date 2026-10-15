@@ -87,6 +87,7 @@ A personal coursework repository for an embedded-development course (C/C++, Plat
 | No `-Werror` initially | The Arduino framework's own headers are not under the owner's control | — Pending |
 | Host unit tests (`platform = native`) for pure logic | Free, offline, milliseconds — the highest value per unit of effort, and it forces the hardware seam that the IDF migration also needs | — Pending |
 | Commit `.planning/` to the public repository | The reasoning behind the work is part of what the repository documents; a public portfolio benefits from visible process | — Pending |
+| Record the accepted override for ROADMAP Phase 1 **criterion 2 second conjunct** as a dated, deliberate deviation | The literal criterion — a project moved one level deeper breaks the build — is unobservable while `homeworks/project-baseline/platformio.ini` declares no `lib_deps`, so nothing fails to resolve; the sweep's `DEPTH RULE VIOLATED` detector names the rule before any child process exists and satisfies the criterion's intent. Plan 01-06's two-arm measurement is the evidence, and Phase 3's added success criterion makes the literal mechanism observable once a `symlink://` shared-library dependency exists | — Accepted override, owner decision 2026-10-15 (deviation recorded in `ROADMAP.md` Phase 1 and in `01-VERIFICATION.md`) |
 
 ## Traps for Later Phases
 
