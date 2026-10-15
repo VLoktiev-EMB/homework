@@ -114,42 +114,52 @@ Which phases cover which requirements. Populated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REPO-01 | TBD | Pending |
-| REPO-02 | TBD | Pending |
-| REPO-03 | TBD | Pending |
-| REPO-04 | TBD | Pending |
-| HW-01 | TBD | Pending |
-| HW-02 | TBD | Pending |
-| HW-03 | TBD | Pending |
-| HW-04 | TBD | Pending |
-| SHARED-01 | TBD | Pending |
-| SHARED-02 | TBD | Pending |
-| SHARED-03 | TBD | Pending |
-| SHARED-04 | TBD | Pending |
-| WIRE-01 | TBD | Pending |
-| WIRE-02 | TBD | Pending |
-| WIRE-03 | TBD | Pending |
-| WIRE-04 | TBD | Pending |
-| WIRE-05 | TBD | Pending |
-| VERIFY-01 | TBD | Pending |
-| VERIFY-02 | TBD | Pending |
-| VERIFY-03 | TBD | Pending |
-| VERIFY-04 | TBD | Pending |
-| VERIFY-05 | TBD | Pending |
-| AGENT-01 | TBD | Pending |
-| AGENT-02 | TBD | Pending |
-| AGENT-03 | TBD | Pending |
-| AGENT-04 | TBD | Pending |
-| AGENT-05 | TBD | Pending |
-| DELIV-01 | TBD | Pending |
-| DELIV-02 | TBD | Pending |
-| DELIV-03 | TBD | Pending |
+| REPO-01 | Phase 1 | Pending |
+| REPO-02 | Phase 1 | Pending |
+| REPO-03 | Phase 1 | Pending |
+| REPO-04 | Phase 1 | Pending |
+| HW-01 | Phase 2 | Pending |
+| HW-02 | Phase 4 | Pending |
+| HW-03 | Phase 4 | Pending |
+| HW-04 | Phase 2 | Pending |
+| SHARED-01 | Phase 3 | Pending |
+| SHARED-02 | Phase 3 | Pending |
+| SHARED-03 | Phase 3 | Pending |
+| SHARED-04 | Phase 3 | Pending |
+| WIRE-01 | Phase 4 | Pending |
+| WIRE-02 | Phase 4 | Pending |
+| WIRE-03 | Phase 4 | Pending |
+| WIRE-04 | Phase 4 | Pending |
+| WIRE-05 | Phase 4 | Pending |
+| VERIFY-01 | Phase 5 | Pending |
+| VERIFY-02 | Phase 6 | Pending |
+| VERIFY-03 | Phase 6 | Pending |
+| VERIFY-04 | Phase 5 | Pending |
+| VERIFY-05 | Phase 5 | Pending |
+| AGENT-01 | Phase 7 | Pending |
+| AGENT-02 | Phase 7 | Pending |
+| AGENT-03 | Phase 7 | Pending |
+| AGENT-04 | Phase 7 | Pending |
+| AGENT-05 | Phase 7 | Pending |
+| DELIV-01 | Phase 8 | Pending |
+| DELIV-02 | Phase 8 | Pending |
+| DELIV-03 | Phase 8 | Pending |
 
 **Coverage:**
 - v1 requirements: 30 total
-- Mapped to phases: 0 — populated by roadmap creation
-- Unmapped: 30 ⚠️
+- Mapped to phases: 30 ✓
+- Unmapped: 0
+
+**Per-phase counts:**
+- Phase 1 (Repository Skeleton and Project Layout): REPO-01..04 — 4
+- Phase 2 (Board and Environment Baseline, N16R8 Acceptance Gate): HW-01, HW-04 — 2
+- Phase 3 (Shared Libraries and the Hardware Seam): SHARED-01..04 — 4
+- Phase 4 (Wiring Pipeline and Pin Safety): WIRE-01..05, HW-02, HW-03 — 7
+- Phase 5 (Verification Layers and Pinned Static Checks): VERIFY-01, VERIFY-04, VERIFY-05 — 3
+- Phase 6 (Hook and CI Gates): VERIFY-02, VERIFY-03 — 2
+- Phase 7 (Agent Rules and the Scaffolding Skill): AGENT-01..05 — 5
+- Phase 8 (The First Real Homework, End to End): DELIV-01..03 — 3
 
 ---
 *Requirements defined: 2026-10-15*
-*Last updated: 2026-10-15 after initial definition*
+*Last updated: 2026-10-15 after roadmap creation (traceability populated, 30/30 mapped)*
