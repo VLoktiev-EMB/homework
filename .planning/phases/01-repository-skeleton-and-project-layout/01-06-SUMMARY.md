@@ -16,9 +16,9 @@ affects: ["plan 01-07", "phase 2", "phase 3", "phase 6"]
 actuals:
   tokens: 9498
   tasks: 2
-  commits: 1
+  commits: 2
   plan_head_before: 085a59cc8ac7306f52075660fa96b6f7b7c5091d
-  plan_head_after: da4f577acd43f54df22c49de2f15210d33b2ec2a
+  plan_head_after: 282dcbe7f6891332eeaa3cae880a48911ea2c688
   # `tokens` is chars/4 over the realized diff (#2632), on the same estimateTokens
   # scale as the plan's `estimate`, never a harness token count: 37,993 characters
   # (this summary 30,836 + tools/tests/ignore-rules.test.mjs 6,801 + the 356
@@ -31,10 +31,11 @@ actuals:
   # explicit `git rev-list --count <base>..HEAD`, exactly as plan 01-05 recorded for
   # the same constraint.
   #
-  # At the moment of this write HEAD is the task-1 commit, so the measurement reads
-  # `commits: 1` / `plan_head_after: da4f577`. This summary's own commit is this
-  # plan's second task commit, and the closing metadata commit of this plan finalizes
-  # both fields against it — the same shape plan 01-05 recorded.
+  # Both fields are finalized against the measured result, taken after the two task
+  # commits existed: `git rev-list --count 085a59cc…..282dcbe…` -> 2, where 282dcbe is
+  # the commit carrying this summary — this plan's second and last task commit. The
+  # closing metadata commit that writes these two lines is not itself counted, the
+  # same shape plan 01-05 recorded.
 
 tech-stack:
   added: []
@@ -148,9 +149,9 @@ metrics:
 Each task was committed atomically:
 
 1. **Task 1: Close the un-ignored GSD lock file by rule, and gate the whole ignore contract against regression** — `da4f577` (docs)
-2. **Task 2: Measure the depth rule's build behaviour on a two-arm throwaway fixture** — the commit carrying this summary (docs)
+2. **Task 2: Measure the depth rule's build behaviour on a two-arm throwaway fixture** — `282dcbe` (docs)
 
-**Plan metadata:** the closing commit of this plan, which finalizes the `actuals` block above with the measured commit count and the closing SHA.
+**Plan metadata:** the closing commit of this plan, which finalizes the `actuals` block above with the measured commit count (`2`) and the closing SHA (`282dcbe`).
 
 ## Files Created/Modified
 
