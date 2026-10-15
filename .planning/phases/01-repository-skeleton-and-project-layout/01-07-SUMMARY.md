@@ -22,22 +22,24 @@ affects: ["phase 2", "phase 3", "phase 6", "phase 8", "the milestone audit", "th
 # explicit `git rev-list --count <base>..HEAD`, exactly as plans 01-05 and 01-06
 # recorded for the same constraint.
 actuals:
-  tokens: 10949
+  tokens: 11051
   tasks: 2
   commits: 2
   plan_head_before: b671b38e9096fa8ac476330e81afaa8d908e8c35
   plan_head_after: af847625c8764d523abff0c787bf1422aae0116d
   # `tokens` is chars/4 over the realized diff (#2632), on the same estimateTokens
-  # scale as the plan's `estimate`, never a harness token count: 43,794 characters
-  # (this summary 38,620 + the 5,174 characters the three artifacts' diff adds)
-  # -> 10,949. Same shape plan 01-06 recorded, and the plan's own `estimate` of
-  # 24,000 tokens was high on the same scale — recorded as measured, not rounded
-  # toward it.
+  # scale as the plan's `estimate`, never a harness token count: 44,204 characters
+  # -> 11,051. Measured at the summary's own commit (`12227bd`): this summary
+  # 39,030 characters as that blob, plus the 5,174 characters the three artifacts'
+  # diff adds at `plan_head_after`. The plan's own `estimate` of 24,000 tokens was
+  # ~2.2x high on the same scale — recorded as measured, never rounded toward it.
   #
-  # `plan_head_before` is the worktree base the orchestrator forked from;
+  # `plan_head_before` is the worktree base the orchestrator forked from, and
   # `plan_head_after` is the task-1 commit. `commits` is the measured
-  # `git rev-list --count <before>..<after>` -> 2 (the two task commits; the
-  # summary's own commit is the second of them).
+  # `git rev-list --count <before>..<after>` -> 2: the two task commits, of which
+  # the second is the summary's own commit. The closing metadata commit that
+  # writes these lines is not itself counted — the same shape plans 01-05 and
+  # 01-06 recorded.
 
 tech-stack:
   added: []
