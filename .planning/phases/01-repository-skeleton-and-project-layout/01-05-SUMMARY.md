@@ -13,15 +13,17 @@ provides:
 affects: ["phase 2", "phase 6", "phase 8"]
 
 actuals:
-  tokens: 7500
+  tokens: 7737
   tasks: 2
-  commits: 3
+  commits: 2
   plan_head_before: 22a723e50041a1dd0f348153881b330573cb08e8
-  plan_head_after: pending-measurement
-  # `commits` is MEASURED as `git rev-list --count <plan_head_before>..HEAD`, never
-  # narrated (#3968); `tokens` is chars/4 over the realized diff. Both are re-measured
-  # and finalized by the closing commit that carries this file's last revision, which
-  # also replaces the plan_head_after placeholder above.
+  plan_head_after: efcbee5e57037f76bcc0089ac35d37da32bebd78
+  # `tokens` is chars/4 over the realized diff (#2632) — 30,947 characters in the phase
+  # log at the task-2 commit — on the same estimateTokens scale as the plan's `estimate`,
+  # never a harness token count. `commits` is MEASURED, never narrated (#3968):
+  #   git rev-list --count 22a723e5…(plan_head_before)..efcbee5…(plan_head_after) -> 2
+  # i.e. the two task commits. The metadata commit that finalizes this block is not
+  # counted, matching how plan 01-03 recorded its own ledger.
 
 tech-stack:
   added: []
@@ -114,7 +116,7 @@ coverage:
     human_judgment: false
 
 metrics:
-  duration: 3min
+  duration: 4min
   completed: 2026-10-15
   status: complete
 ---
@@ -125,9 +127,9 @@ metrics:
 
 ## Performance
 
-- **Duration:** 6 min
+- **Duration:** 4 min
 - **Started:** 2026-10-15T12:55:39Z
-- **Completed:** 2026-10-15T13:01:30Z
+- **Completed:** 2026-10-15T12:59:23Z
 - **Tasks:** 2
 - **Files modified:** 1 created
 
@@ -447,3 +449,20 @@ ______________________
 
 *Phase: 01-repository-skeleton-and-project-layout*
 *Completed: 2026-10-15*
+
+## Self-Check: PASSED
+
+- FOUND: `.planning/phases/01-repository-skeleton-and-project-layout/01-05-SUMMARY.md`
+- FOUND: commit `926db18` (ancestor of HEAD) — task 1, the acceptance run and this log
+- FOUND: commit `efcbee5` (ancestor of HEAD) — task 2, the deferred observations
+- Plan-level verification, all eight items:
+  - `git status --porcelain` → empty after a full `pio run`, after `-t compiledb`, and again after this log was committed — **PASS**
+  - `node tools/generate-workspace.mjs --check` → `homework.code-workspace is up to date`, exit 0 — **PASS**
+  - `node tools/sweep-homeworks.mjs --list` → exactly `project-baseline`, exit 0 — **PASS**
+  - `pio run -d homeworks/project-baseline` → exit 0, `[SUCCESS] Took 2.44 seconds`, `6553600` in the size line — **PASS**
+  - `pio run -d homeworks/project-baseline -t compiledb` → exit 0, the database exists inside the project directory and is ignored (`.gitignore:20`) — **PASS**
+  - the depth probe → `DEPTH RULE VIOLATED` with the offending path, then the probe removed with its absence asserted — **PASS**
+  - `node --test "tools/**/*.test.mjs"` → tests 27, pass 27, fail 0 — **PASS**
+  - the recorded manual observations — present in §12, explicitly **DEFERRED** to `/gsd-verify-work 1` with unfilled output slots — **DEFERRED (by design)**, not a failure: no agent can observe a VS Code window, and an invented observation would be worse than an honest gap.
+- No build artifact, compilation database or generated editor file was staged at any point; `homeworks/project-baseline/.pio/` and its `compile_commands.json` exist on disk and are reported only under `git status --ignored`.
+- No hook, CI job or pre-commit entry was added (D-20).
