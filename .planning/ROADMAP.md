@@ -30,6 +30,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 ## Phase Details
 
 ### Phase 1: Repository Skeleton and Project Layout
+
 **Goal:** The repository is one VS Code workspace holding the root, the shared-library tree and one folder per homework, with the folder names and the one-level depth rule frozen before any mechanism is built on them.
 **Mode:** mvp
 **Depends on:** Nothing (first phase)
@@ -39,15 +40,22 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. A PlatformIO project placed at `homeworks/<module>-<lesson>-<slug>/` builds from the repo root with exactly one command, `pio run -d homeworks/<id>` — and moving it one level deeper breaks the build, which is what proves the depth rule is load-bearing.
   3. `git status` stays clean across a full build and an editor session: `.pio/`, `compile_commands.json` and generated editor state never appear as untracked or modified.
   4. Running a repo-wide sweep script in a tree where it matches zero homework projects exits non-zero with a readable message instead of reporting success.
+
 **Plans:** 5 plans
 Plans:
+**Wave 1**
 - [ ] 01-01-PLAN.md — The walking skeleton: discovery, the generated workspace file, and the one-command build
 - [ ] 01-02-PLAN.md — Ignore rules, the text-layer contract, and the editor settings
 - [ ] 01-03-PLAN.md — The corrected path traps and the root README
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 01-04-PLAN.md — The repo-wide sweep that fails loudly on zero matches and names the depth rule
+
+**Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 01-05-PLAN.md — The acceptance run: build once, prove the depth rule, leave the tree clean
 
 ### Phase 2: Board and Environment Baseline (N16R8 Acceptance Gate)
+
 **Goal:** The N16R8 board is proven end-to-end from a pinned, explicitly-ported environment, so every later phase inherits a configuration that really compiles, flashes and reports the physical flash and PSRAM — not the N8 defaults PlatformIO assumes.
 **Mode:** mvp
 **Depends on:** Phase 1
@@ -58,9 +66,11 @@ Plans:
   3. The resolved platform, framework and toolchain versions reported by `pio pkg list` are written into the repository, so the environment can be reproduced from the committed files alone.
   4. `pio project config` shows every environment carrying one exact `platform` version and its own explicit console port — no range, no `#develop`, no unset port.
   5. The console-port choice and the RGB-LED GPIO are settled by a measurement on this board and recorded in the phase log, replacing the documentation-derived assumption.
+
 **Plans:** TBD
 
 ### Phase 3: Shared Libraries and the Hardware Seam
+
 **Goal:** Reusable modules are real PlatformIO libraries consumed through live symlinked dependencies, with no framework include above a narrow HAL seam — so pure logic is testable on the host and the later ESP-IDF migration is a backend swap rather than a rewrite.
 **Mode:** mvp
 **Depends on:** Phase 2
@@ -70,9 +80,11 @@ Plans:
   2. Editing a shared library's source is picked up by the next homework build with no reinstall and no stale copy — a change to shared code visibly changes the firmware.
   3. A framework include (`Arduino.h`, `esp_*`, `driver/`, `freertos/`) planted anywhere under `shared/lib` is named by the seam check, which exits non-zero on it.
   4. No `lib_extra_dirs` or `globallib_dir` reference survives anywhere in the repository.
+
 **Plans:** TBD
 
 ### Phase 4: Wiring Pipeline and Pin Safety
+
 **Goal:** One canonical `diagram.json` per homework drives the README image, the pin table and the simulator — so they cannot disagree — and a machine-readable board-fact database rejects electrically illegal wiring before it is committed.
 **Mode:** mvp
 **Depends on:** Phase 3
@@ -83,9 +95,11 @@ Plans:
   3. The homework README shows a Mermaid topology overview and cites the official board pin-layout image rather than redrawing it.
   4. The pin check rejects every illegal net it is required to reject — GPIO22–34, GPIO35/36/37, external drive of strapping GPIO0/3/45/46, 5 V logic on a GPIO with no stated level shifter, and ADC2 (GPIO11–20) used together with Wi-Fi — while accepting a legal diagram without complaint.
   5. `shared/hardware/` holds the module marking (N16R8), the board revision, the console port, the pin database and the constraint list as machine-readable facts that the pin check actually reads.
+
 **Plans:** TBD
 
 ### Phase 5: Verification Layers and Pinned Static Checks
+
 **Goal:** Pure logic is proven on the host with no hardware attached, and every static check is pinned, committed and validated against the analyzer versions the pinned platform actually ships — so a misconfigured analyzer fails loudly instead of silently reporting nothing.
 **Mode:** mvp
 **Depends on:** Phase 4
@@ -96,9 +110,11 @@ Plans:
   3. clang-format, clang-tidy and cppcheck are pinned to exact versions with committed configuration, and the committed clang-tidy configuration validates against the analyzer version PlatformIO bundles.
   4. A planted defect is reported at the configured threshold while an accepted file produces no report — proving the analyzers are wired, not silently empty.
   5. `-Wpedantic` applies to the repository's own sources only and no `-Werror` appears in global build flags, so a warning inside a framework header does not stop the build.
+
 **Plans:** TBD
 
 ### Phase 6: Hook and CI Gates
+
 **Goal:** Pre-commit, pre-push and CI invoke the same definition of every check, so a check cannot exist in one gate and be missing from another, and a change to shared code always builds every project that consumes it.
 **Mode:** mvp
 **Depends on:** Phase 5
@@ -108,9 +124,11 @@ Plans:
   2. A commit that passes the fast checks completes without compiling anything, and a push only then builds the changed homework projects.
   3. Editing one shared library makes the push gate and CI build every homework that declares it through `symlink://` — including projects that are not the nearest `platformio.ini` ancestor of the edit.
   4. CI on a pull request builds only the changed projects and lints all of them, and the run fails loudly rather than passing green when it discovers zero projects.
+
 **Plans:** TBD
 
 ### Phase 7: Agent Rules and the Scaffolding Skill
+
 **Goal:** One short root `AGENTS.md` plus a mirrored skill tree is the single funnel through which every convention above reaches the repository across both harnesses, so the sixtieth homework looks like the first.
 **Mode:** mvp
 **Depends on:** Phase 6
@@ -121,9 +139,11 @@ Plans:
   3. A scaffolding request that names no mode makes the skill ask which of the two modes is wanted — it never picks one itself.
   4. In `guide` mode the skill produces the homework skeleton and visibly stops before writing homework logic.
   5. Asked for a pin or board fact that is absent from the committed board-facts database, the skill emits an explicit unverified note instead of a value.
+
 **Plans:** TBD
 
 ### Phase 8: The First Real Homework, End to End
+
 **Goal:** One real course homework runs the whole loop — scaffolded through the skill, built, host-tested, wired, documented and gate-green — and reads to the instructor as submitted.
 **Mode:** mvp
 **Depends on:** Phase 7
@@ -134,6 +154,7 @@ Plans:
   3. The repository README index lists the homework with its id, slug, board, one-line description and commit SHA, and that SHA is the commit the homework was delivered at.
   4. Every commit that produced the homework carries an AI-participation trailer, and the README's AI-participation section agrees with the trailers.
   5. Following only the README's build and verify sections on a clean clone reproduces the demonstrated behaviour, and regenerating the wiring artifacts produces no diff.
+
 **Plans:** TBD
 
 ## Progress
