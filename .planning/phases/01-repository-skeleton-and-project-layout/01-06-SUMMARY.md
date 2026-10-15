@@ -481,3 +481,23 @@ No file under `shared/lib/` other than that README exists, and no build artifact
 
 *Phase: 01-repository-skeleton-and-project-layout*
 *Completed: 2026-10-15*
+
+## Self-Check: PASSED
+
+- FOUND: `.gitignore` — the additive lock rule and the extended agent-state comment, `git check-ignore -v .planning/milestone.lock` → `.gitignore:96:.planning/*.lock`, exit 0
+- FOUND: `tools/tests/ignore-rules.test.mjs` — collected by the quoted glob, tests 5, pass 5, fail 0
+- FOUND: `.planning/phases/01-repository-skeleton-and-project-layout/01-06-SUMMARY.md` — this file
+- FOUND: commit `da4f577` (ancestor of HEAD) — task 1, the lock rule and the ignore-contract gate
+- FOUND: commit `282dcbe` (ancestor of HEAD) — task 2, the two-arm measurement and this record
+- Plan-level verification, all eight items:
+  1. `git status --porcelain` → empty after this summary was committed — **PASS**
+  2. `git check-ignore -v .planning/milestone.lock` → exit 0, source `.gitignore` — **PASS**
+  3. `! git check-ignore -q` for `.planning/config.json`, `.planning/PROJECT.md`, `sdkconfig.defaults`, `.claude/skills/new-homework/SKILL.md` and `build/` → all exit 1 — **PASS**
+  4. `node --test "tools/**/*.test.mjs"` → tests 32, pass 32, fail 0, skipped 0, todo 0 (27 before this plan added its five) — **PASS**
+  5. The two-arm measurement recorded with both arms' commands, exit statuses and output — **PASS** (`### Arm A — control`: exit 0; `### Arm B — violation`: exit 1, `PackageException: Can not create a symbolic link for \`../../shared/lib/probelib\`, not a directory`)
+  6. `test ! -d "${TMPDIR:-/tmp}/phase01-depth-probe"` → exit 0 — **PASS**
+  7. `test ! -d homeworks/m01-l03-probe` → exit 0; `ls -1 homeworks/` → `project-baseline` only — **PASS**
+  8. This summary present and committed, carrying both arm headings, `symlink://`, `milestone.lock` and the explicit boundary statement naming plan 01-07 — **PASS**
+- No build artifact, compilation database or generated editor file was staged at any point; `shared/lib/` still holds exactly `README.md` and `homeworks/project-baseline/platformio.ini` still carries no `lib_deps` line (`grep -c` → 0).
+- No existing line of `.gitignore` was reworded, reordered or removed: the diff is 5 added lines, 0 removed.
+- `tools/tests/helpers.mjs` untouched; no `package.json` added.
