@@ -41,7 +41,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. `git status` stays clean across a full build and an editor session: `.pio/`, `compile_commands.json` and generated editor state never appear as untracked or modified.
   4. Running a repo-wide sweep script in a tree where it matches zero homework projects exits non-zero with a readable message instead of reporting success.
 
-**Plans:** 3/5 plans executed
+**Plans:** 4/5 plans executed
 Plans:
 **Wave 1**
 - [x] 01-01-PLAN.md — The walking skeleton: discovery, the generated workspace file, and the one-command build
@@ -49,7 +49,7 @@ Plans:
 - [x] 01-03-PLAN.md — The corrected path traps and the root README
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 01-04-PLAN.md — The repo-wide sweep that fails loudly on zero matches and names the depth rule
+- [x] 01-04-PLAN.md — The repo-wide sweep that fails loudly on zero matches and names the depth rule
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 01-05-PLAN.md — The acceptance run: build once, prove the depth rule, leave the tree clean
@@ -164,7 +164,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Repository Skeleton and Project Layout | 3/5 | In Progress | - |
+| 1. Repository Skeleton and Project Layout | 4/5 | In Progress | - |
 | 2. Board and Environment Baseline (N16R8 Acceptance Gate) | 0/TBD | Not started | - |
 | 3. Shared Libraries and the Hardware Seam | 0/TBD | Not started | - |
 | 4. Wiring Pipeline and Pin Safety | 0/TBD | Not started | - |
