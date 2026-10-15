@@ -1,10 +1,10 @@
 ---
 phase: 01-repository-skeleton-and-project-layout
-verified: 2026-10-15T13:09:10Z
-status: gaps_found
-score: 31/34 must-haves verified
-covered_files: [".editorconfig", ".gitattributes", ".gitignore", ".planning/PROJECT.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-01-PLAN.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-01-SUMMARY.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-02-PLAN.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-02-SUMMARY.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-03-PLAN.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-03-SUMMARY.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-04-PLAN.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-04-SUMMARY.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-05-PLAN.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-05-SUMMARY.md", ".vscode/extensions.json", ".vscode/settings.json", "AGENTS.md", "README.md", "homework.code-workspace", "homeworks/project-baseline/README.md", "homeworks/project-baseline/platformio.ini", "homeworks/project-baseline/src/main.cpp", "shared/lib/README.md", "tools/generate-workspace.mjs", "tools/lib/discover.mjs", "tools/sweep-homeworks.mjs", "tools/tests/discover.test.mjs", "tools/tests/generate-workspace.test.mjs", "tools/tests/helpers.mjs", "tools/tests/sweep.test.mjs"]
-covered_digest: "v3:sha256:2b9c95daab5b86580edb88c7bcfa8845c72fb0c4edbae446a9fbcd1f81f255fd"
+verified: 2026-10-15T15:06:36Z
+status: human_needed
+score: 32/34 must-haves verified
+covered_files: [".editorconfig", ".gitattributes", ".gitignore", ".planning/phases/01-repository-skeleton-and-project-layout/01-01-PLAN.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-01-SUMMARY.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-02-PLAN.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-02-SUMMARY.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-03-PLAN.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-03-SUMMARY.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-04-PLAN.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-04-SUMMARY.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-05-PLAN.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-05-SUMMARY.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-06-PLAN.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-06-SUMMARY.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-07-PLAN.md", ".planning/phases/01-repository-skeleton-and-project-layout/01-07-SUMMARY.md", ".vscode/extensions.json", ".vscode/settings.json", "AGENTS.md", "README.md", "homework.code-workspace", "homeworks/project-baseline/README.md", "homeworks/project-baseline/platformio.ini", "homeworks/project-baseline/src/main.cpp", "shared/lib/README.md", "tools/generate-workspace.mjs", "tools/lib/discover.mjs", "tools/sweep-homeworks.mjs", "tools/tests/discover.test.mjs", "tools/tests/generate-workspace.test.mjs", "tools/tests/helpers.mjs", "tools/tests/ignore-rules.test.mjs", "tools/tests/sweep.test.mjs"]
+covered_digest: "v3:sha256:ad2bcef30f5d73261f2d571f8c00c186947060fd7108debd89b6b3bbdea26f91"
 behavior_unverified: 0
 overrides_applied: 1
 overrides:
@@ -13,133 +13,133 @@ overrides:
     accepted_by: "4oc3p"
     accepted_at: "2026-10-15T16:13:03+03:00"
 re_verification:
-  previous_status: none
-  previous_score: n/a
-  gaps_closed: []
+  previous_status: gaps_found
+  previous_score: 31/34
+  gaps_closed:
+    - "Gap 1 — ROADMAP success criterion 2, second conjunct (the depth rule's build-failure half). Discharged by the owner-accepted override recorded in `.planning/ROADMAP.md` (dated 2026-10-15, decision commit `bf60cca`), in `.planning/PROJECT.md`'s Key Decisions and in this report's `overrides:` entry. Carried forward, not re-opened; the underlying substitution is unchanged and the literal mechanism is deferred to Phase 3 success criterion 5. Still not VERIFIED as written — no longer counted as a failure."
+    - "Gap 2 — the un-ignored GSD lock file (`.planning/milestone.lock`) that made `git status --porcelain` non-empty. CLOSED BY RULE: `.gitignore:96` now carries `.planning/*.lock`; `git check-ignore -v .planning/milestone.lock` → `.gitignore:96:.planning/*.lock`; `git status --porcelain` prints nothing on a built tree."
   gaps_remaining: []
   regressions: []
-gaps:
-  - truth: "ROADMAP success criterion 2, second conjunct: moving a homework one level deeper breaks the build, which is what proves the depth rule is load-bearing."
-    status: failed
-    reason: "Reproduced: a copy of the baseline environment placed at homeworks/project-baseline/deeper/ builds successfully with `pio run -d homeworks/project-baseline/deeper` (exit 0, '[SUCCESS] Took 2.64 seconds'). The phase log records this honestly (01-05-SUMMARY.md §10) and discharges the half with the sweep's rule-naming detector instead, deferring the observable build failure to Phase 3. The detector is a genuine substitute for the rule's enforcement intent but not for the criterion's literal mechanism."
-    artifacts:
-      - path: "homeworks/project-baseline/platformio.ini"
-        issue: "Carries no lib_deps line, so nothing resolves relative to the project directory and a deeper copy still compiles. The failure the criterion names cannot exist until a symlinked shared-library dependency does."
-      - path: "tools/sweep-homeworks.mjs"
-        issue: "Enforces the rule correctly (DEPTH RULE VIOLATED, exit 1) — this is the substitute the phase chose, not a defect in itself."
-    missing:
-      - "Either an accepted override recording the detector as the sanctioned discharge of criterion 2 half (b), or a Phase 3 dependency (`lib_deps = <name>=symlink://../../shared/lib/<name>`) under which a one-level-deeper project observably fails to resolve."
-  - truth: "01-05 must-have truth and ROADMAP success criterion 3 (blanket clause): a clone-then-build run leaves `git status --porcelain` completely empty — no machine-written GSD state file appears as untracked."
-    status: failed
-    reason: "Measured on the current tree, before and after a full build and after a full sweep run: `git status --porcelain` prints `?? .planning/milestone.lock`. `git check-ignore -v .planning/milestone.lock` exits 1 — no pattern covers it. The three artifacts the criterion names (.pio/, compile_commands.json, generated editor state) ARE all covered by rule, and the three pre-phase entries are closed, so the failure is the un-named fourth GSD artifact the phase log itself recorded as a known deviation (01-05-SUMMARY.md, 'Known deviations'), not the named three."
-    artifacts:
-      - path: ".gitignore"
-        issue: "The GSD section closes .planning/state.json and .planning/research/.cache/ but not the sibling artifact .planning/milestone.lock. This is the same defect the review files as WR-09 (.gitignore:115-120)."
-    missing:
-      - "One line in the GSD block of .gitignore: `.planning/milestone.lock`."
 human_verification:
-  - test: "Criterion 1 manual half — open the committed homework.code-workspace in VS Code (File → Open Workspace from File...) from a checkout unmodified since 926db18, and read the Explorer's top-level root names."
-    expected: "Exactly three top-level roots, named `root`, `shared` and `project-baseline`; no unresolved-path marker on `shared`; no stale-workspace warning. Optionally also confirm that opening homeworks/project-baseline/src/main.cpp in that window shows editor.rulers = 100 and C_Cpp.formatting = clangFormat in the effective settings (open question IN-06: the root `.vscode/settings.json` is folder-scoped and every homework is nested inside the `root` folder)."
+  - test: "Criterion 1's manual half — open the committed `homework.code-workspace` in VS Code via File → Open Workspace from File… (the workspace file, not the folder) and read the Explorer's top-level root names."
+    expected: "Exactly three top-level roots named `root`, `shared` and `project-baseline`; no unresolved-path marker on `shared`; no stale-workspace warning. While the window is open, also confirm whether `editor.rulers = 100` and `C_Cpp.formatting = clangFormat` are in effect for `homeworks/project-baseline/src/main.cpp` (open question: the root `.vscode/settings.json` is folder-scoped and every homework is nested inside the `root` folder)."
     why_human: "No agent can observe what a VS Code window renders, and there is no deterministic predicate for 'the editor loaded the workspace'. The phase deliberately recorded this with an explicitly unfilled output slot in 01-05-SUMMARY.md §12 — that empty slot is the correct artifact, not a gap in the work."
-  - test: "Criterion 3 editor half — in that same workspace session, open and save one tracked file in each of the three roots (a file under .planning/, a file under shared/, one baseline project file), let the editor settle, then run `git status --porcelain` from the repository root BEFORE writing the result into any tracked file."
-    expected: "No output other than the already-recorded `?? .planning/milestone.lock`; in particular no modification to homeworks/project-baseline/src/main.cpp."
-    why_human: "A human editor session is not automatable, and the reading must be taken before the observation is written down (the log is itself a tracked file). Raised in severity by an open review finding: WR-06 measures that `editor.formatOnSave` is true, `[cpp]` uses ms-vscode.cpptools with `C_Cpp.formatting = clangFormat`, no `.clang-format` exists in the repository, and main.cpp line 13 is 108 columns with a 2-space body indent while `.editorconfig` declares `indent_size = 4` for `*.cpp`. Saving that file is therefore expected to rewrite it and make `git status` dirty. If the observation fails, record exactly what changed rather than re-saving."
+  - test: "Criterion 3's editor half — in that same workspace session, open and save one tracked file in each of the three roots (a file under `.planning/`, a file under `shared/`, one baseline project file), let the editor settle, then run `git status --porcelain` from the repository root BEFORE writing the result into any tracked file."
+    expected: "No output. In particular, no modification to `homeworks/project-baseline/src/main.cpp`."
+    why_human: "A human editor session is not automatable, and the reading must be taken before the observation is written down (the log is itself a tracked file). Raised in severity by a live review finding: `editor.formatOnSave` is true, `[cpp]` uses `ms-vscode.cpptools` with `C_Cpp.formatting = clangFormat`, no `.clang-format` exists in the repository, and `main.cpp` line 13 is 108 columns with a 2-space body indent while `.editorconfig` declares `indent_size = 4` for `*.cpp`. Saving that file is therefore expected to rewrite it and make `git status` dirty. If the observation fails, record exactly what changed rather than re-saving until it looks clean."
 ---
 
 # Phase 1: Repository Skeleton and Project Layout Verification Report
 
 **Phase Goal:** The repository is one VS Code workspace holding the root, the shared-library tree and one folder per homework, with the folder names and the one-level depth rule frozen before any mechanism is built on them.
-**Verified:** 2026-10-15T13:09:10Z
-**Status:** gaps_found
-**Re-verification:** No — initial verification (no prior VERIFICATION.md existed in the phase directory)
+**Verified:** 2026-10-15T15:06:36Z
+**Status:** human_needed
+**Re-verification:** Yes — after gap closure (previous report: `gaps_found`, 31/34, two `failed` gaps)
 
 ## Goal Achievement
 
-The phase goal itself — a frozen tree, one generated multi-root workspace, one folder per homework, a frozen id grammar and a one-level depth rule enforced by the repository's own tooling — is present in the codebase and works. The verdict is `gaps_found` because two of the four ROADMAP success criteria are not literally true on the tree that ships, and one of them was verified false by reproduction rather than by inference.
+The phase goal is achieved. The tree is frozen and the mechanisms built on it work: `homework.code-workspace` is a genuine pure function of the filesystem and its drift check fires on a hand edit; the baseline builds from the repository root with exactly one command and reports the 16 MB N16R8 partition; one discovery rule drives the generator, the sweep and (later) the CI matrix; the depth rule is enforced by name before any child process exists; a zero-match sweep refuses to report success. Every artifact is substantive, wired and carrying real data, and the 32-case suite passes.
+
+The verdict is `human_needed`, not `passed`, because two of the four ROADMAP success criteria each contain one conjunct that is only observable in a human editor session, and this report lists both. It is not `gaps_found`: the two gaps the previous pass filed are both resolved — gap 1 by the owner-accepted override, gap 2 by an ignore rule — and no truth is FAILED, no artifact is MISSING or STUB, and no key link is broken.
 
 ### Observable Truths — ROADMAP Success Criteria (the contract)
 
 | # | Truth | Status | Evidence |
 | --- | ----- | ------ | -------- |
-| A1 | Criterion 1: opening the committed workspace file in VS Code shows the repo root, `shared/` and every homework as top-level roots | ? UNCERTAIN | Automated half VERIFIED: `node tools/generate-workspace.mjs --check` prints `homework.code-workspace is up to date`, exit 0, and the file lists exactly `root` (`.`), `shared` (`shared`) and `project-baseline` (`homeworks/project-baseline`). The manual half — what VS Code renders — is unobservable by an agent and is deferred in the phase log with an unfilled output slot. |
-| A2 | Criterion 2: a project at `homeworks/<id>/` builds from the root with exactly one command, AND moving it one level deeper breaks the build | ✗ FAILED | First conjunct VERIFIED: `/Users/vloktiev/.platformio/penv/bin/pio run -d homeworks/project-baseline` → exit 0, `[SUCCESS]`, `Flash: used 268177 bytes from 6553600 bytes`. Second conjunct FAILED: a copy of the same environment at `homeworks/project-baseline/deeper/` builds with exit 0 in 2.64 s. |
-| A3 | Criterion 3: `git status` stays clean across a full build and an editor session — `.pio/`, `compile_commands.json` and generated editor state never appear as untracked or modified | ✗ FAILED | The three named artifacts ARE covered by rule (`git check-ignore -v` → `.gitignore:16` for `.pio/`, `.gitignore:20` for `compile_commands.json`) and `--ignored` reports both. But the criterion's blanket claim is false on a working checkout: after a full build and after a full sweep run, `git status --porcelain` prints `?? .planning/milestone.lock`. The editor half is additionally deferred. |
-| A4 | Criterion 4: a repo-wide sweep in a tree matching zero homework projects exits non-zero with a readable message instead of reporting success | ✓ VERIFIED | Against an empty fixture tree: `sweep: found ZERO homework projects under homeworks/*/platformio.ini` / `A gate that built nothing must not exit 0.` / `Pass --allow-empty only if an empty tree is genuinely expected.` — exit 1. `--allow-empty` is the single named escape hatch and must be asked for; the failure path is the default. |
+| A1 | Criterion 1: opening the committed workspace file in VS Code shows the repo root, `shared/` and every homework as top-level roots | ? UNCERTAIN (human) | Automated half re-verified: `node tools/generate-workspace.mjs --check` → `homework.code-workspace is up to date`, exit 0; the file's `folders` array is exactly `root` (`.`), `shared` (`shared`), `project-baseline` (`homeworks/project-baseline`). What VS Code renders is unobservable by an agent and is carried in Human Verification. Not counted toward the score. |
+| A2 | Criterion 2: a project at `homeworks/<id>/` builds from the root with exactly one command, AND moving it one level deeper breaks the build | PASSED (override) | First conjunct re-measured: `pio run -d homeworks/project-baseline` → exit 0, `[SUCCESS] Took 0.69 seconds`, `Flash: used 268177 bytes from 6553600 bytes` (the 16 MB table). Second conjunct is **deliberately not met** and independently reconfirmed: I copied the environment to `homeworks/project-baseline/deeper/` and built it — exit 0, `[SUCCESS] Took 2.87 seconds`. Override: owner-accepted deviation, `bf60cca`, accepted by 4oc3p on 2026-10-15; see `overrides:` above and the Override Review below. |
+| A3 | Criterion 3: `git status` stays clean across a full build and an editor session — `.pio/`, `compile_commands.json` and generated editor state never appear as untracked or modified | ? UNCERTAIN (build half VERIFIED, editor half human) | Build half now holds: after `pio run -d homeworks/project-baseline`, a full sweep run and a `compiledb`-equivalent build, `git status --porcelain` prints nothing. The criterion's three named artifacts resolve to the repository's own `.gitignore` — `.gitignore:16:.pio/` and `.gitignore:20:compile_commands.json` — and appear only under `--ignored`. The editor-session conjunct is not agent-observable and is carried in Human Verification. Not counted toward the score. |
+| A4 | Criterion 4: a repo-wide sweep in a tree matching zero homework projects exits non-zero with a readable message instead of reporting success | ✓ VERIFIED | Against an empty fixture root: `sweep: found ZERO homework projects under homeworks/*/platformio.ini` / `A gate that built nothing must not exit 0.` / `Pass --allow-empty only if an empty tree is genuinely expected.` — exit 1. `--allow-empty` remains the single named escape hatch and must be asked for. |
 
-**Score:** 1/4 roadmap criteria verified, 1 uncertain, 2 failed.
+**Score:** 2/4 roadmap criteria counted (A2 override, A4 verified); A1 and A3 each blocked on one human-observable conjunct.
 
-### Observable Truths — PLAN frontmatter must-haves (deduplicated against the contract above)
+### Observable Truths — PLAN frontmatter must-haves (inherited contract, re-verified)
+
+The previous report established this 34-item contract; re-verification reuses it verbatim rather than re-deriving it. Items the previous pass marked VERIFIED were given a regression check, not a full re-derivation.
+
+| # | Truth | Status | Evidence (re-verification) |
+| --- | ----- | ------ | -------------------------- |
+| B1 | (01-01) The workspace file names `shared` and every discovered homework id, sorted; regenerating an unchanged tree is byte-identical | ✓ VERIFIED | `--check` exit 0; `git status --porcelain` clean after regeneration; renderer is a pure export. |
+| B2 | (01-01) `--check` exits 0 on a current file and 1 naming the file and the remedy on a hand-edited one | ✓ VERIFIED | Direct invocation: exit 0 when current; after appending one byte, exit 1 with `... is STALE.` + `must never be hand-edited.` + `Run: node tools/generate-workspace.mjs`. Boundary noted under CR-01 below (the guard fails open when the script path itself is symlinked); the documented invocation is correct. |
+| B3 | (01-01) A directory under `homeworks/` is a homework iff its name matches the frozen grammar and it contains a `platformio.ini`; one rule serves generator, sweep and future CI | ✓ VERIFIED | `tools/lib/discover.mjs` is the only definition; `grep -cE 'readdirSync\|ID_PATTERN\s*=' tools/sweep-homeworks.mjs` → 0; the sweep imports `{ discoverHomeworks, ID_PATTERN_TEXT }`. |
+| B4 | (01-01) No `upload_port` or `monitor_port` is committed for the baseline | ✓ VERIFIED | `grep -rn 'upload_port\|monitor_port' homeworks/` → no match. |
+| B5 | (01-01) `shared/lib/` exists as a git-tracked directory because it contains a README.md | ✓ VERIFIED | `git ls-files shared` → `shared/lib/README.md`. |
+| B6 | (01-02) `git status --porcelain` reports no untracked entry for `.DS_Store`, `.planning/research/.cache/` and `.planning/state.json` | ✓ VERIFIED | All three resolve to the repository's own `.gitignore`; `git status --porcelain` reports none. |
+| B7 | (01-02) Build output is ignored at any depth without an extra prefix | ✓ VERIFIED | `git check-ignore -v homeworks/project-baseline/.pio/` → `.gitignore:16:.pio/`; `.../compile_commands.json` → `.gitignore:20:compile_commands.json`. |
+| B8 | (01-02) No gitignore pattern carries an inline comment that would silently disable it | ✓ VERIFIED | `grep -cE '^[^#][^#]*#' .gitignore` → 0; the new lock rule is preceded by comment lines, not suffixed. |
+| B9 | (01-02) `sdkconfig.*` is negated for the hand-authored `sdkconfig.defaults` | ✓ VERIFIED | `git check-ignore -q sdkconfig.defaults` → exit 1. |
+| B10 | (01-02) `.claude/settings.local.json` is ignored by the repository, not only by this machine's global excludes | ✓ VERIFIED | `git check-ignore -q .claude/settings.local.json` → exit 0. |
+| B11 | (01-02) The agent-state rules never match the whole `.claude` directory, so Phase 7 skill mirrors stay trackable | ✓ VERIFIED | `git check-ignore -q .claude/skills/new-homework/SKILL.md` → exit 1. |
+| B12 | (01-02) `.editorconfig` uses only the nine properties the EditorConfig specification defines | ✓ VERIFIED | Read: `root`, `charset`, `end_of_line`, `insert_final_newline`, `trim_trailing_whitespace`, `indent_style`, `indent_size` only. |
+| B13 | (01-02) `.gitattributes` normalises text to LF in the index while `.editorconfig` governs the editor | ✓ VERIFIED | `git check-attr text eol -- README.md` → `text: set`, `eol: lf`. |
+| B14 | (01-02) A generated vector image is treated as text by git | ✓ VERIFIED | `git check-attr text -- docs/wiring.svg` → `text: set`. |
+| B15 | (01-02) Editor settings live only in `.vscode/settings.json`; only the one measured PlatformIO IDE key is present | ✓ VERIFIED | `homework.code-workspace` has no `settings` key (`grep -c '"settings"'` → 0); `.vscode/settings.json:25` carries exactly one `platformio-ide.*` key; no `files.exclude`. |
+| B16 | (01-03) The plural library-folder path no longer appears anywhere in `AGENTS.md` | ✓ VERIFIED | `grep -c 'shared/libs' AGENTS.md` → 0; `grep -c 'shared/lib/' AGENTS.md` → 2. |
+| B17 | (01-03) `AGENTS.md` contains nothing but the two path-segment corrections | ✓ VERIFIED | Two-hunk diff, one single-token substitution each; file unchanged since. |
+| B18 | (01-03) The path segment appearing only inside prose about the rejected global-library directive is left untouched | ✓ VERIFIED | Same diff: the `lib_extra_dirs`/`globallib_dir` row keeps its prose, changes only the `symlink://` path segment. |
+| B19 | (01-03) `.planning/PROJECT.md` names the same library folder as `REQUIREMENTS.md` | ✓ VERIFIED | `grep -c 'shared/lib/' .planning/PROJECT.md` → 3; no `shared/libs`. |
+| B20 | (01-03) `.planning/PROJECT.md` gains a Traps section every later phase's prior-context load will read | ✓ VERIFIED | `grep -c '^## Traps for Later Phases$' .planning/PROJECT.md` → 1. |
+| B21 | (01-03) The root README names the generated workspace file and says how to open it | ✓ VERIFIED | `grep -c 'homework.code-workspace' README.md` → 4. |
+| B22 | (01-03) The root README states the one-command build, where the conventions live, and what counts as a homework | ✓ VERIFIED | README carries `pio run -d homeworks/<id>`, the `## Conventions` pointer to `AGENTS.md`, and the `## What counts as a homework` definition. |
+| B23 | (01-03) The root README documents no directory, file or command that does not exist in the tree it ships with | ✓ VERIFIED | Every path in the structure block exists; no `.clang-format`, `.clang-tidy`, `scripts/`, `docs/` or `.agents/` claim. |
+| B24 | (01-04) A `platformio.ini` one level below a homework folder makes the sweep exit non-zero naming the RULE | ✓ VERIFIED | Fixture with `homeworks/m01-l03-blink/deeper/platformio.ini` → `DEPTH RULE VIOLATED` + one-level requirement + two-line reason + `  deeper platformio.ini found: homeworks/m01-l03-blink/deeper`, exit 1. |
+| B25 | (01-04) A homework folder whose name fails the frozen grammar makes the sweep exit non-zero and print the expected pattern | ✓ VERIFIED | Fixture `homeworks/badName/` → `MALFORMED HOMEWORK ID` / `Expected: ^(?:m[0-9]{2}-l[0-9]{2}\|project)-[a-z0-9]+(?:-[a-z0-9]+)*$` / `  does not match: homeworks/badName/`, exit 1. |
+| B26 | (01-04) Both policy failures fire before any build is attempted | ✓ VERIFIED | Control flow: the depth and grammar branches exit 1 before `resolvePio()` and before any `spawnSync` build. |
+| B27 | (01-04) The sweep builds every discovered project from the repository root and accumulates failures rather than stopping at the first | ✓ VERIFIED | `node tools/sweep-homeworks.mjs` → discovered `project-baseline`, built from the root, reported the 16 MB partition, exit 0. |
+| B28 | (01-04) An absent or unresolvable PlatformIO binary produces an actionable message, distinguishable from a project's build failure | ✓ VERIFIED | Covered by the suite's `an unstartable PlatformIO binary exits 1 with a spawn failure, not a build failure` (green). |
+| B29 | (01-04) Discovery and validation are delegated to the one shared module rather than re-implemented | ✓ VERIFIED | `tools/sweep-homeworks.mjs:35` imports the shared module; no second discovery implementation (count 0). |
+| B30 | (01-05) The exact `git status` output observed before, during and after the acceptance run is recorded in the phase log | ✓ VERIFIED | `01-05-SUMMARY.md` §2/§3/§8/§11 carry verbatim output; 01-06's second reading and today's empty reading agree. |
+
+**Score:** 30/30 plan-level truths re-verified by regression check.
+
+### Gap-Closure Truths (delivered by this round, all verified)
+
+These 13 truths belong to plans 01-06 and 01-07, which post-date the previous report and are therefore outside its 34-item contract. They are reported here rather than folded into the headline score so the re-verification delta stays legible. Every one is verified.
 
 | # | Truth | Status | Evidence |
 | --- | ----- | ------ | -------- |
-| B1 | (01-01) The workspace file names `shared` and every discovered homework id, sorted, and regenerating an unchanged tree is byte-identical | ✓ VERIFIED | `node tools/generate-workspace.mjs` then `cmp` against the backup → BYTE-IDENTICAL; `git diff --stat homework.code-workspace` empty. |
-| B2 | (01-01) `--check` exits 0 on a current file and 1 with a message naming the file and the remedy on a hand-edited one | ✓ VERIFIED | Exit 0 on the committed file; after appending one byte, exit 1 with `homework.code-workspace is STALE.` + `It is generated from the filesystem and must never be hand-edited.` + `Run: node tools/generate-workspace.mjs`. |
-| B3 | (01-01) A directory directly under `homeworks/` is a homework iff its name matches the frozen id grammar and it contains a `platformio.ini`; one rule serves generator, sweep and future CI | ✓ VERIFIED | `tools/lib/discover.mjs` is the only definition; `tools/generate-workspace.mjs` and `tools/sweep-homeworks.mjs` both import it; `grep -cE 'readdirSync\|ID_PATTERN\s*=' tools/sweep-homeworks.mjs` → 0. |
-| B4 | (01-01) No `upload_port` or `monitor_port` is committed for the baseline | ✓ VERIFIED | `grep -rn 'upload_port\|monitor_port' homeworks/` → no match. `monitor_speed = 115200` is present and matches `Serial.begin(115200)`. |
-| B5 | (01-01) `shared/lib/` exists as a git-tracked directory because it contains a README.md | ✓ VERIFIED | `git ls-files shared` → `shared/lib/README.md`. |
-| B6 | (01-02) `git status --porcelain` reports no untracked entry for `.DS_Store`, `.planning/research/.cache/` and `.planning/state.json` | ✓ VERIFIED | All three resolve to the repository's own `.gitignore` (`:82`, `:120`, `:91`); `git status --porcelain` reports none of them. |
-| B7 | (01-02) Build output is ignored at any depth without an extra prefix | ✓ VERIFIED | `git check-ignore -v homeworks/project-baseline/.pio/` → `.gitignore:16:.pio/`; `.../compile_commands.json` → `.gitignore:20`. Both appear only under `--ignored`. |
-| B8 | (01-02) No gitignore pattern carries an inline comment that would silently disable it | ✓ VERIFIED | `grep -cE '^[^#][^#]*#' .gitignore` → 0. |
-| B9 | (01-02) `sdkconfig.*` is negated for the hand-authored `sdkconfig.defaults` | ✓ VERIFIED | `git check-ignore -q sdkconfig.defaults` exits 1 (not ignored). |
-| B10 | (01-02) `.claude/settings.local.json` is ignored by the repository, not only by this machine's global excludes | ✓ VERIFIED | `git check-ignore -q .claude/settings.local.json` exits 0. |
-| B11 | (01-02) The agent-state rules never match the whole `.claude` directory, so Phase 7 skill mirrors stay trackable | ✓ VERIFIED | `git check-ignore -q .claude/skills/new-homework/SKILL.md` exits 1 (trackable). |
-| B12 | (01-02) `.editorconfig` uses only the nine properties the EditorConfig specification defines | ✓ VERIFIED | Inspection: `root`, `charset`, `end_of_line`, `insert_final_newline`, `trim_trailing_whitespace`, `indent_style`, `indent_size` only — no `max_line_length`, no `trim_final_newlines`. |
-| B13 | (01-02) `.gitattributes` normalises text to LF in the index while `.editorconfig` governs the editor; neither duplicates the other | ✓ VERIFIED | `git check-attr text eol -- README.md` → `set`, `lf`. |
-| B14 | (01-02) A generated vector image is treated as text by git | ✓ VERIFIED | `.gitattributes:24 *.svg text`; `git check-attr text -- docs/wiring.svg` → `text: set`. |
-| B15 | (01-02) Editor settings live only in `.vscode/settings.json`; the only PlatformIO IDE key present is the one measured to exist in the installed extension | ✓ VERIFIED | `homework.code-workspace` carries no `settings` key (pure folder list); exactly one `platformio-ide.*` key, `platformio-ide.activateProjectOnTextEditorChange`; no `files.exclude`. |
-| B16 | (01-03) The plural library-folder path no longer appears anywhere in `AGENTS.md` | ✓ VERIFIED | `grep -c 'shared/libs' AGENTS.md` → 0; `grep -c 'shared/lib/' AGENTS.md` → 2. |
-| B17 | (01-03) `AGENTS.md` contains nothing but those two path-segment corrections; every other line is byte-identical | ✓ VERIFIED | `git diff 57558cb^ 57558cb -- AGENTS.md` → exactly two hunks (lines 45 and 107 in file numbering), each a single substitution. Line count 219 unchanged. |
-| B18 | (01-03) The path segment appearing only inside prose about the rejected global-library directive is left untouched — no blind substitution | ✓ VERIFIED | Same two-hunk diff: the `lib_extra_dirs`/`globallib_dir` row keeps its prose and changes only the `symlink://` path segment. |
-| B19 | (01-03) `.planning/PROJECT.md` names the same library folder as `REQUIREMENTS.md` | ✓ VERIFIED | `grep -cE 'shared/([^l]\|$)' .planning/PROJECT.md` → 0; `grep -c 'shared/lib/'` → 3. |
-| B20 | (01-03) `.planning/PROJECT.md` gains a Traps section every later phase's prior-context load will read | ✓ VERIFIED | `grep -c '^## Traps for Later Phases$' .planning/PROJECT.md` → 1, immediately before `## Evolution`. |
-| B21 | (01-03) The root README names the generated workspace file and says how to open it | ✓ VERIFIED | `grep -c 'homework.code-workspace' README.md` → 4; lines 12-29 give the File → Open Workspace procedure plus both commands. |
-| B22 | (01-03) The root README states the one-command build, where the conventions live, and what counts as a homework | ✓ VERIFIED | README lines 75-96: `pio run -d homeworks/<id>`, the `## Conventions` pointer to `AGENTS.md`, and the `## What counts as a homework` definition. |
-| B23 | (01-03) The root README documents no directory, file or command that does not exist in the tree it ships with | ✓ VERIFIED | Every path in the structure block exists; no `.clang-format`, `.clang-tidy`, `scripts/`, `docs/` or `.agents/` claim; no machine-local absolute path. |
-| B24 | (01-04) A `platformio.ini` found one level below a homework folder makes the sweep exit non-zero with a message that names the RULE | ✓ VERIFIED | Fixture `homeworks/m01-l03-blink/deeper/platformio.ini` → `DEPTH RULE VIOLATED` + one-level requirement + two-line reason + `  deeper platformio.ini found: homeworks/m01-l03-blink/deeper`, exit 1. |
-| B25 | (01-04) A homework folder whose name fails the frozen grammar makes the sweep exit non-zero and print the expected pattern | ✓ VERIFIED | Fixture `homeworks/badName/` → `MALFORMED HOMEWORK ID` / `Expected: ^(?:m[0-9]{2}-l[0-9]{2}\|project)-[a-z0-9]+(?:-[a-z0-9]+)*$` / `  does not match: homeworks/badName/`, exit 1. |
-| B26 | (01-04) Both policy failures fire before any build is attempted | ✓ VERIFIED | Control flow in `tools/sweep-homeworks.mjs`: the depth and grammar branches set `failed` and `process.exit(1)` before `resolvePio()` and before any `spawnSync` of a build. |
-| B27 | (01-04) The sweep builds every discovered project from the repository root and accumulates failures rather than stopping at the first | ✓ VERIFIED | `node tools/sweep-homeworks.mjs` on the real tree → discovered `project-baseline`, built it from the root, reported the 16 MB partition, exit 0. The loop branches on `spawnSync` error separately from child status and never breaks early. |
-| B28 | (01-04) An absent or unresolvable PlatformIO binary produces an actionable message, distinguishable from a project's build failure | ✓ VERIFIED | With `HOME` pointing at an empty directory and no `pio` on `PATH`: `PlatformIO Core was not found.` / `Install it, or point at it explicitly:` / `  export PLATFORMIO_CORE=$HOME/.platformio/penv/bin/pio`, exit 1 — a distinct branch from the per-project failure path. |
-| B29 | (01-04) Discovery and validation are delegated to the one shared module rather than re-implemented | ✓ VERIFIED | `tools/sweep-homeworks.mjs:35` imports `{ discoverHomeworks, ID_PATTERN_TEXT }`; no second discovery implementation (count 0). |
-| B30 | (01-05) The exact `git status` output observed before, during and after the acceptance run is recorded in the phase log | ✓ VERIFIED | `01-05-SUMMARY.md` §2 (before), §3/§8 (after build and compiledb), §11 (after the log was committed) — each with verbatim output. |
-
-**Score:** 30/30 plan-level truths verified.
-
-**Overall score:** 31/34 must-haves verified. 2 failed, 1 uncertain. No truth failed for absence of implementation: every failing item is a documented substitution or an un-named artifact, not missing work.
+| G1 | (01-06) `.planning/milestone.lock` no longer appears in `git status --porcelain`; every GSD lock file under the planning directory is closed by the repository's own ignore file | ✓ VERIFIED | `git status --porcelain` → empty on a built tree; `git check-ignore -v .planning/milestone.lock` → `.gitignore:96:.planning/*.lock`. |
+| G2 | (01-06) The closing rule is a lock-file glob narrow enough to reach only lock files, and no currently-tracked path under the planning directory becomes ignored | ✓ VERIFIED | `.gitignore:96` is `.planning/*.lock`; the suite's `git ls-files -i -c --exclude-standard` guard (a tracked path that became ignored) is green, and the five tracked planning documents are asserted still tracked. |
+| G3 | (01-06) The rule is the repository's own, not this machine's global excludes | ✓ VERIFIED | `git check-ignore -v` names `.gitignore` as the source; `git config --get core.excludesFile` is unset here, and the source assertion is what makes that irrelevant. |
+| G4 | (01-06) A regression gate covers the class: `tools/tests/ignore-rules.test.mjs` asserts both directions, so dropping the lock line or a previously asserted rule turns the suite red | ✓ VERIFIED | The file exists (180 lines, 5 tests) and all 5 are green; it asserts the reported ignore **source**, not a pattern's shape. |
+| G5 | (01-06) The depth rule's build behaviour with a real symlinked `lib_deps` is MEASURED on a two-arm fixture outside the repository, both arms recorded verbatim | ✓ VERIFIED | Independently reproduced by this pass on a fresh fixture under `os.tmpdir()`: arm A (exactly one level below `homeworks/`) → exit 0, `[SUCCESS] Took 2.72 seconds`; arm B (same project one level deeper) → exit 1, `PackageException: Can not create a symbolic link for ../../shared/lib/probelib, not a directory`. |
+| G6 | (01-06) The measurement leaves no residue; the tree is unchanged by it | ✓ VERIFIED | No directory matching the frozen grammar exists under `homeworks/` other than `project-baseline`; the fixture was removed; `git status --porcelain` was clean immediately after (the only modification I ever observed was a concurrent external writer's, described below — not this measurement). |
+| G7 | (01-06) Both clean-tree readings the plan asserts are empty | ✓ VERIFIED | The readings are recorded verbatim in `01-06-SUMMARY.md`; today's independent reading on the built tree is also empty. |
+| G8 | (01-07) The owner's decision on criterion 2's second conjunct is recorded in `ROADMAP.md` as a dated, deliberate deviation carrying both the reason and the Phase 3 trigger | ✓ VERIFIED | `ROADMAP.md` lines 44–47: the `> **Verification discharge (criterion 2, second conjunct):**` blockquote, dated 2026-10-15, naming `bf60cca`, the reason, the measured evidence and the Phase 3 trigger. |
+| G9 | (01-07) `ROADMAP.md` Phase 1 criterion 2's wording is unchanged; the discharge is an appended note beside it | ✓ VERIFIED | The sentence `moving it one level deeper breaks the build` is present in **every** revision of `ROADMAP.md` in the repository's history (11/11 commits that touched the file); the note is a blockquote after the criteria list, not a rewrite. |
+| G10 | (01-07) The verification record carries exactly one override entry, attributed to the identity the owner's decision commit is authored under and timestamped from that commit | ✓ VERIFIED | `git show af84762` adds exactly one `overrides:` entry and `overrides_applied: 0 → 1`. `accepted_by: "4oc3p"` / `accepted_at: "2026-10-15T16:13:03+03:00"` match `git show -s bf60cca` (`4oc3p <23013718+4oc3p@users.noreply.github.com>`, Thu Oct 15 16:13:03 2026 +0300) exactly. `bf60cca` is an ancestor of HEAD. |
+| G11 | (01-07) ROADMAP Phase 3 carries an additional numbered success criterion making the depth rule's build-failure half observable on the committed tree | ✓ VERIFIED | `ROADMAP.md` Phase 3 success criterion 5 (line 94) states the `lib_deps = <name>=symlink://../../shared/lib/<name>` trigger and the one command that settles it. |
+| G12 | (01-07) The tree still builds and stays clean after the recording | ✓ VERIFIED | `pio run -d homeworks/project-baseline` → exit 0 reporting `6553600` bytes; `--check` → exit 0; `--list` → `project-baseline`, exit 0; suite 32/32 green; `git status --porcelain` empty throughout (modulo the concurrent writer noted below). |
+| G13 | (01-07) The owner's stated reason is either confirmed by the measurement or contradicted in the record | ✓ VERIFIED | `01-07-SUMMARY.md` §6 states the confirmation explicitly and records the one nuance (the fixture demonstrates what happens **once** a symlinked dependency exists; it does not make one exist on the committed tree) rather than smoothing it over. My independent reproduction agrees with both. |
 
 ### Required Artifacts
 
 | Artifact | Expected | Status | Details |
 | -------- | -------- | ------ | ------- |
-| `tools/lib/discover.mjs` | Single discovery source: `HOMEWORKS_DIR`, `ID_PATTERN`, `ID_PATTERN_TEXT`, `discoverHomeworks`, `findDepthViolations`, `envNames` | ✓ VERIFIED | All six symbols exported; `node:fs`/`node:path` only; `isDirectory()` excludes symlinks; a missing directory yields `[]` rather than throwing. |
-| `tools/generate-workspace.mjs` | Pure renderer plus byte-comparison drift check | ✓ VERIFIED | `renderWorkspace(repoRoot)` is a pure export; CLI behind an entry-point guard (see CR-01 below); both `--check` outcomes reproduced. |
-| `homework.code-workspace` | Generated multi-root workspace containing `homeworks/project-baseline` | ✓ VERIFIED | Contains `homeworks/project-baseline`; pure folder list; LF; one trailing newline; regenerates byte-identically. |
-| `homeworks/project-baseline/platformio.ini` | Pinned, N16R8-overridden build environment | ✓ VERIFIED | `platform = espressif32@7.1.3` (exact), the four overrides, `monitor_speed = 115200`, no console-port key. |
-| `homeworks/project-baseline/src/main.cpp` | Serial report of flash size, `psramFound()` and PSRAM size; touches no GPIO | ✓ VERIFIED | `Serial.begin(115200)` + one `printf`; `grep -cE 'pinMode\|digitalWrite\|analogRead\|ledcSetup'` → 0. |
-| `tools/tests/helpers.mjs` | Shared `os.tmpdir()` fixture builder | ✓ VERIFIED | Extended with `makeDepthViolation`, `runSweep`, `SWEEP_PATH`; every fixture built under `os.tmpdir()`. |
-| `tools/tests/discover.test.mjs` | Id grammar, depth walk, `envNames` | ✓ VERIFIED (substantive) | 134 lines, 17 assertions; one is vacuous — see IN-04. |
-| `tools/tests/generate-workspace.test.mjs` | Renderer determinism, folder set, both `--check` outcomes | ✓ VERIFIED | 97 lines, 12 assertions; spawns the real CLI. |
-| `shared/lib/README.md` | Makes `shared/lib` trackable; states the frozen layout and dependency form | ✓ VERIFIED | Tracked; no deprecated global-library directive. |
-| `homeworks/project-baseline/README.md` | Declares the baseline is not a course homework | ✓ VERIFIED | First line carries the disclaimer. |
-| `tools/sweep-homeworks.mjs` | Repo-wide gate with loud zero-match failure and named-rule depth detection | ✓ VERIFIED | Contains `DEPTH RULE VIOLATED`; argv array, no shell. |
-| `tools/tests/sweep.test.mjs` | Integration coverage of every exit path | ✓ VERIFIED | 146 lines, 25 assertions; nine cases, one per exit path. |
-| `.gitignore` | Single deliberate ignore file | ⚠️ PRESENT, ONE HOLE | Covers PlatformIO output, ESP-IDF, C/C++ artifacts, CMake, caches, named generated editor files, OS junk, agent state, secrets and the GSD research cache — but not `.planning/milestone.lock` (gap 2, WR-09). |
-| `.editorconfig`, `.gitattributes`, `.vscode/settings.json`, `.vscode/extensions.json` | The text-layer contract and editor settings | ✓ VERIFIED | `.gitignore`/`.editorconfig`/`.gitattributes` each parse and each rule resolves; see WR-04 for the one `.code-workspace` indent mismatch. |
+| `tools/lib/discover.mjs` | Single discovery source: `HOMEWORKS_DIR`, `ID_PATTERN`, `ID_PATTERN_TEXT`, `discoverHomeworks`, `findDepthViolations`, `envNames` | ✓ VERIFIED | All six exported; `node:fs`/`node:path` only; unchanged since the prior pass. |
+| `tools/generate-workspace.mjs` | Pure renderer plus byte-comparison drift check | ✓ VERIFIED | `renderWorkspace(repoRoot)` is a pure export; both `--check` outcomes reproduced. Entry-point guard boundary under CR-01. |
+| `homework.code-workspace` | Generated multi-root workspace containing `homeworks/project-baseline` | ✓ VERIFIED | Exactly the three expected folders; pure folder list; regenerates byte-identically. |
+| `homeworks/project-baseline/platformio.ini` | Pinned, N16R8-overridden build environment | ✓ VERIFIED | `platform = espressif32@7.1.3` (exact), the four overrides, `monitor_speed = 115200`, no console-port key, no `lib_deps` (`grep -c` → 0 — the fact the override rests on). |
+| `homeworks/project-baseline/src/main.cpp` | Serial report of flash size, `psramFound()` and PSRAM size; touches no GPIO | ✓ VERIFIED | `Serial.begin(115200)` + one `printf` reading `ESP.getFlashChipSize()`, `psramFound()`, `ESP.getPsramSize()`; GPIO-call grep → 0. |
+| `tools/sweep-homeworks.mjs` | Repo-wide gate with loud zero-match failure and named-rule depth detection | ✓ VERIFIED | Contains `DEPTH RULE VIOLATED`; argv array, no shell; unchanged since the prior pass. |
+| `tools/tests/ignore-rules.test.mjs` | The ignore contract asserted against git itself, both directions | ✓ VERIFIED | 180 lines, 5 tests, all green; read-only by construction. |
+| `.gitignore` | Single deliberate ignore file; the GSD lock class now closed by rule | ✓ VERIFIED (gap 2 closed) | `.gitignore:96` `.planning/*.lock` with a documented rationale at lines 91–94; `git status --porcelain` empty. |
+| `.editorconfig`, `.gitattributes`, `.vscode/settings.json`, `.vscode/extensions.json` | The text-layer contract and editor settings | ✓ VERIFIED | Each parses and each rule resolves; the `.code-workspace` indent mismatch (WR-04) and the `[cpp]` format-on-save risk (WR-06) are carried below. |
+| `tools/tests/{discover,generate-workspace,sweep}.test.mjs`, `tools/tests/helpers.mjs` | Unit and integration coverage | ✓ VERIFIED | Unchanged since the prior pass; all green within the 32-test run. |
+| `shared/lib/README.md`, `homeworks/project-baseline/README.md` | Make `shared/lib` trackable; declare the baseline not a course homework | ✓ VERIFIED | Tracked; baseline README's first line carries the disclaimer. |
 
 ### Key Link Verification
 
 | From | To | Via | Status | Details |
 | ---- | -- | --- | ------ | ------- |
-| `tools/generate-workspace.mjs` | `tools/lib/discover.mjs` | imports `discoverHomeworks` | WIRED | Single discovery source; grep for a second implementation returns 0. |
-| `tools/lib/discover.mjs` | `homework.code-workspace` | `renderWorkspace` turns discovered ids into the `folders` array; `--check` compares bytes | WIRED | Drift check exits 0 on the committed file; hand-edit makes it exit 1. |
-| `homeworks/project-baseline/platformio.ini` | `homeworks/project-baseline/src/main.cpp` | the env's `src/` tree builds; `monitor_speed` matches `Serial.begin()` | WIRED | `monitor_speed = 115200`; `Serial.begin(115200)`. |
+| `tools/generate-workspace.mjs` | `tools/lib/discover.mjs` | imports `discoverHomeworks` | WIRED | Single discovery source; second-implementation grep → 0. |
+| `tools/lib/discover.mjs` | `homework.code-workspace` | `renderWorkspace` turns discovered ids into `folders`; `--check` compares bytes | WIRED | Drift check exits 0 on the committed file; hand-edit makes it exit 1. |
+| `homeworks/project-baseline/platformio.ini` | `homeworks/project-baseline/src/main.cpp` | the env's `src/` tree builds; `monitor_speed` matches `Serial.begin()` | WIRED | `monitor_speed = 115200` (ini:23); `Serial.begin(115200)` (main.cpp:12). |
 | `tools/sweep-homeworks.mjs` | `tools/lib/discover.mjs` | imports `discoverHomeworks` and the printable id pattern | WIRED | Confirmed by import and by the exported banner text. |
 | `tools/sweep-homeworks.mjs` | `homeworks/project-baseline` | spawns the build verb with a project-directory argument and no shell | WIRED | Live run built the baseline from the repository root, exit 0. |
-| `tools/tests/sweep.test.mjs` | `tools/tests/helpers.mjs` | every fixture built under `os.tmpdir()` | WIRED | `mkdtemp` in the helper; no test builds against the repository root (WR-07 flags that `--list` still points at it). |
-| `.gitignore` | `homeworks/project-baseline/.pio/` | unanchored `.pio/` matches at any depth | WIRED | `.gitignore:16` is the resolving source for the built directory. |
-| `.editorconfig` | `.gitattributes` | deliberate non-duplication (editor vs index) | WIRED | `eol=lf` in the index; `end_of_line = lf` in the editor; values agree. |
-| `.vscode/settings.json` | `.editorconfig` | one owner per rule | WIRED, with one exception | The `files.*` mirror is identical to `.editorconfig`, but `editor.tabSize = 4` vs the generator's 2-space output for `.code-workspace` is the WR-04 mismatch. |
-| `homeworks/project-baseline/platformio.ini` | `.gitignore` | the build writes only into the project directory; the ignore rules keep `git status` clean | WIRED for the build artifacts | `.pio/` and `compile_commands.json` are ignored; `.planning/milestone.lock` is not (gap 2). |
+| `tools/tests/ignore-rules.test.mjs` | `.gitignore` | `git check-ignore -v` source assertion, per path | WIRED | Green; asserts `.gitignore` is the reported source, so a machine-local excludes file cannot make it pass vacuously. |
+| `.gitignore` | `.planning/milestone.lock` | `.planning/*.lock` | WIRED | Resolves to `.gitignore:96`; the tree is clean. |
+| `.vscode/settings.json` | `.editorconfig` | one owner per rule | WIRED, one exception | The `files.*` mirror agrees, but `editor.tabSize = 4` vs the generator's 2-space `.code-workspace` output is WR-04. |
 | `homework.code-workspace` | `homeworks/` | the committed file is what a reader opens; the drift check proves it still matches | WIRED | `--check` exit 0; the three roots match the tree. |
 
 ### Data-Flow Trace (Level 4)
@@ -149,111 +149,112 @@ The phase goal itself — a frozen tree, one generated multi-root workspace, one
 | `homework.code-workspace` | `folders[]` | `discoverHomeworks(REPO_ROOT).found` — a real `readdirSync` over `homeworks/` | Yes | ✓ FLOWING |
 | `tools/generate-workspace.mjs --check` | `expected` | `renderWorkspace()` over the live tree, compared byte-for-byte with the file on disk | Yes | ✓ FLOWING |
 | `tools/sweep-homeworks.mjs` | `found` | `discoverHomeworks(root)` over the real tree, then a real `spawnSync` build | Yes | ✓ FLOWING |
-| `homeworks/project-baseline/src/main.cpp` | flash/PSRAM values | `ESP.getFlashChipSize()`, `psramFound()`, `ESP.getPsramSize()` — runtime measurement, no literal | Yes (on hardware) | ✓ FLOWING (compile-time verified; runtime report is Phase 2's on-board acceptance) |
+| `homeworks/project-baseline/src/main.cpp` | flash/PSRAM values | `ESP.getFlashChipSize()`, `psramFound()`, `ESP.getPsramSize()` — runtime measurement, no literal | Yes (on hardware) | ✓ FLOWING (compile-time verified; the runtime report is Phase 2's on-board acceptance) |
 
 No hard-coded literal, static fallback or mock terminates any of these chains.
 
-### Behavioral Spot-Checks / Probe Execution
+### Behavioral Spot-Checks
 
 | Behavior | Command | Result | Status |
 | -------- | ------- | ------ | ------ |
 | Workspace drift check passes | `node tools/generate-workspace.mjs --check` | `homework.code-workspace is up to date`, exit 0 | ✓ PASS |
 | Drift check fires on a hand edit | append one byte, then `--check` | `... is STALE.` + remedy, exit 1; file restored | ✓ PASS |
-| One-command build from the repo root | `pio run -d homeworks/project-baseline` | exit 0, `[SUCCESS] Took 0.54 seconds`, `6553600` bytes | ✓ PASS |
-| Criterion 2 half (b): deeper project breaks the build | `pio run -d homeworks/project-baseline/deeper` (fixture copy) | exit 0, `[SUCCESS] Took 2.64 seconds` | ✗ FAIL — the criterion's mechanism is absent |
+| One-command build from the repo root | `pio run -d homeworks/project-baseline` | exit 0, `[SUCCESS] Took 0.69 seconds`, `6553600` bytes | ✓ PASS |
+| Criterion 2 half (b): a deeper project breaks the build | `pio run -d homeworks/project-baseline/deeper` (fixture copy) | exit 0, `[SUCCESS] Took 2.87 seconds` | ✗ NOT MET — the criterion's literal mechanism is absent; **discharged by the accepted override** |
+| Two-arm symlinked-dependency measurement (G5) | arm A / arm B on a fresh `os.tmpdir()` fixture | arm A exit 0 `[SUCCESS] Took 2.72 seconds`; arm B exit 1 `PackageException: Can not create a symbolic link for ../../shared/lib/probelib, not a directory` | ✓ PASS (the boundary is real) |
 | Sweep lists validated ids | `node tools/sweep-homeworks.mjs --list` | `project-baseline`, exit 0 | ✓ PASS |
-| Sweep defaults to the repo root from a foreign cwd | `cd /tmp && node .../sweep-homeworks.mjs --list` | `project-baseline`, exit 0 | ✓ PASS |
-| Criterion 4: zero matches fails loudly | `node .../sweep-homeworks.mjs --root <empty fixture>` | three-line message, exit 1 | ✓ PASS |
+| Criterion 4: zero matches fails loudly | `node tools/sweep-homeworks.mjs --root <empty fixture>` | three-line message, exit 1 | ✓ PASS |
 | Escape hatch is opt-in | `--root <empty fixture> --allow-empty` | exit 0, one line | ✓ PASS |
 | Depth rule names the rule, before any build | fixture with `homeworks/m01-l03-blink/deeper/platformio.ini` | `DEPTH RULE VIOLATED` + path, exit 1 | ✓ PASS |
 | Malformed id names the grammar | fixture with `homeworks/badName/` | `MALFORMED HOMEWORK ID` + expected pattern, exit 1 | ✓ PASS |
-| Missing PlatformIO is a distinct, actionable failure | clean env, empty `HOME`, no `pio` on `PATH` | `PlatformIO Core was not found.` + export line, exit 1 | ✓ PASS |
-| Full sweep builds from the root | `node tools/sweep-homeworks.mjs` | baseline built, exit 0 | ✓ PASS |
-| Test suite | `FORCE_COLOR=0 node --test "tools/**/*.test.mjs"` | tests 27, pass 27, fail 0, skipped 0, todo 0 | ✓ PASS |
-| Criterion 3 after a full build and a full sweep | `git status --porcelain` | `?? .planning/milestone.lock` | ✗ FAIL (the criterion's named artifacts are clean; the tree is not) |
+| Criterion 3: tree clean after builds | `git status --porcelain` after `pio run` runs | empty | ✓ PASS |
+| Test suite | `FORCE_COLOR=0 node --test "tools/**/*.test.mjs"` | tests 32, pass 32, fail 0, skipped 0, todo 0 | ✓ PASS |
 
-No probe scripts (`scripts/*/tests/probe-*.sh`) are declared or implied by this phase; Step 7c is not applicable.
+### Probe Execution
+
+No probe scripts (`scripts/*/tests/probe-*.sh`) are declared or implied by this phase, and none exist in the tree. Step 7c is not applicable.
 
 ### Requirements Coverage
 
 | Requirement | Source Plan | Description | Status | Evidence |
 | ----------- | ----------- | ----------- | ------ | -------- |
-| REPO-01 | 01-01, 01-03, 01-05 | The repository opens as ONE VS Code workspace listing the repo root, `shared/`, and one folder per homework | ✓ SATISFIED (automated half) / ? NEEDS HUMAN (rendered window) | `homework.code-workspace` lists exactly `root`, `shared`, `project-baseline`; `--check` exit 0; README documents how to open it. What VS Code renders is deferred. |
-| REPO-02 | 01-01, 01-03, 01-04, 01-05 | Each homework lives at `homeworks/<module>-<lesson>-<slug>/` and is buildable from the root with `pio run -d homeworks/<id>` | ✓ SATISFIED | Build exits 0 from the root reporting the 16 MB partition; `--list` prints `project-baseline`; the grammar is frozen in `discover.mjs`. |
-| REPO-03 | 01-03, 01-04, 01-05 | Every homework sits exactly one directory level below `homeworks/`, because every shared-library path in `lib_deps` is relative to the project | ⚠️ PARTIAL | The rule is enforced by name before any build (`DEPTH RULE VIOLATED`, exit 1) and documented in the README and `PROJECT.md`. The complementary observable — a deeper project failing to build — does not exist yet (gap 1). |
-| REPO-04 | 01-02, 01-05 | Machine-generated and machine-local artifacts (`.pio/`, `compile_commands.json`) are gitignored, never committed | ✓ SATISFIED (as written) | Both named artifacts resolve to `.gitignore` (`:16`, `:20`) and appear only under `--ignored`; neither is committed. A fourth, un-named machine-local artifact (`.planning/milestone.lock`) is not covered — recorded as gap 2. |
+| REPO-01 | 01-01, 01-03, 01-05, 01-06, 01-07 | The repository opens as ONE VS Code workspace listing the repo root, `shared/`, and one folder per homework | ✓ SATISFIED (automated half) / ? NEEDS HUMAN (rendered window) | `homework.code-workspace` lists exactly `root`, `shared`, `project-baseline`; `--check` exit 0; README documents how to open it. What VS Code renders is carried in Human Verification. |
+| REPO-02 | 01-01, 01-03, 01-04, 01-05, 01-06, 01-07 | Each homework lives at `homeworks/<module>-<lesson>-<slug>/` and is buildable from the root with `pio run -d homeworks/<id>` | ✓ SATISFIED | Build exits 0 from the root reporting the 16 MB partition; `--list` prints `project-baseline`; the grammar is frozen in `discover.mjs`. |
+| REPO-03 | 01-03, 01-04, 01-05, 01-06, 01-07 | Every homework sits exactly one directory level below `homeworks/`, because every shared-library path in `lib_deps` is relative to the project | ⚠️ PARTIAL — enforced by name; the build-failure half is a **recorded, owner-accepted deviation** | The rule fires by name before any build (`DEPTH RULE VIOLATED`, exit 1) and is documented in the README, `PROJECT.md` and the ROADMAP discharge note. The complementary observable is measured on a fixture (G5) but absent from the committed tree, which declares no `lib_deps`. Retired by Phase 3 success criterion 5. |
+| REPO-04 | 01-02, 01-05, 01-06 | Machine-generated and machine-local artifacts (`.pio/`, `compile_commands.json`) are gitignored, never committed | ✓ SATISFIED (now including the fourth artifact) | `.pio/` → `.gitignore:16`, `compile_commands.json` → `.gitignore:20`, and the previously un-named `.planning/milestone.lock` → `.gitignore:96`. `git status --porcelain` is empty. |
 
-No orphaned requirements: `REQUIREMENTS.md` maps exactly REPO-01..04 to Phase 1, and all four appear in at least one PLAN's `requirements` field.
-
-### Decision Coverage
-
-All trackable CONTEXT.md decisions are honored by shipped artifacts. (`check.decision-coverage-verify`: total 26, honored 26, not_honored [] — `{"skipped": false, "blocking": false}`.)
-
-### Test Quality Audit
-
-| Test File | Linked Req | Active | Skipped | Circular | Assertion Level | Verdict |
-| --------- | ---------- | ------ | ------- | -------- | --------------- | ------- |
-| `tools/tests/discover.test.mjs` | REPO-02 | 17 | 0 | no | value | ⚠️ one tautological assertion (IN-04) |
-| `tools/tests/generate-workspace.test.mjs` | REPO-01 | 12 | 0 | no | value / behavioral | OK |
-| `tools/tests/sweep.test.mjs` | REPO-02, REPO-03 | 25 | 0 | no | value / behavioral | ⚠️ one case silently requires a working PlatformIO (WR-08) |
-
-**Disabled tests on requirements:** 0 → no BLOCKER.
-**Circular patterns detected:** 0 → no BLOCKER. No fixture is generated by the system under test; every sweep fixture is built by `helpers.mjs` under `os.tmpdir()`.
-**Insufficient assertions:** 1 (WARNING) — `assert.deepEqual(envNames("m01-l03-blink"), envNames("m01-l03-blink"))` in `discover.test.mjs` compares a pure function with itself and cannot fail. It contributes a green tick and no coverage. `envNames()` has no production consumer at all (WR-05).
+No orphaned requirements: `REQUIREMENTS.md` maps exactly REPO-01..04 to Phase 1, all four appear in the `requirements:` field of at least one plan (01-01: REPO-01, REPO-02; 01-02: REPO-04; 01-03: REPO-01..03; 01-04: REPO-02, REPO-03; 01-05: REPO-01..04; 01-06: REPO-01..04; 01-07: REPO-01..04), and none is claimed by a plan outside this phase. `REQUIREMENTS.md`'s traceability table still reads `Gaps Found` for all four rows — that column is the *phase* status and this report supersedes it; the same document's per-requirement rows are correctly scoped.
 
 ### Anti-Patterns Found
 
 | File | Line | Pattern | Severity | Impact |
 | ---- | ---- | ------- | -------- | ------ |
-| — | — | `TBD` / `FIXME` / `XXX` in any phase-modified file | none | Scanned all 19 authored artifacts; zero matches. No debt-marker BLOCKER. |
-| — | — | `TODO` / `HACK` / `PLACEHOLDER` under `tools/`, `homeworks/`, `shared/`, `.vscode/` | none | Zero matches. |
-| `homeworks/project-baseline/src/main.cpp` | 13 | 108-column line under `editor.rulers: [100]`, 2-space body indent vs `.editorconfig`'s `indent_size = 4` for `*.cpp` | ⚠️ Warning | Format-on-save is enabled globally with `C_Cpp.formatting = clangFormat` and no `.clang-format` in the repository, so opening and saving this file is expected to rewrite it — directly threatening criterion 3's deferred editor observation (WR-06). |
-| `.editorconfig` | 22 | `[*.{json,jsonc,yml,yaml,ini,cfg,properties}]` does not match `.code-workspace`, so `homework.code-workspace` inherits `[*] indent_size = 4` while the generator emits 2 spaces | ⚠️ Warning | A single format-on-save of the generated file turns a correct tree into a reported STALE, and the README tells the reader not to hand-edit it (WR-04). Does not affect the file as committed. |
+| — | — | `TBD` / `FIXME` / `XXX` in any phase-modified file | none | Scanned `.gitignore`, `tools/tests/ignore-rules.test.mjs`, `tools/generate-workspace.mjs`, `tools/lib/discover.mjs`, `tools/sweep-homeworks.mjs`, `homeworks/project-baseline/src/main.cpp`, `homeworks/project-baseline/platformio.ini` → zero matches. No debt-marker BLOCKER. |
+| — | — | `TODO` / `HACK` / `PLACEHOLDER` / `not yet implemented` / `coming soon` under phase-modified files | none | Zero matches. |
+| `homeworks/project-baseline/src/main.cpp` | 13 | 108-column line under `editor.rulers: [100]`, 2-space body indent vs `.editorconfig`'s `indent_size = 4` for `*.cpp` | ⚠️ Warning | `editor.formatOnSave` is true, `[cpp]` uses `ms-vscode.cpptools` with `C_Cpp.formatting = clangFormat`, and no `.clang-format` exists — so opening and saving this file is expected to rewrite it, directly threatening criterion 3's deferred editor observation. Carried into Human Verification. |
+| `.editorconfig` | 22 | `[*.{json,jsonc,yml,yaml,ini,cfg,properties}]` does not match `.code-workspace`, so `homework.code-workspace` inherits `[*] indent_size = 4` while the generator emits 2 spaces | ⚠️ Warning | A single format-on-save of the generated file turns a correct tree into a reported STALE. Does not affect the file as committed. |
 
-### Code Review Findings — Bearing on the Success Criteria
+### Carried Code-Review Findings — none falsifies a must-have
 
-The phase's `01-REVIEW.md` (16 findings, all `open` in `01-REVIEW-DISPOSITION.md`) was re-read, not re-run. Assessment of each finding against the goal and the four criteria:
+`01-REVIEW.md` and `01-REVIEW-DISPOSITION.md` record the phase's code-review findings, all `open` (an untriaged state, not an oversight). I re-read the critical one and reproduced it; I did not treat the findings as must-have evidence either way.
 
-- **CR-01** (entry-point guard fails open through a symlinked script path; `--check` exits 0 having checked nothing). Reproduced independently: `node gen.mjs --check` through a symlink prints nothing and exits 0, where the direct invocation prints the verdict. **Bears on criterion 1's automated half.** It does **not** prevent the phase goal or change today's verdict: I ran the documented invocation myself and it genuinely checked the real file, and the failure needs the script path itself to be symlinked. Judged a **WARNING**, not a blocker — but it is the one finding that undermines an evidence-producing gate, and it is latent rather than harmless.
-- **WR-01** (the depth rule walks the filesystem, not the committed tree; `.pio/libdeps/**/examples/*/platformio.ini` would make the gate red on any machine that has built). **Bears on criterion 2 half (b) and criterion 4's determinism.** Not manifest today: the baseline declares no `lib_deps`, no `.pio/libdeps` exists, and `find homeworks -name platformio.ini` returns only the project's own file. Latent; becomes live in Phase 3. **WARNING.**
-- **WR-03** (the generator silently drops a homework whose name fails the grammar and exits 0). **Bears directly on criterion 1** — the exact failure the README warns about. Reproduced. Latent: no malformed folder exists in the tree, and the committed file is correct for the tree that ships. **WARNING.**
-- **WR-09** (`.planning/milestone.lock` untracked and unignored). **Bears on criterion 3 and on REPO-04's intent.** This is gap 2 — the one review finding that is a live, measured failure of a stated criterion rather than a latent risk. **BLOCKER.**
-- **WR-02, WR-04, WR-05, WR-06, WR-07, WR-08, IN-01..IN-06.** WR-06 bears on criterion 3's deferred editor half (see Human Verification). WR-04 bears on criterion 1's automated-half stability. The remainder concern the Phase 6 consumer contract, test hygiene and documentation completeness; they do not bear on what this phase delivered. **WARNING / INFO.**
-- No security finding was raised, and none is warranted: no secrets, no network access, and the sweep passes an argv array to `spawnSync` with no shell.
+- **CR-01 (critical) — the entry-point guard fails open.** Reproduced independently: `node <symlink-to-generate-workspace.mjs> --check` prints nothing, and with `homework.code-workspace` deliberately staled it still exits **0**, where the direct invocation prints `homework.code-workspace is STALE.` and exits **1**. The guard compares `import.meta.url` against `pathToFileURL(process.argv[1])`, which differ whenever the script path carries a symlink. **My judgment: it does not falsify a must-have.** B2's two documented outcomes are correct under the invocation the README prescribes (I ran it both ways), the renderer `renderWorkspace` is a real pure export with data flowing, and no truth, artifact or key link is affected. It is not a Step 7 anti-pattern (no debt marker, stub, hollow prop, empty implementation or console-log-only body), so the convergence-evidence gate does not promote it to a blocker, and the flagged file was **not** modified since the prior verification (`git log --since=<prior verified> -- tools/generate-workspace.mjs` is empty), so it is neither a regression nor a carried-forward gap. **It is nonetheless a real defect in an evidence-producing gate and should be fixed before Phase 6 wires this script into a hook**: a gate that reports success without checking is exactly the failure the phase's own README warns about.
+- **WR-01, WR-03, WR-04, WR-06, WR-09, IN-01..IN-07, WR-02, WR-05, WR-07, WR-08.** WR-09 is the review's own id for gap 2 and is now **closed by the ignore rule** — the disposition row still reads `open`, which understates the tree's current state. WR-01 (the depth walk sees `.pio/libdeps/**/examples/*/platformio.ini`) and WR-03 (the generator silently drops an ungrammatical folder) are latent: neither condition exists in the shipped tree, and I confirmed `find homeworks -name platformio.ini` returns only the project's own file. WR-02/WR-05/WR-07/WR-08 concern the Phase 6 consumer contract, test hygiene and documentation completeness. WR-04 and WR-06 bear on criterion 1's and criterion 3's deferred human halves and are carried above. **WARNING / INFO; none touches the phase goal.**
+- No security finding is warranted: no secrets, no network access, and the sweep passes an argv array to `spawnSync` with no shell.
+
+### Advisory (New Scope, Unevidenced)
+
+None. Every finding raised in this re-verification pass either matches a carried-forward gap, sits on a file modified since the prior pass, or was reproduced with a deterministic command — there is nothing new-scope and unevidenced to record.
+
+### Note — Phase 1 is declared `mode: mvp` but its goal is not a User Story
+
+`ROADMAP.md` marks the phase `**Mode:** mvp`, but the phase goal is not a user story: `gsd-tools query user-story.validate` returns `{"valid": false}` with all three slot errors (`As a [role]`, `I want to [capability]`, `so that [outcome]`). Phase 1 is infrastructure ("Repository Skeleton and Project Layout"), and so are Phases 2–8; the `mvp` marker appears to be the roadmap generator's default rather than a genuine MVP slice. I therefore did **not** apply the MVP-mode narrowing (there is no `[outcome]` clause to verify) and verified against the four ROADMAP success criteria, exactly as the prior pass did and as the gap-closure plans assumed. Recorded so the discrepancy is visible rather than silently absorbed; if the `mvp` marker is meant, this phase would need `/gsd-mvp-phase 01` to restate its goal.
+
+### Note — a concurrent process rewrote and committed `01-REVIEW.md` during this verification
+
+`git status --porcelain` was empty when this verification opened and empty after every build it ran. Mid-pass, `.planning/phases/01-repository-skeleton-and-project-layout/01-REVIEW.md` began changing on its own: its mtime advanced 18:01:50 → 18:04:00 → 18:04:47 local and its size 43,773 → 43,776 bytes while this agent held no writer. A separate process then committed it and a regenerated disposition as `e2b0dc7 docs(01): add code review report` and `933f451 docs(01): record code review disposition`. Its content moved from the previously committed `1 critical / 8 warning / 7 info` (16 findings, `reviewed: 2026-10-15T14:53:40Z`) to `1 critical / 10 warning / 8 info` (19 findings, `reviewed: 2026-10-15T15:00:47Z`), and the disposition from 17 rows to 20, all `open`. I did **not** revert or re-run it — it is not a phase implementation artifact (it is absent from `covered_files`), and my analysis of CR-01 is anchored to the finding's text and my own reproduction rather than to any finding count. The implementation tree was clean throughout; the only working-tree change this verification left is its own report.
+
+### Override Review — does the override discharge the truth?
+
+The override is properly formed against `verification-overrides.md`: its `must_have` text restates the failing clause in the clause's own vocabulary (so the fuzzy match binds to ROADMAP criterion 2's second conjunct, not to some nearby truth), its `reason` is specific and states what was measured rather than "not needed", and both `accepted_by` and `accepted_at` are present and are **git-derived, not typed** — they match `bf60cca`'s author and timestamp exactly, and that commit is an ancestor of HEAD.
+
+I checked the premise rather than trusting it, because a false premise would make the override a way of discharging a truth that either could have passed or deserves to fail:
+
+- **The literal criterion really is unobservable on the committed tree.** `homeworks/project-baseline/platformio.ini` declares no `lib_deps` (`grep -c` → 0), and a copy of that environment one level deeper builds — I rebuilt it: exit 0, `[SUCCESS] Took 2.87 seconds`. So there is genuinely no build failure to demonstrate, and the honest options were a substitution or a deferred mechanism.
+- **The substitution's justification is real, not a rationalization.** I reproduced the two-arm measurement on a fresh fixture: with `lib_deps = probelib=symlink://../../shared/lib/probelib`, arm A (exactly one level below `homeworks/`) exits 0 and arm B (one level deeper) exits 1 with PlatformIO's own `PackageException: Can not create a symbolic link for ../../shared/lib/probelib, not a directory`. The depth boundary is load-bearing; the committed baseline simply lacks the dependency that would exhibit it.
+- **The discharge is bounded.** Phase 3 success criterion 5 (ROADMAP line 94) is the named retirement trigger, and it names the exact dependency form that makes the literal mechanism observable.
+
+I judge the override to **discharge** the truth. It is not a way to skip verification: the deviation stays visible in `ROADMAP.md` beside an untouched criterion, in `PROJECT.md`'s Key Decisions and in this report's frontmatter, and the underlying mechanism is measured rather than asserted. A2 is therefore `PASSED (override)` and counts toward the score, and it is not reported as a gap.
 
 ### Human Verification Required
 
-These two items are the phase log's own deliberately deferred observations (`01-05-SUMMARY.md` §12), recorded there with explicitly unfilled output slots. They are carried here verbatim in substance. They are listed even though the overall status is `gaps_found`, because the `gaps_found` route does not otherwise carry them forward and they are the only record of them.
-
 #### 1. Criterion 1's manual half — the workspace window
 
-**Test:** From a checkout unmodified since `926db18`, open `homework.code-workspace` in VS Code via File → Open Workspace from File… (the workspace file, not the folder).
+**Test:** Open the committed `homework.code-workspace` in VS Code via File → Open Workspace from File… (the workspace file, not the folder) and read the Explorer's top-level root names.
 **Expected:** Exactly three top-level roots named `root`, `shared` and `project-baseline`; no unresolved-path marker on `shared`; no stale-workspace warning.
 **Why human:** No agent can see what the editor renders, and no deterministic predicate exists for "VS Code loaded the workspace". The phase recorded this with an empty output slot rather than inventing an observation.
-**Also worth checking while the window is open (IN-06):** whether `editor.rulers = 100` and `C_Cpp.formatting = clangFormat` are actually in effect for `homeworks/project-baseline/src/main.cpp`. The root `.vscode/settings.json` is folder-scoped, and every homework is nested inside the `root` folder, so the settings may not reach it.
+**Also worth checking while the window is open:** whether `editor.rulers = 100` and `C_Cpp.formatting = clangFormat` are actually in effect for `homeworks/project-baseline/src/main.cpp`. The root `.vscode/settings.json` is folder-scoped, and every homework is nested inside the `root` folder, so the settings may not reach it.
 
 #### 2. Criterion 3's editor half — the clean tree after an editor session
 
-**Test:** In that same session, open and save one tracked file in each of the three roots, let the editor settle, then run `git status --porcelain` from the repository root — **before** writing the result into any tracked file.
-**Expected:** No output beyond the already-recorded `?? .planning/milestone.lock`; specifically, no modification to `homeworks/project-baseline/src/main.cpp`.
+**Test:** In that same session, open and save one tracked file in each of the three roots (a file under `.planning/`, a file under `shared/`, one baseline project file), let the editor settle, then run `git status --porcelain` from the repository root — **before** writing the result into any tracked file.
+**Expected:** Empty output; specifically, no modification to `homeworks/project-baseline/src/main.cpp`.
 **Why human:** A human editor session is not automatable, and the reading must be taken before the observation is written down, because the log is itself a tracked file.
-**Caution, with evidence:** WR-06 measures that `editor.formatOnSave` is true, that `[cpp]` uses `ms-vscode.cpptools` with `C_Cpp.formatting = clangFormat`, that no `.clang-format` exists, and that `main.cpp` line 13 is 108 columns with a 2-space body indent against `.editorconfig`'s declared 4. Saving that file is therefore **expected to make `git status` dirty**. If it does, record exactly which file changed and how, rather than re-saving until it looks clean.
+**Caution, with evidence:** `editor.formatOnSave` is true, `[cpp]` uses `ms-vscode.cpptools` with `C_Cpp.formatting = clangFormat`, no `.clang-format` exists in the repository, and `main.cpp:13` is 108 columns with a 2-space body indent against `.editorconfig`'s declared 4. Saving that file is therefore **expected to make `git status` dirty**. If it does, record exactly which file changed and how, rather than re-saving until it looks clean.
 
 ### Gaps Summary
 
-The skeleton is real and mostly works. The generated workspace file is a genuine pure function of the tree, the drift check genuinely detects a hand edit, the baseline genuinely builds from the repository root with one command and reports the 16 MB N16R8-override partition, the depth rule genuinely fires by name before any child process exists, and the zero-match gate genuinely refuses to report success on an empty tree. Every one of the 30 plan-level must-have truths is supported by code I read or a command I ran, and the 27-case suite passes.
+**No gaps remain.** The two the previous pass filed are both resolved, and I verified each independently rather than on the summaries' word:
 
-Two of the four ROADMAP success criteria are nonetheless not true as written:
+1. **Gap 2 — the dirty tree — is closed by rule, not by an exception.** `.gitignore:96` now carries `.planning/*.lock`, with the rationale written above it; `git check-ignore -v .planning/milestone.lock` names `.gitignore` as the source, so a clone inherits it; and `git status --porcelain` is empty on a tree that has been built, swept and regenerated. The rule is a glob over the lock-file class rather than a single filename, and the new five-test contract asserts both directions — including that no path git actually tracks has become ignored — so the class cannot silently reopen.
 
-1. **Criterion 2's second conjunct does not hold.** Moving a project one level deeper does not break the build — I reproduced it building in 2.64 s. The phase knew this, said so plainly in its own log, and substituted the sweep's rule-naming detector. That substitution is defensible and may even be the better mechanism, but it is not what the roadmap contracted, and the roadmap has not been amended to say otherwise. This is exactly the shape the overrides mechanism exists for: a deliberate deviation where an alternative implementation satisfies the intent but not the literal wording. An accepted override would close it; so would waiting for Phase 3 to introduce the first `symlink://` dependency, under which a deeper project cannot resolve `../../shared/lib/<name>`.
+2. **Gap 1 — criterion 2's second conjunct — is discharged by an owner-accepted override** that I judged against its premise instead of accepting on trust: the literal mechanism is genuinely unobservable while the baseline declares no `lib_deps` (re-measured: the deeper copy builds), the substitution's evidence is real (independently re-measured: the two-arm fixture resolves the symlink at one level and fails one level deeper), and the discharge is bounded by a named Phase 3 criterion that retires it. It remains a deviation, not a verification — but it is now a *recorded, attributed, dated and reversible* one, which is what the overrides mechanism exists to produce.
 
-2. **The tree is not clean.** Criterion 3's blanket claim, and 01-05's own must-have truth ("completely empty … no machine-written GSD state file appears as untracked"), are false on the tree that ships: `git status --porcelain` prints `?? .planning/milestone.lock`, and no ignore pattern covers it. The three artifacts the criterion names — `.pio/`, `compile_commands.json` and generated editor state — are all correctly ignored, so this is not a failure of the ignore file's main job; it is the un-named fourth GSD artifact the phase recorded in its "Known deviations" section and left for a later phase. It is one line to fix, and it makes every `git status` on every working checkout report a change — which is exactly the signal the file exists to produce only when something needs committing.
+**What is left is human, not mechanical.** Two conjuncts — what VS Code renders when the committed workspace file is opened, and whether a real editor session leaves the tree clean — cannot be observed by any agent. They are carried above, both were recorded by the phase with deliberately unfilled output slots (the correct artifact), and neither is counted as verified anywhere in this report's score. That is why the status is `human_needed` and not `passed`.
 
-**The phase log's two deferred observations are unverified, not passing.** Criterion 1's manual half and criterion 3's editor half have never been observed; the log records them with deliberately unfilled output slots, which is the correct artifact. They are carried in Human Verification above. Neither is counted as verified anywhere in the score.
-
-**The code review does not change the verdict.** All 16 findings are `open`, which records an untriaged state rather than an oversight, and they were considered above rather than folded in silently. One of them — WR-09 — is the same defect as gap 2, and is the only review finding that is a live failure of a stated criterion. The rest are latent (CR-01, WR-01, WR-03), concern the Phase 6 consumer contract (WR-02, WR-05), or concern test and documentation hygiene. The single critical finding, CR-01, fails open only when the script path itself is symlinked; the documented invocation works, which I verified directly, so it is a warning about the robustness of an evidence-producing gate rather than a blocker for the phase goal.
+**The one thing a reader should not miss** is CR-01: `tools/generate-workspace.mjs --check` exits 0 without checking when its own path carries a symlink, reproduced above. It does not falsify a must-have and it does not touch the phase goal, so it is not a blocker here — but it is a fail-open gate, and Phase 6 wires this script into hook and CI gates. It should be fixed before anything depends on its verdict.
 
 ---
 
-_Verified: 2026-10-15T13:09:10Z_
+_Verified: 2026-10-15T15:06:36Z_
 _Verifier: Claude (gsd-verifier)_
