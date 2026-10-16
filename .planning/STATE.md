@@ -5,10 +5,10 @@ current_phase: 2
 current_phase_name: Board and Environment Baseline (N16R8 Acceptance Gate)
 status: planning
 stopped_at: Phase 01 complete, ready to plan Phase 2
-last_updated: "2026-10-16T11:47:15.282Z"
+last_updated: "2026-10-16T12:16:18.196Z"
 last_activity: 2026-10-16
 last_activity_desc: Phase 01 complete, transitioned to Phase 2
-state_head: 035a64f4a1d777dc7050f193dc688d706b3072ef
+state_head: 88b9e225c5c53c882975c81bd9a80bd8697d0cf3
 progress:
   total_phases: 8
   completed_phases: 1
@@ -31,7 +31,7 @@ See: .planning/PROJECT.md (updated 2026-10-16)
 Phase: 2 — Board and Environment Baseline (N16R8 Acceptance Gate)
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-10-16 — Phase 01 complete, transitioned to Phase 2
+Last activity: 2026-10-16 - Completed quick task 261016-kz6: close CR-02 fail-open tracked-source guard in ignore-rules test
 
 Progress: [█░░░░░░░░░] 13%
 
@@ -121,6 +121,12 @@ Open decisions the phases must force (research D-list, unresolved at roadmap tim
 - **Host tests are unproven on this machine:** `platform = native` expects a system GCC; `/usr/bin/gcc` here is an Apple clang shim. Phase 5 must smoke-test it before relying on it.
 - **[Phase 1] The fail-open class is still live in two guards** — `tools/generate-workspace.mjs --check` returns 0 without checking when its own path carries a symlinked component (review `CR-01`), and the ignore-contract test exempts the root ignore file by identity rather than by tracked-ness (review `CR-02`, opened 2026-10-16). Neither is a Phase 1 must-have failure, but Phase 6 wires `--check` into hooks and CI, so both must be closed before that gate is trusted. Ledger: `01-REVIEW-DISPOSITION.md`, 25 open.
 - **[Phase 1] Does the root `.vscode/settings.json` reach a nested homework?** The root settings are folder-scoped and every homework sits inside the `root` workspace folder, so `editor.rulers` and `C_Cpp.formatting` may not be in effect for `homeworks/project-baseline/src/main.cpp`. Verifier finding `W-06`; belongs to Phase 5, which owns the editor and formatter contract.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 261016-kz6 | close CR-02 fail-open tracked-source guard in ignore-rules test | 2026-10-16 | 88b9e22 | [261016-kz6-close-cr-02-fail-open-tracked-source-gua](./quick/261016-kz6-close-cr-02-fail-open-tracked-source-gua/) |
 
 ## Deferred Items
 

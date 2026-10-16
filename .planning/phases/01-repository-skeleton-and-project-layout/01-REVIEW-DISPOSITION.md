@@ -5,7 +5,7 @@ titles: json
 findings:
   - id: CR-02
     severity: critical
-    disposition: open
+    disposition: fixed
     title: "`isRepoOwnedIgnoreSource` exempts the root `.gitignore` from the very check it exists to perform — a silent false green"
   - id: WR-10
     severity: warning
@@ -103,7 +103,7 @@ findings:
     severity: warning
     disposition: open
     title: "`.planning/milestone.lock` is untracked and unignored — the tree is dirty, which the `.gitignore` section above it exists to prevent"
-open: 25
+open: 24
 total: 25
 recorded: 2026-10-16T11:42:39.058Z
 ---
@@ -112,7 +112,7 @@ recorded: 2026-10-16T11:42:39.058Z
 
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
-| CR-02 | critical | open | - |
+| CR-02 | critical | fixed | 9f9e2cc — quick task `261016-kz6` deleted the identity exemption; the root file now answers the same `git ls-files` tracked-ness question a nested one does, and the broken fixture went 4 pass / 1 fail |
 | WR-10 | warning | open | - |
 | WR-11 | warning | open | - |
 | WR-12 | warning | open | - |
