@@ -120,3 +120,91 @@ positive reading alone — that gives ROADMAP criterion 1 its meaning.
 The throwaway root `${TMPDIR}/phase02-negative-control` was removed inside the task and its
 absence asserted; no build artifact, map file or copied directory from it exists anywhere
 under the repository.
+
+## Fragment merge semantics
+
+Every reading below was taken with PlatformIO's own configuration reader in its
+machine-readable form, parsed rather than string-sliced, in its own throwaway tree under
+`${TMPDIR}`. Each fixture differs from the repository arrangement by exactly the one thing
+under test; each was removed afterwards and its absence asserted.
+
+### Reading 1 — a project-level override wins
+
+```
+$ pio project config -d "${TMPDIR}/phase02-merge-1/homeworks/probe" --json-output
+EXIT=0
+[["platformio", [["extra_configs", ["../../shared/pio/base.ini"]]]], ["env:probes3", [["monitor_speed", 9600], ["platform", "espressif32@7.1.3"], ["board", "esp32-s3-devkitc-1"], ["framework", ["arduino"]], ["build_flags", ["-DBOARD_HAS_PSRAM"]]]], ["env", [["platform", "espressif32@7.1.3"], ["board", "esp32-s3-devkitc-1"], ["framework", ["arduino"]], ["monitor_speed", 115200], ["build_flags", ["-DBOARD_HAS_PSRAM"]]]]]
+```
+
+The fragment sets `monitor_speed = 115200`; the project re-declares the same key inside its
+own `[env:probes3]` section at `9600`. The reader reports `9600` — the project's value wins,
+so the single-key override path the fragment's header describes works.
+
+### Reading 2 — a re-declared global block in the project loses, silently
+
+```
+$ pio project config -d "${TMPDIR}/phase02-merge-2/homeworks/probe" --json-output
+EXIT=0
+[["platformio", [["extra_configs", ["../../shared/pio/base.ini"]]]], ["env", [["monitor_speed", 115200], ["platform", "espressif32@7.1.3"], ["board", "esp32-s3-devkitc-1"], ["framework", ["arduino"]], ["build_flags", ["-DBOARD_HAS_PSRAM"]]]]]
+```
+
+The project adds a second bare `[env]` block carrying `monitor_speed = 9600` and declares no
+environment-named section of its own. The reader reports `115200` — the **fragment** won.
+The losing arrangement looks entirely reasonable in a diff, which is why the fragment's
+header carries the rule rather than leaving it to review. No warning of any kind accompanies
+the result: the exit status is 0 and the output is well-formed.
+
+### Reading 3 — a list option replaces rather than appends
+
+Replacement — an environment-level `build_flags` line set to a single additional define:
+
+```
+$ pio project config -d "${TMPDIR}/phase02-merge-3a/homeworks/probe" --json-output
+EXIT=0
+[["platformio", [["extra_configs", ["../../shared/pio/base.ini"]]]], ["env:probes3", [["build_flags", ["-DEXTRA=1"]], ["platform", "espressif32@7.1.3"], ["board", "esp32-s3-devkitc-1"], ["framework", ["arduino"]], ["monitor_speed", 115200]]], ["env", [["platform", "espressif32@7.1.3"], ["board", "esp32-s3-devkitc-1"], ["framework", ["arduino"]], ["monitor_speed", 115200], ["build_flags", ["-DBOARD_HAS_PSRAM"]]]]]
+```
+
+The environment reports exactly `["-DEXTRA=1"]`: `-DBOARD_HAS_PSRAM` is gone, and the build
+would still have succeeded. This is the trap that silently removes every `psramFound()`
+reading from an acceptance run.
+
+Interpolation first — the same additional define, with the inherited list interpolated ahead
+of it:
+
+```
+$ pio project config -d "${TMPDIR}/phase02-merge-3b/homeworks/probe" --json-output
+EXIT=0
+[["platformio", [["extra_configs", ["../../shared/pio/base.ini"]]]], ["env:probes3", [["build_flags", ["-DBOARD_HAS_PSRAM -DEXTRA=1"]], ["platform", "espressif32@7.1.3"], ["board", "esp32-s3-devkitc-1"], ["framework", ["arduino"]], ["monitor_speed", 115200]]], ["env", [["platform", "espressif32@7.1.3"], ["board", "esp32-s3-devkitc-1"], ["framework", ["arduino"]], ["monitor_speed", 115200], ["build_flags", ["-DBOARD_HAS_PSRAM"]]]]]
+```
+
+The environment now reports `["-DBOARD_HAS_PSRAM -DEXTRA=1"]` — the inherited flag present
+and **ordered first**, exactly as the fragment's header instructs.
+
+### Reading 4 — a fragment that cannot be found is not an error
+
+```
+$ pio project config -d "${TMPDIR}/phase02-merge-4/homeworks/probe" --json-output
+EXIT=0
+[["platformio", [["extra_configs", ["../../shared/pio/does-not-exist.ini"]]]], ["env:probes3", []]]
+```
+
+The extra-configs key names a file that does not exist, and the project declares an
+environment header of its own. The reader exits **0** and prints the `env:probes3` heading
+with an **empty body** (`[]`). That exit status is the reading that makes the point: a guard
+checking only the exit status is checking nothing, which is why the fragment's header says
+any check must read the resolved content.
+
+### Reading 5 — a project with no environment header of its own fails loudly
+
+The consumer file's own comment claims the environment header is required. Measured, not
+asserted:
+
+```
+$ pio run -d "${TMPDIR}/phase02-merge-5/homeworks/probe"
+EXIT=1
+ProjectEnvsNotAvailableError: Please setup environments in `platformio.ini` file
+```
+
+A project carrying the extra-configs key but no `[env:<id>_s3]` header of its own dies with a
+named error before any build starts. Unlike the missing-fragment trap, this one is loud —
+which is why the fragment's header can safely say the environment stays the project's.
