@@ -5,10 +5,10 @@ current_phase: 02
 current_phase_name: Board and Environment Baseline (N16R8 Acceptance Gate)
 status: executing
 stopped_at: Phase 2 context gathered
-last_updated: "2026-10-16T19:59:07.137Z"
+last_updated: "2026-10-16T21:20:50.414Z"
 last_activity: 2026-10-16
 last_activity_desc: Phase 02 execution started
-state_head: 6fd4004ac4163a5730e690c64e93dcadfc286098
+state_head: 9ecf922ba5ddcd5d595db0d4f4c42fdaf818cb59
 progress:
   total_phases: 8
   completed_phases: 1
@@ -126,6 +126,7 @@ Open decisions the phases must force (research D-list, unresolved at roadmap tim
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 261016-kz6 | close CR-02 fail-open tracked-source guard in ignore-rules test | 2026-10-16 | 88b9e22 | [261016-kz6-close-cr-02-fail-open-tracked-source-gua](./quick/261016-kz6-close-cr-02-fail-open-tracked-source-gua/) |
+| 2 | Rewrite all eight ROADMAP phase goals as canonical MVP user stories | 2026-10-17 | 9ecf922 | — |
 
 ## Deferred Items
 
