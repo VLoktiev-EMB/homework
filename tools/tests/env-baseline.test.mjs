@@ -117,6 +117,39 @@ const REQUIRED_FRAGMENT_KEYS = [
     reason:
       "without the PSRAM define the PSRAM HAL is compiled out, so psramFound() cannot report on hardware that has it",
   },
+  {
+    key: "monitor_speed",
+    value: "115200",
+    reason: "the UART bridge honours the baud rate — the 9600 default prints garbage",
+  },
+  {
+    key: "upload_port",
+    value: "/dev/cu.usbmodem*",
+    reason:
+      "the measured bridge prefix; the previously committed /dev/cu.usbserial-* matched no node, and nothing else in the suite would catch a revert",
+  },
+  { key: "monitor_port", value: "/dev/cu.usbmodem*", reason: "the same measured bridge prefix" },
+  { key: "test_port", value: "/dev/cu.usbmodem*", reason: "the same measured bridge prefix" },
+];
+
+// The keys each project names for itself, with the reason each is required. They are
+// deliberately NOT in the fragment's [env] block: extra_configs merges that block into every
+// environment of every consuming project, and the ini format can only overwrite an inherited
+// key, never unset it. A `platform = native` environment must name neither, so putting them in
+// the fragment would make that environment impossible. Each project's own [env:<id>_s3] names
+// them instead, which is why the value the phase measured is gated here rather than left to
+// the diff.
+const REQUIRED_PROJECT_KEYS = [
+  {
+    key: "board",
+    value: "esp32-s3-devkitc-1",
+    reason: "the N16R8 devkit board id the fragment's four overrides are written against",
+  },
+  {
+    key: "framework",
+    value: "arduino",
+    reason: "the Arduino core is what the four overrides and the PSRAM flag were measured against",
+  },
 ];
 
 // The version record's required names, each with the reason it is required.
@@ -206,6 +239,41 @@ test("the fragment carries the N16R8 module overrides and the PSRAM build flag",
       );
     } else {
       assert.equal(actual, value, `the fragment's ${key} is "${actual}", not "${value}" — ${reason}`);
+    }
+  }
+});
+
+test("the baseline project names its own board and framework, and the fragment does not", () => {
+  const project = sections(readFileSync(BASELINE_INI, "utf8"));
+  const defaults = sections(readFileSync(FRAGMENT_PATH, "utf8")).get("env") ?? new Map();
+
+  // The fragment must not carry these: extra_configs merges its [env] block into every
+  // environment of every consuming project and an inherited key cannot be unset, so a
+  // `platform = native` environment could not exist if board or framework lived there.
+  for (const { key } of REQUIRED_PROJECT_KEYS) {
+    assert.equal(
+      defaults.get(key),
+      undefined,
+      `the fragment's [env] block sets ${key} — it is inherited by every environment of every consuming project and cannot be unset, so each project must name it instead and a platform = native environment must stay possible`,
+    );
+  }
+
+  const environments = [...project.keys()].filter(
+    (name) => name.startsWith("env:") && name.endsWith("_s3"),
+  );
+  assert.ok(
+    environments.length > 0,
+    `${BASELINE_INI} declares no [env:<id>_s3] section — the Arduino environment the board and framework belong to`,
+  );
+
+  for (const name of environments) {
+    const env = project.get(name);
+    for (const { key, value, reason } of REQUIRED_PROJECT_KEYS) {
+      assert.equal(
+        env.get(key),
+        value,
+        `${name}'s ${key} is "${env.get(key)}", not "${value}" — ${reason}`,
+      );
     }
   }
 });
