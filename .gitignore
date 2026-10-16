@@ -1,0 +1,125 @@
+# ===========================================================================
+# homework — repository ignore rules
+#
+# One deliberate file. Everything listed is machine-generated or machine-local
+# and nothing here removes anything a reader needs. The escape hatch for a
+# legitimate exception is a '!' negation on its OWN line, never `git add -f`.
+#
+# There are NO inline comments in gitignore: '#' starts a comment only at the
+# beginning of a line. A trailing comment becomes part of the pattern and
+# silently disables it.
+# ===========================================================================
+
+# --- PlatformIO ------------------------------------------------------------
+# Unanchored on purpose: these match at ANY depth, so every homework is covered
+# without a '**/' prefix (verified with `git check-ignore -v`).
+.pio/
+.pioenvs/
+.piolibdeps/
+.pio-cache/
+compile_commands.json
+
+# --- ESP-IDF (the later migration) -----------------------------------------
+# PlatformIO generates sdkconfig.<env>; sdkconfig.defaults is HAND-AUTHORED
+# input and must be committed — hence the negation, which must come after.
+sdkconfig
+sdkconfig.old
+sdkconfig.*
+!sdkconfig.defaults
+managed_components/
+
+# --- C/C++ build output ----------------------------------------------------
+*.o
+*.obj
+*.lo
+*.slo
+*.d
+*.elf
+*.bin
+*.hex
+*.map
+*.a
+*.la
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.out
+*.gch
+*.pch
+*.pdb
+*.dwo
+*.dSYM/
+
+# --- CMake and other build systems ----------------------------------------
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+install_manifest.txt
+vcpkg_installed/
+
+# --- Caches ----------------------------------------------------------------
+.cache/
+Testing/
+
+# --- VS Code: generated files only, named individually ---------------------
+# Deliberately NOT `.vscode/*` plus negations: a future generated file should
+# be ignored by default rather than committed by accident.
+.vscode/c_cpp_properties.json
+.vscode/launch.json
+.vscode/.browse.c_cpp.db*
+.vscode/ipch/
+.vscode/*.local.json
+*.code-workspace.bak
+
+# --- Editors and OS --------------------------------------------------------
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+
+# --- Agent state (machine-local only) — GSD state.json is timestamped; never `.claude/` whole (Phase 7 tracks skills) ---
+# The GSD lock files beside it are the same kind of artifact: written by GSD state transitions,
+# not by a build, so they appear in any checkout where GSD has run — including a fresh clone the
+# moment any GSD command executes. This glob reaches lock files only, never `.claude/` whole and
+# never the tracked planning data beside them.
+.planning/state.json
+.planning/*.lock
+.claude/settings.local.json
+.claude/*.local.json
+.claude/worktrees/
+.claude/agent-memory-local/
+CLAUDE.local.md
+
+# --- Secrets ---------------------------------------------------------------
+# These land now because the repository is public and this file is authored
+# once. The scanning hook (gitleaks / detect-secrets) is Phase 6.
+secrets.h
+include/secrets.h
+*.pem
+*.key
+.env
+.env.*
+
+# --- Temporary -------------------------------------------------------------
+*.tmp
+*.log
+*.bak
+*.orig
+*.rej
+
+# --- GSD research cache ----------------------------------------------------
+# The research seam writes machine-local digest files here (observed: 12 KB,
+# 5 JSON files, created while researching this phase). It sits INSIDE the
+# tracked .planning/research/ tree, so without this line `git status` is dirty
+# on a fresh research run — the exact state criterion 3 forbids.
+.planning/research/.cache/

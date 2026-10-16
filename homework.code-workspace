@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "name": "root",
+      "path": "."
+    },
+    {
+      "name": "shared",
+      "path": "shared"
+    },
+    {
+      "name": "project-baseline",
+      "path": "homeworks/project-baseline"
+    }
+  ]
+}
