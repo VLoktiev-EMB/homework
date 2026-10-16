@@ -47,7 +47,8 @@ function ignoreSource(path) {
 /**
  * Does a clone of this repository actually inherit the file git reported as the source?
  *
- * The root `.gitignore` always qualifies. A NESTED one qualifies only while git tracks it.
+ * Both the root `.gitignore` and a NESTED one qualify only while git tracks them. The root
+ * file is not exempt, because a clone inherits the index and not the working tree.
  * PlatformIO IDE generates `homeworks/<id>/.gitignore` beside every `platformio.ini`, and
  * that file legitimately owns `.pio/` and the generated editor files inside its project —
  * which is why the repository tracks it (and why the root rules, anchored by the interior
@@ -56,7 +57,6 @@ function ignoreSource(path) {
  * whole distinction, so it is asked of git rather than inferred from the path.
  */
 function isRepoOwnedIgnoreSource(source) {
-  if (source === IGNORE_FILE) return true;
   if (source.startsWith("/") || source.split("/").includes("..")) return false;
   if (source.slice(source.lastIndexOf("/") + 1) !== IGNORE_FILE) return false;
   return git(["ls-files", "--error-unmatch", "--", source]).status === 0;
