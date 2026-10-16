@@ -329,13 +329,13 @@ Exit status **0**. Output: *(empty)*.
 
 **Second reading, taken after this log was committed.**
 
-Taken after this log was committed, because that is the only moment at which it is true of the committed tree. Recorded by the commit that follows this one.
+Taken after this log was committed — commit `9e06da3` — because that is the only moment at which the reading is true of the committed tree rather than of the working tree that still holds the log.
 
 ```bash
 git status --porcelain
 ```
 
-*Output recorded in the follow-up commit; see the commit immediately following this file's own.*
+Exit status **0**. Output: *(empty)*.
 
 ---
 
