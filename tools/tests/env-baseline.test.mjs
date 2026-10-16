@@ -251,6 +251,12 @@ test("every environment the baseline declares pins the platform to an exact vers
     const platform = project.get(name).get("platform") ?? defaults.get("platform");
     assert.ok(platform, `${name} has no platform value, directly or inherited — the pin is the environment's`);
 
+    // `native` is the platform's whole specification; it has no version to pin, and pinning it
+    // as `native@<ver>` is legal but not the canonical form every native project uses. Everything
+    // else is pinned. The project README announces a `projectbaseline_native` environment, so the
+    // rule must let the spelling that environment will carry through instead of turning it red.
+    if (platform === "native") continue;
+
     assert.match(
       platform,
       /@\d/,
