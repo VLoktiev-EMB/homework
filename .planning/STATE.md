@@ -107,7 +107,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+- [2026-10-16] [general] Parameterize board assumptions beyond the N16R8 module — [todo file](.planning/todos/pending/2026-10-17-parameterize-board-assumptions-beyond-the-n16r8-module.md)
 
 ### Blockers/Concerns
 
