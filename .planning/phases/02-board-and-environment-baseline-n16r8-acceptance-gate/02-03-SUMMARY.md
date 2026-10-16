@@ -261,9 +261,9 @@ extra_configs  =  ../../shared/pio/base.ini
 
 env:projectbaseline_s3
 ----------------------
-platform                         =  espressif32@7.1.3
 board                            =  esp32-s3-devkitc-1
 framework                        =  arduino
+platform                         =  espressif32@7.1.3
 board_upload.flash_size          =  16MB
 board_build.partitions           =  default_16MB.csv
 board_build.arduino.memory_type  =  qio_opi
@@ -274,7 +274,13 @@ monitor_port                     =  /dev/cu.usbmodem*
 test_port                        =  /dev/cu.usbmodem*
 ```
 
-The environment carries exactly one `platform` value — the literal released version `espressif32@7.1.3`, with no range operator and no branch reference — and all three console port keys are non-empty. **Every one of these keys is inherited from the fragment, not declared by the project**: the project file carries only `extra_configs` and a bare `[env:projectbaseline_s3]` header. That inheritance is what makes criterion 4 true by construction for every homework created after this one. The `02-01-SUMMARY.md` merge-semantics readings are the evidence that the inheritance direction is the one claimed — reading one (a project-level key wins), reading two (a re-declared global `[env]` in the project loses silently), and reading three (an env-level `build_flags` replaces the inherited list rather than appending).
+**Re-taken after the code-review fix, and it differs from the reading first recorded here.** The first reading of this section was taken before the review, when the fragment's global `[env]` block also carried `board` and `framework`; both appeared in the same position as every other key and the section concluded that all eleven were inherited. That conclusion is no longer true and the reading above is the one that stands.
+
+The environment carries exactly one `platform` value — the literal released version `espressif32@7.1.3`, with no range operator and no branch reference — and all three console port keys are non-empty. **Nine of these eleven keys are inherited from the fragment; `board` and `framework` are declared by the project itself.** The project file therefore carries `extra_configs`, an `[env:projectbaseline_s3]` header naming those two keys, and nothing else.
+
+The split is deliberate and was made in this phase after code review — finding CR-01, commit `0ca6098`. PlatformIO's ini format can **overwrite** an inherited key but never **unset** one: an empty assignment is a present-but-empty value, not a removal. With `board` and `framework` in the fragment's global block, a `platform = native` environment could not be configured at all — `board` fails as an unknown board id under a native run, and `framework = arduino` demands a board of its own — and that is exactly the environment `homeworks/project-baseline/README.md` announces for a later phase. `platform` stays in the fragment because every environment, native included, can overwrite that single key.
+
+**Criterion 4 is still met**, and in the terms the criterion actually names: one exact `platform` version, and three non-empty console port keys, each of which — like the pin — is still inherited rather than declared. What is no longer true by inheritance is the `board`/`framework` pair, which is a change to *which* keys the fragment owns, not to whether the environment resolves. The re-taken reading above, and a build still reporting `6553600`, are the evidence that the correction did not disturb the environment it was meant to leave working. The `02-01-SUMMARY.md` merge-semantics readings remain the evidence that the inheritance direction is the one claimed — reading one (a project-level key wins), reading two (a re-declared global `[env]` in the project loses silently), and reading three (an env-level `build_flags` replaces the inherited list rather than appending).
 
 Note the bare `env` section printed above. It is present in this text form **and** in the `--json-output` form, contrary to `02-RESEARCH.md` Pitfall 7; any automated check must therefore filter on the `env:` prefix rather than assume the entry is absent. `02-02`'s gate already does.
 
@@ -293,7 +299,7 @@ The two halves of criterion 5 therefore rest on different kinds of evidence, and
 | 1 | A clean build links the `qio_opi` memory-type IDF libraries and produces an application partition sized for 16 MB, not the 8 MB default | **met** | `02-01-SUMMARY.md` — 6553600-byte partition and 5629 `sdk/esp32s3/qio_opi` map references, against the stock board's 3342336 bytes and `qio_qspi` |
 | 2 | One dated on-hardware acceptance run goes build → flash → monitor, and both the esptool eFuse banner and `psramFound()` report 16 MB flash and 8 MB octal PSRAM | **met** | Readings 4, 5 and 6 above: the flash die reports `Detected flash size: 16MB`; the banner reports `Embedded PSRAM 8MB (AP_3v3)`; the firmware reports `psram=1 psramSize=8386279` |
 | 3 | The resolved platform, framework and toolchain versions from `pio pkg list` are written into the repository | **met** | `shared/pio/VERSIONS.md`, produced by `02-02` |
-| 4 | `pio project config` shows every environment carrying one exact `platform` version and its own explicit console port | **met** | The criterion-4 reading above; all three port keys non-empty and inherited from the fragment |
+| 4 | `pio project config` shows every environment carrying one exact `platform` version and its own explicit console port | **met** | The criterion-4 reading above — re-taken after the CR-01 fix; one exact `platform` value, all three port keys non-empty and still inherited from the fragment |
 | 5 | The console-port choice and the RGB-LED GPIO are settled by a measurement on this board and recorded in the phase log | **met for the console half; owner-confirmed for the pin** | Console: settled by measurement — Reading 3. Pin: settled by owner confirmation, not a measurement — see the classification above |
 
 No criterion is credited on the strength of a build alone, of a configured value, or of an inference. Criterion 2 was verified against two independent physical readings rather than one, exactly as `02-01-SUMMARY.md`'s sibling plan predicted a single reading could not suffice: for this module the eFuse flash field is empty because the flash die is external, so the banner cannot carry the flash size the criterion names.
@@ -309,7 +315,7 @@ No criterion is credited on the strength of a build alone, of a configured value
 
 ## Known deviations and residual risk
 
-- **`AGENTS.md` still names the CP2102N** and still describes `/dev/cu.usbserial-*` as matching the bridge. This measurement falsifies both sentences. `AGENTS.md` is not in this plan's `files_modified`, so the correction was not made here — it needs its own traceable change.
+- **The bridge's identity is recorded nowhere outside `.planning/`.** An earlier draft of this section claimed that `AGENTS.md` "still names the CP2102N" and describes `/dev/cu.usbserial-*` as matching the bridge. **It does not** — `grep -c` returns `0` for both — and the claim was written without being checked. The code review's IN-03 caught it. What is actually true: the measured chip identity, a **CH343** at `USB VID:PID=1A86:55D3`, appears in no tracked file outside the planning directory; the CP2102N statements this run falsified live in `02-RESEARCH.md` Pitfall 8 and in `D-03`/`D-04`'s rationale in `02-CONTEXT.md`, both of which are planning artifacts rather than reader-facing documents. Whether the measured identity belongs in a reader-facing file is a decision for a later change; no criterion in this phase depends on it.
 - **The corrected pattern cannot separate this board's two USB sockets.** Both enumerate under the `usbmodem` prefix. A flash is safe either way because both reach the same chip; a monitor opened on the native socket instead of the bridge prints nothing, because the vehicle writes to UART0. The both-sockets-cabled case was **not** measured — only one socket was cabled at a time.
 - **The COM socket needs the right USB-C orientation.** With a C-to-C cable and the plug the other way round, the board receives no power at all; the socket's CC pull-down is present on one line only. Recorded because it looks exactly like a dead board.
 - **`pio device monitor` cannot be scripted**, so Reading 6 was taken by a direct serial read. The substitution is the tool's own recommendation, quoted above.
