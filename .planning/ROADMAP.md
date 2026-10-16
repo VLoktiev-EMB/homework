@@ -78,7 +78,7 @@ Plans:
   4. `pio project config` shows every environment carrying one exact `platform` version and its own explicit console port — no range, no `#develop`, no unset port.
   5. The console-port choice and the RGB-LED GPIO are settled by a measurement on this board and recorded in the phase log, replacing the documentation-derived assumption.
 
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans executed
 
 Plans:
 **Wave 1**
@@ -88,7 +88,7 @@ Plans:
 - [x] 02-02-PLAN.md — The resolved version record and the pure-filesystem regression gate
 
 **Wave 3** *(blocked on Waves 1–2)*
-- [ ] 02-03-PLAN.md — The dated on-hardware acceptance run, the console measurement, and the phase log
+- [x] 02-03-PLAN.md — The dated on-hardware acceptance run, the console measurement, and the phase log
 
 > **Planning note — the phase is split at the hardware boundary, and criteria 2 and 5 are not claimed by the offline half.** Plans 02-01 and 02-02 discharge criterion 1, criterion 3, criterion 4 and the static halves of HW-01 and HW-04 entirely offline. Plan 02-03 carries the one dated acceptance run. No board is attached as these plans are written, so 02-03 is written with explicitly unfilled output slots: if the device inventory does not change when the board is attached, criterion 2 and the measurement half of criterion 5 stay **unmet** and the phase log says so in plain words. They are never inferred from a build, from a configured value, or from documentation.
 
@@ -189,7 +189,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Repository Skeleton and Project Layout | 7/7 | Complete    | 2026-10-16 |
-| 2. Board and Environment Baseline (N16R8 Acceptance Gate) | 2/3 | In Progress | - |
+| 2. Board and Environment Baseline (N16R8 Acceptance Gate) | 3/3 | In Progress | - |
 | 3. Shared Libraries and the Hardware Seam | 0/TBD | Not started | - |
 | 4. Wiring Pipeline and Pin Safety | 0/TBD | Not started | - |
 | 5. Verification Layers and Pinned Static Checks | 0/TBD | Not started | - |
