@@ -19,7 +19,7 @@ Phase naming is frozen as `shared/lib/` (one real PlatformIO library per module)
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Repository Skeleton and Project Layout** - The decided tree, one VS Code workspace, the depth rule, and ignore rules frozen before anything is built on them (completed 2026-10-16)
-- [ ] **Phase 2: Board and Environment Baseline (N16R8 Acceptance Gate)** - The N16R8 module proven end-to-end from a pinned, explicitly-ported environment
+- [x] **Phase 2: Board and Environment Baseline (N16R8 Acceptance Gate)** - The N16R8 module proven end-to-end from a pinned, explicitly-ported environment (completed 2026-10-17)
 - [ ] **Phase 3: Shared Libraries and the Hardware Seam** - Reusable modules as real libraries, consumed by live symlink, with no framework include above a narrow HAL
 - [ ] **Phase 4: Wiring Pipeline and Pin Safety** - One canonical `diagram.json` drives the image, the pin table and the lint gate; illegal nets are rejected
 - [ ] **Phase 5: Verification Layers and Pinned Static Checks** - Pure logic proven on the host; format, lint and analyze pinned once and validated
@@ -78,7 +78,7 @@ Plans:
   4. `pio project config` shows every environment carrying one exact `platform` version and its own explicit console port — no range, no `#develop`, no unset port.
   5. The console-port choice and the RGB-LED GPIO are settled by a measurement on this board and recorded in the phase log, replacing the documentation-derived assumption.
 
-**Plans:** 3/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 **Wave 1**
@@ -189,7 +189,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Repository Skeleton and Project Layout | 7/7 | Complete    | 2026-10-16 |
-| 2. Board and Environment Baseline (N16R8 Acceptance Gate) | 3/3 | In Progress | - |
+| 2. Board and Environment Baseline (N16R8 Acceptance Gate) | 3/3 | Complete    | 2026-10-17 |
 | 3. Shared Libraries and the Hardware Seam | 0/TBD | Not started | - |
 | 4. Wiring Pipeline and Pin Safety | 0/TBD | Not started | - |
 | 5. Verification Layers and Pinned Static Checks | 0/TBD | Not started | - |
