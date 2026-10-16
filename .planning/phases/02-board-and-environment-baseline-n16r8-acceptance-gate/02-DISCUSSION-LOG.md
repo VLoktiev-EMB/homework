@@ -86,13 +86,19 @@ External research findings presented: the CDC setting is compiled into the binar
 
 ### Question 2 — the RGB-LED half of criterion 5
 
+Asked three times: the first attempt timed out (600 s idle), the second was cut off when the session ended before the answer was recorded, the third was answered. The user did not select any of the three options; they answered the underlying question with the fact itself.
+
 | Option | Description | Selected |
 |--------|-------------|----------|
-| Probe outside the repo + human observation | The LED probe is a temporary sketch (scratch project, or a `main.cpp` edit reverted after the measurement); the owner makes the observation and it is recorded in the phase log with its procedure and an unfilled slot until confirmed. The baseline stays GPIO-free per `D-14` and no unverified pin is committed. | ✓ (default) |
+| Probe outside the repo + human observation | Temporary sketch (scratch project, or a `main.cpp` edit reverted after the measurement); the owner observes and it is recorded in the phase log with its procedure. The baseline stays GPIO-free per `D-14` and no unverified pin is committed. | |
 | Probe committed as its own sketch | A reproducible artifact in the repository that a future reader can see. Cost: a new file and env kept permanently for a one-time measurement. | |
 | Do not touch GPIO; read the revision from markings | Cheapest, and follows the Phase 1 precedent of a documented criterion narrowing. But it does not prove what the criterion actually wrote. | |
 
-**User's choice:** *No answer — the session was idle for 600 s and the question timed out.* Option 1 was applied as a default. **This is not a recorded user decision and must be re-confirmed before planning.** It is flagged inline in CONTEXT.md (`D-12`).
+**User's choice (free text):** "ргб пін 48 на цій конкретній платі" — the RGB pin is GPIO48 on this specific board.
+
+**Notes:** The answer supplies the *fact* the criterion was asking about, which makes the question of method moot: there is nothing left to probe, so no probe, no new file, and no temporary edit. Recorded in CONTEXT.md as `D-12`.
+
+One distinction was deliberately preserved rather than smoothed over. ROADMAP criterion 5 says the pin is "settled by a measurement on this board"; it is settled here by owner confirmation, which is not the same kind of evidence. `D-12` requires the phase log to say so in those words, so the criterion is not credited with an observation nobody made. A re-check trigger was attached instead of a probe: the first homework that drives GPIO48 and shows no light means a different board revision, and the pin is then re-established by observation and recorded in `shared/hardware/` (Phase 4). This mirrors the shape the user chose for `D-01`.
 
 ---
 
