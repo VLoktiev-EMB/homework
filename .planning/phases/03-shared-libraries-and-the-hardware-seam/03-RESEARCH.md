@@ -519,27 +519,34 @@ This is the machine-readable project→shared-library mapping, and it echoes the
 | A3 | The three libraries should each carry a distinct `version` value rather than all `0.1.0` | Pitfall 2 | Cosmetic only for `symlink://` deps (no range resolution happens); a wrong choice costs nothing beyond a future edit |
 | A4 | The seam check belongs at `tools/check-hal-seam.mjs` with its test at `tools/tests/check-hal-seam.test.mjs` | Pattern 6 | Phase 6 must move a file and update one path; low cost. CONTEXT's Integration Points already assume `tools/` |
 
-## Open Questions
+## Open Questions (RESOLVED)
+
+All four questions below were settled during phase planning on 2026-10-17. Each carries a
+one-line resolution marker recording where it landed; the findings above are unchanged.
 
 1. **Which failure discharges criterion 5 — the unmodified deeper copy, or the arm-B fixture?**
    - **What we know:** Arm A (unmodified) fails with `UndefinedEnvPlatformError: Please specify platform for 'projectbaseline_s3' environment`, exit 1, zero objects. Arm B (fragment path corrected to depth 3, `lib_deps` left at depth 2) fails with ``PackageException: Can not create a symbolic link for `../../shared/lib/emb_hal`, not a directory``, exit 1, zero objects. Arm C (both paths corrected to depth 3) **builds successfully**.
    - **What's unclear:** Whether the criterion's explanatory sentence ("the failure arrives at library installation, before any translation unit is compiled") is discharged by arm B alone, by arm A alone, or by both together.
    - **Recommendation:** Carry **both** arms as the measurement, with arm C as the control that proves the failure is path arithmetic rather than an inherent prohibition. Record the divergence in `ROADMAP.md` beside the criterion, in the established override style. This is the phase's highest-value correctness decision and it is the owner's to make.
+   - **RESOLVED (2026-10-17):** carried as written — `03-03-PLAN.md` Task 2 takes all three arms and Task 3 writes the divergence beside criterion 5 and corrects the Phase 1 override note's retiring trigger.
 
 2. **Is `version` enforced anywhere, or is the "Required fields" claim only a docs-level contract?**
    - **What we know:** Docs say the folder "must contain a manifest file with name and version properties" [CITED]. Measured, `version` is not enforced for a `symlink://` dep — it degrades silently to `0.0.0+<timestamp>` (`base.py:215-216`).
    - **What's unclear:** Whether `pio pkg pack` or registry publish would reject an absent version (never exercised here).
    - **Recommendation:** Keep the policy (name **and** version) and state in `shared/lib/README.md` that its enforcement is review, not the tool — so a later reader does not assume a gate that is not there. Optionally, the seam check or a sibling check can assert every `library.json` has both keys; that is a cheap addition and is falsifiable.
+   - **RESOLVED (2026-10-17):** policy kept and enforcement boundary stated — `03-01-PLAN.md` Task 2 writes "enforced by review, not by the tool" into `shared/lib/README.md`; the optional manifest assertion is taken by `03-02-PLAN.md` Task 3, which asserts both keys on the real tree and on a fixture that omits the version.
 
 3. **Should the transitive dependency be declared per consumer, or in the library's own `library.json` `dependencies`?**
    - **What we know:** Both were A/B measured. Only-`lib_deps` without the transitive line → `fatal error: probe_hal.h: No such file or directory`. With `"dependencies": {"probe_hal": "symlink://../../shared/lib/probe_hal"}` in `probe_log`'s manifest and only the `probe_log` line in the consumer → `probe_hal` auto-installed and the include resolved. The dependency path is resolved against the consumer's project directory (a `file://../probe_hal` spec raised `FileNotFoundError: [Errno 2] No such file or directory: '../probe_hal'` against the raw relative string).
    - **What's unclear:** Whether a `dependencies` entry survives a consumer whose depth differs, and whether it interacts with a registry-spec sibling.
    - **Recommendation:** **D-08 stands** — per-consumer `lib_deps`, because it keeps the shared library consumer-independent and keeps the dependency visible to `grep` and to Phase 6's change-mapping. Record the alternative and its cost in `shared/lib/README.md` or the plan summary so the decision is traceable, rather than leaving a future reader to rediscover it as a "trick".
+   - **RESOLVED (2026-10-17):** `D-08` stands — the per-consumer line is what the phase commits; the measured alternative and its cost (the path resolving against the consumer's project directory) are recorded in `shared/lib/README.md` by `03-01-PLAN.md` Task 2.
 
 4. **Does `emb_hal` need a `src/` directory at all?**
    - **What we know:** An interface-only library with `include/` and no `src/` was measured to install and resolve correctly.
    - **What's unclear:** Nothing functional. It is a layout question: whether an absent `src/` reads as "interface" or as "incomplete".
    - **Recommendation:** Omit `src/` for `emb_hal_arduino`-style reasons — the directory's presence or absence should be meaningful. `emb_hal` has no implementation, so it needs no `src/`; `emb_hal_arduino` has no public API, so it needs no `include/`.
+   - **RESOLVED (2026-10-17):** adopted as the committed layout and stated as such in `03-01-PLAN.md` — `emb_hal` carries `include/` with no `src/`, `emb_log` carries both, `emb_hal_arduino` carries `src/` with no `include/`; the task's manifest-and-layout verification asserts exactly that split, and `shared/lib/README.md` states why the absence is meaningful.
 
 ## Environment Availability
 
