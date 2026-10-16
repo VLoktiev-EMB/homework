@@ -78,14 +78,14 @@ Plans:
   4. `pio project config` shows every environment carrying one exact `platform` version and its own explicit console port — no range, no `#develop`, no unset port.
   5. The console-port choice and the RGB-LED GPIO are settled by a measurement on this board and recorded in the phase log, replacing the documentation-derived assumption.
 
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 **Wave 1**
 - [x] 02-01-PLAN.md — The shared N16R8 environment fragment, its first consumer, and the measured override contrast
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 02-02-PLAN.md — The resolved version record and the pure-filesystem regression gate
+- [x] 02-02-PLAN.md — The resolved version record and the pure-filesystem regression gate
 
 **Wave 3** *(blocked on Waves 1–2)*
 - [ ] 02-03-PLAN.md — The dated on-hardware acceptance run, the console measurement, and the phase log
@@ -189,7 +189,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Repository Skeleton and Project Layout | 7/7 | Complete    | 2026-10-16 |
-| 2. Board and Environment Baseline (N16R8 Acceptance Gate) | 1/3 | In Progress | - |
+| 2. Board and Environment Baseline (N16R8 Acceptance Gate) | 2/3 | In Progress | - |
 | 3. Shared Libraries and the Hardware Seam | 0/TBD | Not started | - |
 | 4. Wiring Pipeline and Pin Safety | 0/TBD | Not started | - |
 | 5. Verification Layers and Pinned Static Checks | 0/TBD | Not started | - |
