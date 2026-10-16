@@ -19,7 +19,7 @@ Phase naming is frozen as `shared/lib/` (one real PlatformIO library per module)
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Repository Skeleton and Project Layout** - The decided tree, one VS Code workspace, the depth rule, and ignore rules frozen before anything is built on them (completed 2026-10-16)
-- [ ] **Phase 2: Board and Environment Baseline (N16R8 Acceptance Gate)** - The N16R8 module proven end-to-end from a pinned, explicitly-ported environment
+- [x] **Phase 2: Board and Environment Baseline (N16R8 Acceptance Gate)** - The N16R8 module proven end-to-end from a pinned, explicitly-ported environment (completed 2026-10-17)
 - [ ] **Phase 3: Shared Libraries and the Hardware Seam** - Reusable modules as real libraries, consumed by live symlink, with no framework include above a narrow HAL
 - [ ] **Phase 4: Wiring Pipeline and Pin Safety** - One canonical `diagram.json` drives the image, the pin table and the lint gate; illegal nets are rejected
 - [ ] **Phase 5: Verification Layers and Pinned Static Checks** - Pure logic proven on the host; format, lint and analyze pinned once and validated
@@ -31,7 +31,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 ### Phase 1: Repository Skeleton and Project Layout
 
-**Goal:** The repository is one VS Code workspace holding the root, the shared-library tree and one folder per homework, with the folder names and the one-level depth rule frozen before any mechanism is built on them.
+**Goal:** As a course student maintaining one public coursework repository, I want to hold the root, the shared-library tree and one folder per homework in a single VS Code workspace whose folder names and one-level depth rule are frozen before any mechanism is built on them, so that every later phase builds on a layout that will not move under it.
 **Mode:** mvp
 **Depends on:** Nothing (first phase)
 **Requirements:** REPO-01, REPO-02, REPO-03, REPO-04
@@ -67,7 +67,7 @@ Plans:
 
 ### Phase 2: Board and Environment Baseline (N16R8 Acceptance Gate)
 
-**Goal:** The N16R8 board is proven end-to-end from a pinned, explicitly-ported environment, so every later phase inherits a configuration that really compiles, flashes and reports the physical flash and PSRAM — not the N8 defaults PlatformIO assumes.
+**Goal:** As a course student maintaining one public coursework repository, I want to prove the N16R8 board end-to-end from a pinned, explicitly-ported environment, so that every later homework inherits a configuration that really compiles, flashes and reports the physical flash and PSRAM rather than the N8 defaults PlatformIO assumes.
 **Mode:** mvp
 **Depends on:** Phase 1
 **Requirements:** HW-01, HW-04
@@ -78,11 +78,23 @@ Plans:
   4. `pio project config` shows every environment carrying one exact `platform` version and its own explicit console port — no range, no `#develop`, no unset port.
   5. The console-port choice and the RGB-LED GPIO are settled by a measurement on this board and recorded in the phase log, replacing the documentation-derived assumption.
 
-**Plans:** TBD
+**Plans:** 3/3 plans complete
+
+Plans:
+**Wave 1**
+- [x] 02-01-PLAN.md — The shared N16R8 environment fragment, its first consumer, and the measured override contrast
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 02-02-PLAN.md — The resolved version record and the pure-filesystem regression gate
+
+**Wave 3** *(blocked on Waves 1–2)*
+- [x] 02-03-PLAN.md — The dated on-hardware acceptance run, the console measurement, and the phase log
+
+> **Planning note — the phase is split at the hardware boundary, and criteria 2 and 5 are not claimed by the offline half.** Plans 02-01 and 02-02 discharge criterion 1, criterion 3, criterion 4 and the static halves of HW-01 and HW-04 entirely offline. Plan 02-03 carries the one dated acceptance run. No board is attached as these plans are written, so 02-03 is written with explicitly unfilled output slots: if the device inventory does not change when the board is attached, criterion 2 and the measurement half of criterion 5 stay **unmet** and the phase log says so in plain words. They are never inferred from a build, from a configured value, or from documentation.
 
 ### Phase 3: Shared Libraries and the Hardware Seam
 
-**Goal:** Reusable modules are real PlatformIO libraries consumed through live symlinked dependencies, with no framework include above a narrow HAL seam — so pure logic is testable on the host and the later ESP-IDF migration is a backend swap rather than a rewrite.
+**Goal:** As a course student maintaining one public coursework repository, I want to consume reusable modules as real PlatformIO libraries through live symlinked dependencies, with no framework include above a narrow HAL seam, so that pure logic is testable on the host and the later ESP-IDF migration is a backend swap rather than a rewrite.
 **Mode:** mvp
 **Depends on:** Phase 2
 **Requirements:** SHARED-01, SHARED-02, SHARED-03, SHARED-04
@@ -97,7 +109,7 @@ Plans:
 
 ### Phase 4: Wiring Pipeline and Pin Safety
 
-**Goal:** One canonical `diagram.json` per homework drives the README image, the pin table and the simulator — so they cannot disagree — and a machine-readable board-fact database rejects electrically illegal wiring before it is committed.
+**Goal:** As a course student maintaining one public coursework repository, I want to drive the README image, the pin table and the simulator from one canonical `diagram.json` per homework, with a machine-readable board-fact database rejecting electrically illegal wiring, so that the three representations cannot disagree and an illegal circuit is caught before it is committed.
 **Mode:** mvp
 **Depends on:** Phase 3
 **Requirements:** WIRE-01, WIRE-02, WIRE-03, WIRE-04, WIRE-05, HW-02, HW-03
@@ -112,7 +124,7 @@ Plans:
 
 ### Phase 5: Verification Layers and Pinned Static Checks
 
-**Goal:** Pure logic is proven on the host with no hardware attached, and every static check is pinned, committed and validated against the analyzer versions the pinned platform actually ships — so a misconfigured analyzer fails loudly instead of silently reporting nothing.
+**Goal:** As a course student maintaining one public coursework repository, I want to prove pure logic on the host with no hardware attached, and to pin, commit and validate every static check against the analyzer versions the pinned platform actually ships, so that a misconfigured analyzer fails loudly instead of silently reporting nothing.
 **Mode:** mvp
 **Depends on:** Phase 4
 **Requirements:** VERIFY-01, VERIFY-04, VERIFY-05
@@ -127,7 +139,7 @@ Plans:
 
 ### Phase 6: Hook and CI Gates
 
-**Goal:** Pre-commit, pre-push and CI invoke the same definition of every check, so a check cannot exist in one gate and be missing from another, and a change to shared code always builds every project that consumes it.
+**Goal:** As a course student maintaining one public coursework repository, I want to invoke the same definition of every check from pre-commit, from pre-push and from CI, so that a check cannot exist in one gate and be missing from another, and a change to shared code always builds every project that consumes it.
 **Mode:** mvp
 **Depends on:** Phase 5
 **Requirements:** VERIFY-02, VERIFY-03
@@ -141,7 +153,7 @@ Plans:
 
 ### Phase 7: Agent Rules and the Scaffolding Skill
 
-**Goal:** One short root `AGENTS.md` plus a mirrored skill tree is the single funnel through which every convention above reaches the repository across both harnesses, so the sixtieth homework looks like the first.
+**Goal:** As a course student maintaining one public coursework repository, I want to funnel every convention above through one short root `AGENTS.md` plus a mirrored skill tree that both harnesses share, so that the sixtieth homework looks like the first.
 **Mode:** mvp
 **Depends on:** Phase 6
 **Requirements:** AGENT-01, AGENT-02, AGENT-03, AGENT-04, AGENT-05
@@ -156,7 +168,7 @@ Plans:
 
 ### Phase 8: The First Real Homework, End to End
 
-**Goal:** One real course homework runs the whole loop — scaffolded through the skill, built, host-tested, wired, documented and gate-green — and reads to the instructor as submitted.
+**Goal:** As a course student maintaining one public coursework repository, I want to run the whole loop on one real course homework that is scaffolded through the skill, then built, host-tested, wired, documented and gate-green, so that it reads to the instructor as submitted.
 **Mode:** mvp
 **Depends on:** Phase 7
 **Requirements:** DELIV-01, DELIV-02, DELIV-03
@@ -177,7 +189,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Repository Skeleton and Project Layout | 7/7 | Complete    | 2026-10-16 |
-| 2. Board and Environment Baseline (N16R8 Acceptance Gate) | 0/TBD | Not started | - |
+| 2. Board and Environment Baseline (N16R8 Acceptance Gate) | 3/3 | Complete    | 2026-10-17 |
 | 3. Shared Libraries and the Hardware Seam | 0/TBD | Not started | - |
 | 4. Wiring Pipeline and Pin Safety | 0/TBD | Not started | - |
 | 5. Verification Layers and Pinned Static Checks | 0/TBD | Not started | - |

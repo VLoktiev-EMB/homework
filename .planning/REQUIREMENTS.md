@@ -16,10 +16,10 @@ The first milestone proves the whole loop on one real homework. Scope below was 
 
 ### Board facts & pin safety
 
-- [ ] **HW-01**: Every homework environment overrides the board for the N16R8 module — flash size 16 MB, the 16 MB partition table, `qio_opi` memory type, and the PSRAM build flag
+- [x] **HW-01**: Every homework environment overrides the board for the N16R8 module — flash size 16 MB, the 16 MB partition table, `qio_opi` memory type, and the PSRAM build flag
 - [ ] **HW-02**: `shared/hardware/` holds machine-readable board facts: the pin database, the constraint list, the module marking (N16R8), the board revision (initial revision, RGB LED on GPIO48) and the console port
 - [ ] **HW-03**: A pin-validation check rejects electrically illegal nets — GPIO22-34 (absent from the headers), GPIO35/36/37 (consumed by octal PSRAM), external drive of strapping GPIO0/3/45/46, 5 V logic on a GPIO without a stated level shifter, and ADC2 (GPIO11-20) used together with WiFi
-- [ ] **HW-04**: Every environment pins the platform to an exact version, never a range, and names its console port explicitly
+- [x] **HW-04**: Every environment pins the platform to an exact version, never a range, and names its console port explicitly
 
 ### Shared libraries & the hardware seam
 
@@ -118,10 +118,10 @@ Which phases cover which requirements. Populated during roadmap creation.
 | REPO-02 | Phase 1 | Complete |
 | REPO-03 | Phase 1 | Complete |
 | REPO-04 | Phase 1 | Complete |
-| HW-01 | Phase 2 | Pending |
+| HW-01 | Phase 2 | Complete |
 | HW-02 | Phase 4 | Pending |
 | HW-03 | Phase 4 | Pending |
-| HW-04 | Phase 2 | Pending |
+| HW-04 | Phase 2 | Complete |
 | SHARED-01 | Phase 3 | Pending |
 | SHARED-02 | Phase 3 | Pending |
 | SHARED-03 | Phase 3 | Pending |

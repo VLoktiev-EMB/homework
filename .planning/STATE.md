@@ -1,44 +1,43 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 2
-current_phase_name: Board and Environment Baseline (N16R8 Acceptance Gate)
-status: planning
-stopped_at: Phase 01 complete, ready to plan Phase 2
-last_updated: "2026-10-16T12:16:18.196Z"
-last_activity: 2026-10-16
-last_activity_desc: Phase 01 complete, transitioned to Phase 2
-state_head: 88b9e225c5c53c882975c81bd9a80bd8697d0cf3
+current_phase: 3
+current_phase_name: Shared Libraries and the Hardware Seam
+status: "Phase 02 shipped — PR #5"
+stopped_at: Phase 02 complete, ready to plan Phase 3
+last_updated: "2026-10-16T21:29:31.017Z"
+last_activity: 2026-10-17
+state_head: ca161030cf69c134ef3d2f1480734832914f8e76
 progress:
   total_phases: 8
-  completed_phases: 1
-  total_plans: 7
-  completed_plans: 7
-  percent: 13
+  completed_phases: 2
+  total_plans: 10
+  completed_plans: 10
+  percent: 25
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-10-16)
+See: .planning/PROJECT.md (updated 2026-10-17)
 
 **Core value:** Every homework stays buildable, demonstrable and self-explanatory long after it was submitted.
-**Current focus:** Phase 2 — Board and Environment Baseline (N16R8 Acceptance Gate)
+**Current focus:** Phase 03 — Shared Libraries and the Hardware Seam
 
 ## Current Position
 
-Phase: 2 — Board and Environment Baseline (N16R8 Acceptance Gate)
+Phase: 3 — Shared Libraries and the Hardware Seam
 Plan: Not started
-Status: Ready to plan
-Last activity: 2026-10-16 - Completed quick task 261016-kz6: close CR-02 fail-open tracked-source guard in ignore-rules test
+Status: Phase 02 shipped — PR #5
+Last activity: 2026-10-17
 
-Progress: [█░░░░░░░░░] 13%
+Progress: [███░░░░░░░] 25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
+- Total plans completed: 10
 - Average duration: — min
 - Total execution time: 0 hours
 
@@ -47,6 +46,7 @@ Progress: [█░░░░░░░░░] 13%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01 | 7 | - | - |
+| 02 | 3 | - | - |
 
 **Recent Trend:**
 - Last 5 plans: —
@@ -99,6 +99,11 @@ Recent decisions affecting current work:
 - [Phase 01]: `.planning/milestone.lock` is recorded as a known fourth machine-local GSD artifact that no Phase 1 plan named and no pattern matches. It belongs to plan 01-02's ignore file, so editing `.gitignore` here would break requirement traceability; it is recorded instead.
 - [Phase 01]: Owner decision after gaps_found: ACCEPT THE OVERRIDE for roadmap criterion 2(b). The literal criterion (a project one level deeper breaks the build) is unobservable in Phase 1 because platformio.ini declares no lib_deps, so nothing fails to resolve; a copy of the baseline at homeworks/project-baseline/deeper/ builds successfully (measured, exit 0). Record in ROADMAP.md that the sweep's named-rule detector (DEPTH RULE VIOLATED, exit 1, raised before any child process) satisfies the criterion's INTENT as a documented, deliberate deviation, with the reason and the Phase 3 trigger that would make the literal form observable.
 - [Phase 01]: Owner decision after gaps_found: FIX gap 2 now via a gap-closure plan, not by leaving it as recorded debt. .planning/milestone.lock is untracked and matches no ignore pattern (git check-ignore exits 1), so git status --porcelain is never empty and both criterion 3 and plan 01-05's own must-have remain unmet. Add a .planning/*.lock rule to the root .gitignore. This edit belongs to plan 01-02, so it must go through a gap_closure plan to keep requirement traceability intact. Independently confirmed as WR-09 by the phase code review.
+- [Phase 02]: The shared environment fragment owns PlatformIO's global `[env]` defaults layer, but `board` and `framework` stay declared in the consuming project. PlatformIO can overwrite an inherited key but never unset one, so a fragment-level `board` makes a `platform = native` environment impossible to configure — which is exactly the environment `homeworks/project-baseline/README.md` announces for a later phase. This was corrected after code review (finding CR-01, commit `0ca6098`); nine of the baseline environment's eleven keys are inherited, `board` and `framework` are not.
+- [Phase 02]: The console port glob was corrected from the documented `/dev/cu.usbserial-*` to the MEASURED `/dev/cu.usbmodem*`, on the strength of a before/after `pio device list --json-output` diff. The old pattern matched nothing in either inventory, and PlatformIO refused to flash (exit 1) rather than silently selecting another device. Committed as `3bb3f87`; still a pattern — no literal node and no serial number is committed anywhere.
+- [Phase 02]: The measured bridge is a CH343 (`VID:PID 1A86:55D3`), which falsifies the CP2102N named by `02-RESEARCH.md` Pitfall 8 and by the D-03/D-04 rationale. The measured identity currently lives in no reader-facing file; recorded as a trap in PROJECT.md so a later phase writing driver or port documentation uses the measured value.
+- [Phase 02]: The phase's regression gate reads the RESOLVED environment content — never the fragment's own text, and never the command's exit status. A fragment that cannot be found is not an error: PlatformIO exits 0 and the environment comes out with an empty body. `tools/tests/env-baseline.test.mjs`, six assertions, pure filesystem, no child processes.
+- [Phase 02]: Criterion 5 is credited in two halves on different evidence, and the difference is stated rather than smoothed over. The console half is settled BY MEASUREMENT (the device-inventory diff); the RGB-LED pin is settled by OWNER CONFIRMATION and is explicitly not described as a measurement anywhere.
 
 ### Pending Todos
 
@@ -108,25 +113,27 @@ None yet.
 
 Open decisions the phases must force (research D-list, unresolved at roadmap time):
 
-- **D1 — course Arduino core (2.x vs 3.x):** not source-compatible; changes every homework's code. Resolve by asking the instructor / inspecting a course example. Phase 2.
-- **D2 — console default (USB CDC on boot vs UART bridge):** the riskier USB path is the scaffold default; UART bridge is the recommended default with native USB as an opt-in env. Phase 2.
-- **D3 — exact resolved platform/core:** the platform manifest declares the Arduino core as a `~` range and research sources contradict each other on what 7.1.3 ships. Only `pio pkg list` output may be recorded. Phase 2.
+- **D1 — course Arduino core (2.x vs 3.x):** not source-compatible; changes every homework's code. **[Phase 2] NOT resolved — deferred with an explicit trigger:** the first course-provided code sample that fails to compile. Everything Phase 2 measured sits on Arduino 2.0.17, so the question stays open until the course supplies code to test against.
+- **D2 — console default (USB CDC on boot vs UART bridge):** **[Phase 2] the bridge half is settled by measurement.** The UART bridge (COM) socket is the console, the port glob is the measured `/dev/cu.usbmodem*`, and all three port keys are pinned in the shared fragment so a new project cannot forget them. The native-USB environment and its debug tool stay deferred together (D-05), as decided; neither was created here.
 - **D4 — C++ standard contract:** `.clang-format`'s `Standard: c++17` is metadata, not a compile decision. State the standard next to the platform pin. Phase 3.
 - **D6 — WIP tolerance of repo-wide gates:** feature-branch pushes are red by construction; the escape hatch must be `SKIP=<hook-id>`, never `--no-verify`. Phase 6.
 - **D8 — submission/freeze model:** live `symlink://` means a submitted homework can rebuild differently after a later shared edit. Keep live linking; freeze on evidence. Residual risk.
 - **D9 — `AGENTS.md` size (288 lines measured on the abandoned scaffold vs the ~200-line target):** decide inside Phase 7 before the file grows.
 - **D10 — `.claude/skills` mirror shape:** per-skill-entry symlinks, one live smoke test, keep the broken-link check. Phase 7.
 - **D11 — VS Code extension choice (official frozen vs pioarduino fork):** an IDE choice, independent of the official-platform decision. Inspect the installed extension's schema before trusting workspace keys.
-- **D12 — board revision and ADC2-while-Wi-Fi:** the RGB-LED GPIO is GPIO48 on the initial revision (owner-confirmed); ADC2 + Wi-Fi stays conservative (ADC1 GPIO1–10 for analog) until measured. Phase 2 / Phase 4.
+- **D12 — board revision and ADC2-while-Wi-Fi:** **[Phase 2] the RGB-LED half is owner-confirmed, not measured** — GPIO48 on the initial revision, with a re-check trigger: the first homework that drives that pin as an RGB LED and shows no light means a different revision, and the pin must then be re-established by observation and recorded in the machine-readable board-facts directory. ADC2 + Wi-Fi stays conservative (ADC1 GPIO1–10 for analog) until measured. **Phase 4** owns the board facts.
 - **Host tests are unproven on this machine:** `platform = native` expects a system GCC; `/usr/bin/gcc` here is an Apple clang shim. Phase 5 must smoke-test it before relying on it.
 - **[Phase 1] The fail-open class is still live in two guards** — `tools/generate-workspace.mjs --check` returns 0 without checking when its own path carries a symlinked component (review `CR-01`), and the ignore-contract test exempts the root ignore file by identity rather than by tracked-ness (review `CR-02`, opened 2026-10-16). Neither is a Phase 1 must-have failure, but Phase 6 wires `--check` into hooks and CI, so both must be closed before that gate is trusted. Ledger: `01-REVIEW-DISPOSITION.md`, 25 open.
 - **[Phase 1] Does the root `.vscode/settings.json` reach a nested homework?** The root settings are folder-scoped and every homework sits inside the `root` workspace folder, so `editor.rulers` and `C_Cpp.formatting` may not be in effect for `homeworks/project-baseline/src/main.cpp`. Verifier finding `W-06`; belongs to Phase 5, which owns the editor and formatter contract.
+- **[Phase 2] The `/dev/cu.usbmodem*` glob is not socket-specific.** Both of the board's USB sockets enumerate under that prefix, so the pattern means "a node belonging to this board", never "the bridge". A flash is safe either way because both sockets reach the same chip, but a monitor opened on the native socket prints nothing, because the acceptance vehicle writes to UART0. The both-sockets-cabled case was never measured — only one socket was cabled at a time — and the pattern is verified on one machine against one board. Phase 5 owns the editor and formatter contract and Phase 8 the README index; neither may describe the glob as bridge-specific.
+- **[Phase 2] The board's COM socket needs the right USB-C orientation.** With a C-to-C cable and the plug the other way round the board receives no power at all, because the socket's CC pull-down is present on one line only. Recorded because it presents exactly as a dead board — a reflash, a re-seat or a driver reinstall cannot fix it — and every phase from here on flashes.
 
 ### Quick Tasks Completed
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 261016-kz6 | close CR-02 fail-open tracked-source guard in ignore-rules test | 2026-10-16 | 88b9e22 | [261016-kz6-close-cr-02-fail-open-tracked-source-gua](./quick/261016-kz6-close-cr-02-fail-open-tracked-source-gua/) |
+| 2 | Rewrite all eight ROADMAP phase goals as canonical MVP user stories | 2026-10-17 | 9ecf922 | — |
 
 ## Deferred Items
 
@@ -138,6 +145,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-16T11:50:00.000Z
-Stopped at: Phase 01 complete, ready to plan Phase 2
+Last session: 2026-10-16T21:27:53.000Z
+Stopped at: Phase 02 complete, ready to plan Phase 3
 Resume file: None

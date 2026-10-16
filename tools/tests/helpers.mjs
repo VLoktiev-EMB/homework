@@ -10,6 +10,8 @@ import { tmpdir } from "node:os";
 import { dirname, join, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { envNames } from "../lib/discover.mjs";
+
 // Read-only: the tool tree under test is copied INTO a fixture; no fixture is
 // ever built here, and no test asserts against the repository's own root.
 const TOOLS_DIR = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -102,6 +104,51 @@ export function makeDepthViolation(root, homeId, nested = "deeper") {
     join("homeworks", homeId, nested, "platformio.ini"),
     "[env:fixture]\nplatform = native\n",
   );
+}
+
+/**
+ * Install one shared environment fragment and one project that consumes it, so the
+ * fragment's location can be exercised without touching the repository's own tree.
+ *
+ * The consumer's `extra-configs` key is written from the arithmetic a real project
+ * uses: out of `homeworks/<id>/` two levels, then into the shared tree. The path is
+ * relative to the project directory, which is where PlatformIO resolves it. Nothing
+ * here is built, and PlatformIO is never pointed at the repository root.
+ *
+ * The options are what make the resolved-path assertion falsifiable rather than
+ * merely passable: `wrongPath` plants the fragment one directory away from where the
+ * key points, and `fragment: false` omits it, so a caller can show the assertion
+ * failing on a layout that is visibly wrong instead of only succeeding.
+ *
+ * @param {string} root fixture root
+ * @param {string} id the homework directory name; the environment name is derived
+ *   from it by `envNames`, never spelled by hand
+ * @param {{fragment?: boolean, wrongPath?: boolean}} [options]
+ * @returns {{homeDir: string, iniPath: string, fragmentPath: string, declared: string}}
+ *   absolute paths, plus the `extra-configs` value as written in the file
+ */
+export function makeFragmentConsumer(root, id, options = {}) {
+  const { fragment = true, wrongPath = false } = options;
+  const homeDir = join(root, "homeworks", id);
+  mkdirSync(homeDir, { recursive: true });
+
+  const declared = "../../shared/pio/base.ini";
+  const iniPath = join(homeDir, "platformio.ini");
+  writeFileSync(
+    iniPath,
+    ["[platformio]", `extra_configs = ${declared}`, "", `[env:${envNames(id).s3}]`, ""].join("\n"),
+  );
+
+  const fragmentPath = join(
+    root,
+    ...(wrongPath ? ["shared", "config", "base.ini"] : ["shared", "pio", "base.ini"]),
+  );
+  if (fragment) {
+    mkdirSync(dirname(fragmentPath), { recursive: true });
+    writeFileSync(fragmentPath, "[env]\nplatform = espressif32@7.1.3\n");
+  }
+
+  return { homeDir, iniPath, fragmentPath, declared };
 }
 
 /**
