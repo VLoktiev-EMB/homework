@@ -31,7 +31,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 ### Phase 1: Repository Skeleton and Project Layout
 
-**Goal:** The repository is one VS Code workspace holding the root, the shared-library tree and one folder per homework, with the folder names and the one-level depth rule frozen before any mechanism is built on them.
+**Goal:** As a course student maintaining one public coursework repository, I want to hold the root, the shared-library tree and one folder per homework in a single VS Code workspace whose folder names and one-level depth rule are frozen before any mechanism is built on them, so that every later phase builds on a layout that will not move under it.
 **Mode:** mvp
 **Depends on:** Nothing (first phase)
 **Requirements:** REPO-01, REPO-02, REPO-03, REPO-04
@@ -67,7 +67,7 @@ Plans:
 
 ### Phase 2: Board and Environment Baseline (N16R8 Acceptance Gate)
 
-**Goal:** The N16R8 board is proven end-to-end from a pinned, explicitly-ported environment, so every later phase inherits a configuration that really compiles, flashes and reports the physical flash and PSRAM — not the N8 defaults PlatformIO assumes.
+**Goal:** As a course student maintaining one public coursework repository, I want to prove the N16R8 board end-to-end from a pinned, explicitly-ported environment, so that every later homework inherits a configuration that really compiles, flashes and reports the physical flash and PSRAM rather than the N8 defaults PlatformIO assumes.
 **Mode:** mvp
 **Depends on:** Phase 1
 **Requirements:** HW-01, HW-04
@@ -94,7 +94,7 @@ Plans:
 
 ### Phase 3: Shared Libraries and the Hardware Seam
 
-**Goal:** Reusable modules are real PlatformIO libraries consumed through live symlinked dependencies, with no framework include above a narrow HAL seam — so pure logic is testable on the host and the later ESP-IDF migration is a backend swap rather than a rewrite.
+**Goal:** As a course student maintaining one public coursework repository, I want to consume reusable modules as real PlatformIO libraries through live symlinked dependencies, with no framework include above a narrow HAL seam, so that pure logic is testable on the host and the later ESP-IDF migration is a backend swap rather than a rewrite.
 **Mode:** mvp
 **Depends on:** Phase 2
 **Requirements:** SHARED-01, SHARED-02, SHARED-03, SHARED-04
@@ -109,7 +109,7 @@ Plans:
 
 ### Phase 4: Wiring Pipeline and Pin Safety
 
-**Goal:** One canonical `diagram.json` per homework drives the README image, the pin table and the simulator — so they cannot disagree — and a machine-readable board-fact database rejects electrically illegal wiring before it is committed.
+**Goal:** As a course student maintaining one public coursework repository, I want to drive the README image, the pin table and the simulator from one canonical `diagram.json` per homework, with a machine-readable board-fact database rejecting electrically illegal wiring, so that the three representations cannot disagree and an illegal circuit is caught before it is committed.
 **Mode:** mvp
 **Depends on:** Phase 3
 **Requirements:** WIRE-01, WIRE-02, WIRE-03, WIRE-04, WIRE-05, HW-02, HW-03
@@ -124,7 +124,7 @@ Plans:
 
 ### Phase 5: Verification Layers and Pinned Static Checks
 
-**Goal:** Pure logic is proven on the host with no hardware attached, and every static check is pinned, committed and validated against the analyzer versions the pinned platform actually ships — so a misconfigured analyzer fails loudly instead of silently reporting nothing.
+**Goal:** As a course student maintaining one public coursework repository, I want to prove pure logic on the host with no hardware attached, and to pin, commit and validate every static check against the analyzer versions the pinned platform actually ships, so that a misconfigured analyzer fails loudly instead of silently reporting nothing.
 **Mode:** mvp
 **Depends on:** Phase 4
 **Requirements:** VERIFY-01, VERIFY-04, VERIFY-05
@@ -139,7 +139,7 @@ Plans:
 
 ### Phase 6: Hook and CI Gates
 
-**Goal:** Pre-commit, pre-push and CI invoke the same definition of every check, so a check cannot exist in one gate and be missing from another, and a change to shared code always builds every project that consumes it.
+**Goal:** As a course student maintaining one public coursework repository, I want to invoke the same definition of every check from pre-commit, from pre-push and from CI, so that a check cannot exist in one gate and be missing from another, and a change to shared code always builds every project that consumes it.
 **Mode:** mvp
 **Depends on:** Phase 5
 **Requirements:** VERIFY-02, VERIFY-03
@@ -153,7 +153,7 @@ Plans:
 
 ### Phase 7: Agent Rules and the Scaffolding Skill
 
-**Goal:** One short root `AGENTS.md` plus a mirrored skill tree is the single funnel through which every convention above reaches the repository across both harnesses, so the sixtieth homework looks like the first.
+**Goal:** As a course student maintaining one public coursework repository, I want to funnel every convention above through one short root `AGENTS.md` plus a mirrored skill tree that both harnesses share, so that the sixtieth homework looks like the first.
 **Mode:** mvp
 **Depends on:** Phase 6
 **Requirements:** AGENT-01, AGENT-02, AGENT-03, AGENT-04, AGENT-05
@@ -168,7 +168,7 @@ Plans:
 
 ### Phase 8: The First Real Homework, End to End
 
-**Goal:** One real course homework runs the whole loop — scaffolded through the skill, built, host-tested, wired, documented and gate-green — and reads to the instructor as submitted.
+**Goal:** As a course student maintaining one public coursework repository, I want to run the whole loop on one real course homework that is scaffolded through the skill, then built, host-tested, wired, documented and gate-green, so that it reads to the instructor as submitted.
 **Mode:** mvp
 **Depends on:** Phase 7
 **Requirements:** DELIV-01, DELIV-02, DELIV-03
