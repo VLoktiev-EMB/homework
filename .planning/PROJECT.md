@@ -12,12 +12,11 @@ A personal coursework repository for an embedded-development course (C/C++, Plat
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ The repository opens as one VS Code workspace: root, shared libraries, and one folder per homework — Phase 1 (`REPO-01`). `homework.code-workspace` is a pure function of the filesystem with a byte-comparison drift check, so it cannot go stale silently.
+- ✓ Each homework is a self-contained PlatformIO project under `homeworks/<id>/`, buildable from the repo root with `pio run -d` — Phase 1 (`REPO-02`). Two of its conditions ship as their own requirements and were verified with it: the one-level depth rule, enforced by name before any child process exists (`REPO-03`), and the ignore contract for `.pio/` and `compile_commands.json` (`REPO-04`).
 
 ### Active
 
-- [ ] The repository opens as one VS Code workspace: root, shared libraries, and one folder per homework
-- [ ] Each homework is a self-contained PlatformIO project under `homeworks/<id>/`, buildable from the repo root with `pio run -d`
 - [ ] A scaffolding skill creates a new homework from a freeform description, in one of two explicit modes: `guide` (teaches, stops, never writes homework logic unprompted) or `auto` (one-shot, no questions)
 - [ ] Every homework ships a wiring artifact generated from ONE canonical `diagram.json`: a rendered SVG image, a pin-connection table, and a Mermaid overview
 - [ ] Wiring artifacts validate offline in pre-commit (`wokwi-cli lint --warnings-as-errors --offline`), and the same file drives local simulation
@@ -88,6 +87,8 @@ A personal coursework repository for an embedded-development course (C/C++, Plat
 | Host unit tests (`platform = native`) for pure logic | Free, offline, milliseconds — the highest value per unit of effort, and it forces the hardware seam that the IDF migration also needs | — Pending |
 | Commit `.planning/` to the public repository | The reasoning behind the work is part of what the repository documents; a public portfolio benefits from visible process | — Pending |
 | Record the accepted override for ROADMAP Phase 1 **criterion 2 second conjunct** as a dated, deliberate deviation | The literal criterion — a project moved one level deeper breaks the build — is unobservable while `homeworks/project-baseline/platformio.ini` declares no `lib_deps`, so nothing fails to resolve; the sweep's `DEPTH RULE VIOLATED` detector names the rule before any child process exists and satisfies the criterion's intent. Plan 01-06's two-arm measurement is the evidence, and Phase 3's added success criterion makes the literal mechanism observable once a `symlink://` shared-library dependency exists | — Accepted override, owner decision 2026-10-15 (deviation recorded in `ROADMAP.md` Phase 1 and in `01-VERIFICATION.md`) |
+| `homework.code-workspace` is generated and guarded by a byte-comparison drift check, never hand-edited | The tree decides the file's content, so the workspace cannot disagree with the folders on disk; a hand edit fails the check instead of silently persisting | — Realized in Phase 1 (`tools/generate-workspace.mjs --check`). Every later phase that adds a homework must re-run the generator. |
+| Each homework commits its own PlatformIO-generated `.gitignore` and `.vscode/extensions.json` | The root ignore rules that would otherwise cover them are anchored by an interior slash, so they never reach a nested project directory. Ignoring them instead would leave criterion 3's clean-tree reading unachievable in any fresh checkout | — Realized in Phase 1 for `homeworks/project-baseline/` (commit `3b94058`). Applies to every homework added later. |
 
 ## Traps for Later Phases
 
@@ -116,4 +117,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-15 after initialization*
+*Last updated: 2026-10-16 after Phase 1*

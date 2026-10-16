@@ -21,10 +21,10 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-10-15)
+See: .planning/PROJECT.md (updated 2026-10-16)
 
 **Core value:** Every homework stays buildable, demonstrable and self-explanatory long after it was submitted.
-**Current focus:** Phase 01 — Repository Skeleton and Project Layout
+**Current focus:** Phase 2 — Board and Environment Baseline (N16R8 Acceptance Gate)
 
 ## Current Position
 
@@ -112,15 +112,15 @@ Open decisions the phases must force (research D-list, unresolved at roadmap tim
 - **D2 — console default (USB CDC on boot vs UART bridge):** the riskier USB path is the scaffold default; UART bridge is the recommended default with native USB as an opt-in env. Phase 2.
 - **D3 — exact resolved platform/core:** the platform manifest declares the Arduino core as a `~` range and research sources contradict each other on what 7.1.3 ships. Only `pio pkg list` output may be recorded. Phase 2.
 - **D4 — C++ standard contract:** `.clang-format`'s `Standard: c++17` is metadata, not a compile decision. State the standard next to the platform pin. Phase 3.
-- **D5 — hook stage split:** settled by the owner (pre-commit fast, pre-push builds changed projects). No longer open.
 - **D6 — WIP tolerance of repo-wide gates:** feature-branch pushes are red by construction; the escape hatch must be `SKIP=<hook-id>`, never `--no-verify`. Phase 6.
-- **D7 — naming freeze:** RESOLVED by REQUIREMENTS.md + owner constraints. Not open.
 - **D8 — submission/freeze model:** live `symlink://` means a submitted homework can rebuild differently after a later shared edit. Keep live linking; freeze on evidence. Residual risk.
 - **D9 — `AGENTS.md` size (288 lines measured on the abandoned scaffold vs the ~200-line target):** decide inside Phase 7 before the file grows.
 - **D10 — `.claude/skills` mirror shape:** per-skill-entry symlinks, one live smoke test, keep the broken-link check. Phase 7.
 - **D11 — VS Code extension choice (official frozen vs pioarduino fork):** an IDE choice, independent of the official-platform decision. Inspect the installed extension's schema before trusting workspace keys.
 - **D12 — board revision and ADC2-while-Wi-Fi:** the RGB-LED GPIO is GPIO48 on the initial revision (owner-confirmed); ADC2 + Wi-Fi stays conservative (ADC1 GPIO1–10 for analog) until measured. Phase 2 / Phase 4.
 - **Host tests are unproven on this machine:** `platform = native` expects a system GCC; `/usr/bin/gcc` here is an Apple clang shim. Phase 5 must smoke-test it before relying on it.
+- **[Phase 1] The fail-open class is still live in two guards** — `tools/generate-workspace.mjs --check` returns 0 without checking when its own path carries a symlinked component (review `CR-01`), and the ignore-contract test exempts the root ignore file by identity rather than by tracked-ness (review `CR-02`, opened 2026-10-16). Neither is a Phase 1 must-have failure, but Phase 6 wires `--check` into hooks and CI, so both must be closed before that gate is trusted. Ledger: `01-REVIEW-DISPOSITION.md`, 25 open.
+- **[Phase 1] Does the root `.vscode/settings.json` reach a nested homework?** The root settings are folder-scoped and every homework sits inside the `root` workspace folder, so `editor.rulers` and `C_Cpp.formatting` may not be in effect for `homeworks/project-baseline/src/main.cpp`. Verifier finding `W-06`; belongs to Phase 5, which owns the editor and formatter contract.
 
 ## Deferred Items
 
@@ -132,6 +132,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-15T13:00:36.542Z
+Last session: 2026-10-16T11:50:00.000Z
 Stopped at: Phase 01 complete, ready to plan Phase 2
 Resume file: None
