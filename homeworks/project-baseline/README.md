@@ -15,7 +15,10 @@ From the repository root:
     pio run -d homeworks/project-baseline
 
 The build reports a `6553600`-byte application partition — the 16 MB table, which is the proof that
-the four N16R8 overrides in `platformio.ini` are in effect.
+the N16R8 overrides are in effect. Those overrides are not in this directory's `platformio.ini`:
+the environment facts live in the shared fragment `shared/pio/base.ini`, which this project consumes
+through its `extra_configs` key. The versions that fragment's platform pin resolves to are recorded
+in [`shared/pio/VERSIONS.md`](../../shared/pio/VERSIONS.md).
 
 `src/main.cpp` prints a boot line with the flash size, `psramFound()` and the PSRAM size, and drives
 no GPIO. That is exactly what Phase 2's acceptance run needs to see over the monitor.
@@ -28,9 +31,20 @@ would break the one-command build. It arrives in Phase 5, where VERIFY-01 filter
 per environment. The name it will take, `projectbaseline_native`, is already fixed by `envNames()`
 in `tools/lib/discover.mjs`.
 
-## Why no console port is pinned
+## The console: the UART bridge, pinned by glob
 
-The repository is public and no usable port is verified on this machine — `pio device list` shows
-only the debug console and a Bluetooth port. A committed port would be either a private machine
-detail or a build-breaker on another machine, so Phase 2 settles the port and console choice after
-the acceptance run.
+The repository's default console is the **UART bridge**, not the firmware's own native USB device.
+The bridge port belongs to the bridge chip, so it survives reset, crash and deep sleep — exactly the
+moments a log is read — and it always carries the ROM boot log on UART0. The native USB port is
+created by the firmware itself and disappears at those same moments, and the CDC choice is compiled
+into the binary, so a socket or setting mismatch produces a board that flashes successfully and
+prints nothing.
+
+The console is carried as a **device-name glob** — `/dev/cu.usbserial-*` — rather than a literal
+node. The repository is public, so a literal path would be either a private machine detail or a
+build-breaker on a machine where that path does not exist. The glob resolves at run time, and a
+pattern that matches nothing fails loudly instead of silently falling back to another device. The
+pattern has not yet matched an attached board; that reading is the acceptance run's to take.
+
+A project that needs a different console re-declares that one key inside its own `[env:<id>_s3]`
+section. It does not fork or duplicate the shared fragment.
