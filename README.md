@@ -47,7 +47,10 @@ homework/
 │   ├── lib/                      # discovery and id-grammar helpers
 │   └── tests/                    # host tests for the scripts above
 ├── shared/
-│   └── lib/                      # reusable PlatformIO libraries
+│   ├── lib/                      # reusable PlatformIO libraries
+│   └── pio/                      # shared PlatformIO environment facts
+│       ├── base.ini              # the N16R8 fragment every project consumes
+│       └── VERSIONS.md           # the versions the platform pin resolves to
 └── homeworks/
     └── project-baseline/         # the build-proof project — not a course homework
 ```
@@ -77,12 +80,17 @@ export PATH="$HOME/.platformio/penv/bin:$PATH"
 Every homework builds from the repository root with one command, in the project-directory form:
 
 ```bash
-pio run -d homeworks/<id>
+pio run -d homeworks/<id>                    # build
+pio run -d homeworks/<id> --target upload   # build and flash
+pio device monitor -d homeworks/<id>        # watch the serial output
 ```
 
-`<id>` is the homework's folder name. Append `--target upload` to flash the board, and
-`pio device monitor -d homeworks/<id>` to watch the serial output. Environment names are
-project-scoped, so address a project by its directory rather than by an environment flag.
+`<id>` is the homework's folder name. Environment names are project-scoped, so address a project by
+its directory rather than by an environment flag.
+
+Every environment takes its exact platform pin and its console ports from the shared fragment
+`shared/pio/base.ini` — never a version range, never a development branch, and never an unset port.
+The versions that pin resolves to are recorded in [`shared/pio/VERSIONS.md`](shared/pio/VERSIONS.md).
 
 ## What counts as a homework
 
