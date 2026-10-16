@@ -1,19 +1,14 @@
 ---
-status: testing
+status: complete
 phase: 01-repository-skeleton-and-project-layout
 source: [01-01-SUMMARY.md, 01-02-SUMMARY.md, 01-03-SUMMARY.md, 01-04-SUMMARY.md, 01-05-SUMMARY.md, 01-06-SUMMARY.md, 01-07-SUMMARY.md]
 started: 2026-10-16T11:19:34Z
-updated: 2026-10-16T11:19:34Z
+updated: 2026-10-16T11:22:08.729Z
 ---
 
 ## Current Test
-<!-- OVERWRITE each test - shows where we are -->
 
-number: 1
-name: The baseline README records, in prose, the one-environment rationale and the no-console-port rationale so a later reader does not re-open either
-expected: |
-  The baseline README records, in prose, the one-environment rationale and the no-console-port rationale so a later reader does not re-open either
-awaiting: user response
+[testing complete]
 
 ## Tests
 
@@ -26,56 +21,56 @@ expected: The baseline README records, in prose, the one-environment rationale a
 why_human: |
   Automation proves the file exists, is tracked and begins with the disclaimer. Whether the recorded reasoning actually stops a reader from re-litigating the environment set or the absent port is a judgment about prose, not a property a command can assert.
 reason: human_judgment
-result: [pending]
+result: pass
 
 ### 2. .vscode/settings.json and .vscode/extensions.json hold the editor settings in their single home, with exactly one PlatformIO IDE key and a recommendation list that agrees with the settings
 expected: .vscode/settings.json and .vscode/extensions.json hold the editor settings in their single home, with exactly one PlatformIO IDE key and a recommendation list that agrees with the settings
 why_human: |
   The automated gates prove parseability and key presence, not that the editor honours them: the editor-hygiene group, the C/C++ formatter bindings and the C_Cpp.* group are asserted by inspection only, and RESEARCH assumption A2 (whether a multi-root window surfaces .vscode/extensions.json recommendations at all) is explicitly flagged as unverified and deliberately left unresolved in Phase 1.
 reason: human_judgment
-result: [pending]
+result: pass
 
 ### 3. The root README names the generated workspace file and how to open it, gives the one-command build, states what a homework is, and describes only the tree Phase 1 ships
 expected: The root README names the generated workspace file and how to open it, gives the one-command build, states what a homework is, and describes only the tree Phase 1 ships
 why_human: |
   The README gates prove the absence of forbidden content and the presence of required strings, but whether the prose actually reads as an entry point — and whether the section order and tree framing serve a human cloning the repository for the first time — is a judgement no grep makes. A verifier reading the file is the check.
 reason: human_judgment
-result: [pending]
+result: pass
 
 ### 4. The four failure messages read as the repository's own account of a rule that was broken — the rule, the reason and the remedy — rather than as a downstream tool's error or silence
 expected: The four failure messages read as the repository's own account of a rule that was broken — the rule, the reason and the remedy — rather than as a downstream tool's error or silence
 why_human: |
   Automation proves the strings are present and correctly placed, and that the spawn-failure branch is reachable separately from the build-failure branch. Whether the prose actually lets a reader who misplaced a folder know what to do — and whether the zero-match message reads as a refusal rather than as reassurance, which is the exact failure the abandoned scaffold's `No homework projects yet - nothing to build.` line committed — is a judgement about wording that no grep makes.
 reason: human_judgment
-result: [pending]
+result: pass
 
 ### 5. Criterion 1's manual half: opening homework.code-workspace in VS Code shows exactly three top-level roots, and the shared-library root resolves without an unresolved-path marker
 expected: Criterion 1's manual half: opening homework.code-workspace in VS Code shows exactly three top-level roots, and the shared-library root resolves without an unresolved-path marker
 why_human: |
   Opening an editor window is not automatable and no agent can see what it renders. The observation is DEFERRED to end-of-phase verification (/gsd-verify-work 1) per this phase's human_verify_mode; the log carries the exact file to open, the exact three root names expected, and an explicitly unfilled output slot. An invented observation would enter later phases as fact.
 reason: human_judgment
-result: [pending]
+result: pass
 
 ### 6. Criterion 3's editor half: after opening and saving one tracked file in each of the three roots, `git status --porcelain` still prints nothing — the modification source a build cannot exercise
 expected: Criterion 3's editor half: after opening and saving one tracked file in each of the three roots, `git status --porcelain` still prints nothing — the modification source a build cannot exercise
 why_human: |
   The reading is a property of a human editor session with format-on-save enabled, and it must be taken before the observations are appended to this log. It is DEFERRED to end-of-phase verification with an explicitly unfilled output slot and the exact command and its required timing written down.
 reason: human_judgment
-result: [pending]
+result: pass
 
 ### 7. The depth rule's build-failure mechanism is measured on a two-arm throwaway fixture and recorded verbatim — arm A resolves the symlinked dependency at one level below homeworks/, arm B fails one level deeper
 expected: The depth rule's build-failure mechanism is measured on a two-arm throwaway fixture and recorded verbatim — arm A resolves the symlinked dependency at one level below homeworks/, arm B fails one level deeper
 why_human: |
   The deliverable is the truthful record of a measurement later phases read as fact, and the plan's own anti-fabrication contract is what makes it worth anything: no test can assert that the recorded output was not chosen after seeing both arms. Plan 01-07's ratification checkpoint is where that clause's discharge is read, and it needs a human to confirm the record matches the mechanism the criterion names.
 reason: human_judgment
-result: [pending]
+result: pass
 
 ### 8. The record states whether the two-arm measurement confirms the owner's stated reason or disagrees with any material part of it — the one thing that makes the override checkable
 expected: The record states whether the two-arm measurement confirms the owner's stated reason or disagrees with any material part of it — the one thing that makes the override checkable
 why_human: |
   The deliverable is a judgement about whether a human-recorded rationale survives contact with a measurement, written into a record the milestone audit and the instructor read as fact. No test can assert that the comparison was made honestly rather than smoothed over; the paragraph's worth is that a human can read both and check it. Section 'Does the measurement confirm the owner's stated reason?' below is where that judgement is written.
 reason: human_judgment
-result: [pending]
+result: pass
 
 ### 9. Discovery and validation have exactly one definition: a directory directly under homeworks/ whose name matches the frozen id grammar and which contains a platformio.ini
 expected: Discovery and validation have exactly one definition: a directory directly under homeworks/ whose name matches the frozen id grammar and which contains a platformio.ini
@@ -296,9 +291,9 @@ covered_by: integration:node tools/generate-workspace.mjs --check -> 'homework.c
 ## Summary
 
 total: 35
-passed: 27
+passed: 35
 issues: 0
-pending: 8
+pending: 0
 skipped: 0
 blocked: 0
 
