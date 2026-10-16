@@ -18,7 +18,7 @@ Phase naming is frozen as `shared/lib/` (one real PlatformIO library per module)
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Repository Skeleton and Project Layout** - The decided tree, one VS Code workspace, the depth rule, and ignore rules frozen before anything is built on them
+- [x] **Phase 1: Repository Skeleton and Project Layout** - The decided tree, one VS Code workspace, the depth rule, and ignore rules frozen before anything is built on them (completed 2026-10-16)
 - [ ] **Phase 2: Board and Environment Baseline (N16R8 Acceptance Gate)** - The N16R8 module proven end-to-end from a pinned, explicitly-ported environment
 - [ ] **Phase 3: Shared Libraries and the Hardware Seam** - Reusable modules as real libraries, consumed by live symlink, with no framework include above a narrow HAL
 - [ ] **Phase 4: Wiring Pipeline and Pin Safety** - One canonical `diagram.json` drives the image, the pin table and the lint gate; illegal nets are rejected
@@ -176,7 +176,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Repository Skeleton and Project Layout | 7/7 | In Progress | - |
+| 1. Repository Skeleton and Project Layout | 7/7 | Complete    | 2026-10-16 |
 | 2. Board and Environment Baseline (N16R8 Acceptance Gate) | 0/TBD | Not started | - |
 | 3. Shared Libraries and the Hardware Seam | 0/TBD | Not started | - |
 | 4. Wiring Pipeline and Pin Safety | 0/TBD | Not started | - |
