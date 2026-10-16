@@ -5,7 +5,10 @@
 // about a fresh clone: this machine's `~/.config/git/ignore` already matches some of
 // these paths, so an exit-status-only check can pass with no repository rule at all.
 // Every member of the ignored table therefore asserts the *source* git reports as
-// well as the exit status, and the source must be this repository's own `.gitignore`.
+// well as the exit status, and the source must be an ignore file this repository
+// TRACKS — the root `.gitignore`, or a nested one git holds in its index. A nested
+// file that is generated but untracked still fails here: a clone would not have it,
+// so every rule it carries would vanish with it. That is checked, not assumed.
 //
 // Read-only by construction: `git check-ignore` and `git ls-files` answer about the
 // real tree without writing to it, so this file needs no temporary fixture and must
@@ -39,6 +42,24 @@ function ignoreSource(path) {
   if (result.status !== 0) return null;
   const [reported] = result.stdout.trim().split("\t");
   return reported.split(":")[0];
+}
+
+/**
+ * Does a clone of this repository actually inherit the file git reported as the source?
+ *
+ * The root `.gitignore` always qualifies. A NESTED one qualifies only while git tracks it.
+ * PlatformIO IDE generates `homeworks/<id>/.gitignore` beside every `platformio.ini`, and
+ * that file legitimately owns `.pio/` and the generated editor files inside its project —
+ * which is why the repository tracks it (and why the root rules, anchored by the interior
+ * slash, never reached it). But an *untracked* nested file is absent from a clone, so the
+ * rules it carries would vanish with it; that case must keep failing. Tracked-ness is the
+ * whole distinction, so it is asked of git rather than inferred from the path.
+ */
+function isRepoOwnedIgnoreSource(source) {
+  if (source === IGNORE_FILE) return true;
+  if (source.startsWith("/") || source.split("/").includes("..")) return false;
+  if (source.slice(source.lastIndexOf("/") + 1) !== IGNORE_FILE) return false;
+  return git(["ls-files", "--error-unmatch", "--", source]).status === 0;
 }
 
 // Paths that must be ignored BY THIS REPOSITORY. The `protects` note states which rule each
@@ -112,14 +133,13 @@ const MUST_NOT_BE_IGNORED = [
   },
 ];
 
-test("every machine-local artifact resolves to this repository's own ignore file", () => {
+test("every machine-local artifact resolves to an ignore file this repository tracks", () => {
   for (const { path, protects } of MUST_BE_IGNORED) {
     const source = ignoreSource(path);
     assert.notEqual(source, null, `${path} is not ignored at all — protects ${protects}`);
-    assert.equal(
-      source,
-      IGNORE_FILE,
-      `${path} is ignored by ${source}, not by ${IGNORE_FILE} — a clone without that file inherits nothing; protects ${protects}`,
+    assert.ok(
+      isRepoOwnedIgnoreSource(source),
+      `${path} is ignored by ${source}, which a clone does not inherit — the rule must live in a tracked ignore file (the root ${IGNORE_FILE}, or a nested one git tracks); protects ${protects}`,
     );
   }
 });
