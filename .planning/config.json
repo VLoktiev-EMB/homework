@@ -15,7 +15,10 @@
     "create_tag": true,
     "phase_branch_template": "gsd/phase-{phase}-{slug}",
     "milestone_branch_template": "gsd/{milestone}-{slug}",
-    "quick_branch_template": null
+    "quick_branch_template": "gsd/quick-{slug}",
+    "protected_branches": [
+      "main"
+    ]
   },
   "workflow": {
     "research": true,
@@ -33,7 +36,7 @@
     "context_guard_mode": "warn",
     "text_mode": false,
     "compact_content": false,
-    "research_before_questions": false,
+    "research_before_questions": true,
     "discuss_mode": "discuss",
     "skip_discuss": false,
     "code_review": true,
@@ -49,7 +52,9 @@
     "security_asvs_level": 1,
     "security_block_on": "high",
     "_auto_chain_active": false,
-    "ui_review": false
+    "ui_review": false,
+    "tdd_mode": false,
+    "use_worktrees": true
   },
   "ship": {
     "pr_body_sections": []
@@ -67,5 +72,12 @@
   },
   "resolve_model_ids": "omit",
   "mode": "interactive",
-  "granularity": "standard"
+  "granularity": "standard",
+  "intel": {
+    "enabled": true
+  },
+  "graphify": {
+    "enabled": true,
+    "auto_update": true
+  }
 }
