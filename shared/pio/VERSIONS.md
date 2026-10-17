@@ -31,3 +31,20 @@ The `arduino` framework this repository builds with compiles against
 `framework-arduinoespressif32` and `toolchain-xtensa-esp32s3`; the remaining packages
 resolve because the `espressif32` platform declares them, and they are listed here
 rather than filtered out so the record does not make that judgement on a reader's behalf.
+
+## The two C standards in force
+
+Read from the framework's own build script — `tools/platformio-build-esp32s3.py` inside
+the installed Arduino framework package — rather than inferred from configuration
+metadata, which does not carry them. They sit beside the pin because a reader who
+reproduces the environment needs all three facts from one place.
+
+| Applies to | Standard | Declared as |
+| --- | --- | --- |
+| Every `.c` file, including everything under `shared/lib/` | `-std=gnu99` | an entry of the framework's `CFLAGS` |
+| `homeworks/*/src/main.cpp`, the thin shim only | `-std=gnu++11` | an entry of the framework's `CXXFLAGS` |
+
+`gnu99` is the **ceiling** for the shared tree, not a floor to raise: it has no
+`_Static_assert` and no `stdatomic.h`, so C11 must not be assumed there. The shim's
+`gnu++11` is the framework's choice rather than this repository's, and it is the reason
+the shared layer is written in C at all — the C++ standard's drift never reaches it.

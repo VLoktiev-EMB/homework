@@ -23,6 +23,25 @@ in [`shared/pio/VERSIONS.md`](../../shared/pio/VERSIONS.md).
 `src/main.cpp` prints a boot line with the flash size, `psramFound()` and the PSRAM size, and drives
 no GPIO. That is exactly what Phase 2's acceptance run needs to see over the monitor.
 
+## Consuming the shared libraries
+
+The baseline is the shared library tree's **first consumer**, so the mechanism below is provable
+from a clone rather than described in the abstract. `platformio.ini` declares it in one line:
+
+    lib_deps = emb_hal=symlink://../../shared/lib/emb_hal, emb_hal_arduino=symlink://../../shared/lib/emb_hal_arduino, emb_log=symlink://../../shared/lib/emb_log
+
+One entry per library, transitive ones included — the dependency scanner does not read a library's
+own source, so the entry for `emb_hal` is required even though nothing here includes it directly.
+The path is relative to *this* project directory, which is why a homework sits exactly one level
+below `homeworks/` and nothing may be placed deeper.
+
+`symlink://` compiles each library's source in place: editing a file under `shared/lib/` is picked
+up by the next build, with no reinstall and no stale copy. The rules that bind that tree are in
+[`shared/lib/README.md`](../../shared/lib/README.md).
+
+`src/main.cpp` remains a thin C++ shim for the framework's sake, and hands its report to `emb_log`,
+which writes it through the `emb_hal` console seam — everything below the shim is C.
+
 ## Why exactly one environment
 
 `pio run -d` with no `-e` builds **every** environment in the file. This source tree is
