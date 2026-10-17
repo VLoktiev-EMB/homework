@@ -251,7 +251,7 @@ export function sharedLibSpec(name) {
 }
 
 /** The one near-miss directory name a `renameBackend` fixture plants. */
-const NEAR_MISS_BACKEND = `${EXEMPT_BACKEND}_alt`;
+export const NEAR_MISS_BACKEND = `${EXEMPT_BACKEND}_alt`;
 
 /** Normalise an option that accepts a single value or a list of them. */
 function asList(value) {
