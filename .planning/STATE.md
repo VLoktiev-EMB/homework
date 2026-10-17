@@ -24,7 +24,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-17)
 
 **Core value:** Every homework stays buildable, demonstrable and self-explanatory long after it was submitted.
-**Current focus:** Phase 03 — Shared Libraries and the Hardware Seam
+**Current focus:** Phase 4 — Wiring Pipeline and Pin Safety
 
 ## Current Position
 
@@ -106,6 +106,10 @@ Recent decisions affecting current work:
 - [Phase 02]: The measured bridge is a CH343 (`VID:PID 1A86:55D3`), which falsifies the CP2102N named by `02-RESEARCH.md` Pitfall 8 and by the D-03/D-04 rationale. The measured identity currently lives in no reader-facing file; recorded as a trap in PROJECT.md so a later phase writing driver or port documentation uses the measured value.
 - [Phase 02]: The phase's regression gate reads the RESOLVED environment content — never the fragment's own text, and never the command's exit status. A fragment that cannot be found is not an error: PlatformIO exits 0 and the environment comes out with an empty body. `tools/tests/env-baseline.test.mjs`, six assertions, pure filesystem, no child processes.
 - [Phase 02]: Criterion 5 is credited in two halves on different evidence, and the difference is stated rather than smoothed over. The console half is settled BY MEASUREMENT (the device-inventory diff); the RGB-LED pin is settled by OWNER CONFIRMATION and is explicitly not described as a measurement anywhere.
+- [Phase 03]: The seam is a C ABI in a framework-free header, and exactly ONE shared directory may see a framework header. Both absences are structural and load-bearing: `emb_hal` has no `src/`, the Arduino backend has no `include/`. The exemption is a literal named list in the check, never a pattern — a pattern-shaped exemption was falsified by the near-miss rename case.
+- [Phase 03]: `EMB_LOG_LINE_MAX` is published as the caller's buffer size, but the tag and separator leave the caller only 86 characters of text; the longest line the source can assemble is 95. The baseline's report is 50 characters, so the defect is LATENT, not live. `03-REVIEW.md` WR-01/WR-02; the baseline shim also discards `emb_log_line`'s return value, making a dropped report indistinguishable from a delivered one.
+- [Phase 03]: Criterion 5's mechanism was corrected by measurement, not smoothed over. An UNMODIFIED deeper copy fails earlier than the roadmap predicted — at environment assembly, `UndefinedEnvPlatformError`, naming a platform rather than a path — because `extra_configs = ../../shared/pio/base.ini` is also project-relative and stops resolving first. The `PackageException` the roadmap describes appears only once the fragment path alone is corrected. Roadmap and the Phase 1 retiring trigger corrected in `689d306`.
+- [Phase 03]: `tools/check-hal-seam.mjs` is deliberately ORPHANED — no hook, CI job or sweep invokes it. The detector half of `SHARED-04` is delivered and falsified by 19 cases; the "fails the commit" half is `VERIFY-02` (Phase 6), and `03-VALIDATION.md` carries `nyquist_compliant: false` for exactly that reason. Recorded in `REQUIREMENTS.md` as a scope annotation on `SHARED-04`. Do not read that row as "commits are blocked today".
 
 ### Pending Todos
 
@@ -118,7 +122,7 @@ Open decisions the phases must force (research D-list, unresolved at roadmap tim
 
 - **D1 — course Arduino core (2.x vs 3.x):** not source-compatible; changes every homework's code. **[Phase 2] NOT resolved — deferred with an explicit trigger:** the first course-provided code sample that fails to compile. Everything Phase 2 measured sits on Arduino 2.0.17, so the question stays open until the course supplies code to test against.
 - **D2 — console default (USB CDC on boot vs UART bridge):** **[Phase 2] the bridge half is settled by measurement.** The UART bridge (COM) socket is the console, the port glob is the measured `/dev/cu.usbmodem*`, and all three port keys are pinned in the shared fragment so a new project cannot forget them. The native-USB environment and its debug tool stay deferred together (D-05), as decided; neither was created here.
-- **D4 — C++ standard contract:** `.clang-format`'s `Standard: c++17` is metadata, not a compile decision. State the standard next to the platform pin. Phase 3.
+- **D4 — C++ standard contract:** **[Phase 3] RESOLVED by measurement.** `shared/pio/VERSIONS.md` records `gnu99` (C) and `gnu++11` (C++) read from the framework's own build script, stated beside the platform pin as the research required. The IntelliSense standard matches. Re-verify on any platform bump.
 - **D6 — WIP tolerance of repo-wide gates:** feature-branch pushes are red by construction; the escape hatch must be `SKIP=<hook-id>`, never `--no-verify`. Phase 6.
 - **D8 — submission/freeze model:** live `symlink://` means a submitted homework can rebuild differently after a later shared edit. Keep live linking; freeze on evidence. Residual risk.
 - **D9 — `AGENTS.md` size (288 lines measured on the abandoned scaffold vs the ~200-line target):** decide inside Phase 7 before the file grows.
@@ -130,6 +134,10 @@ Open decisions the phases must force (research D-list, unresolved at roadmap tim
 - **[Phase 1] Does the root `.vscode/settings.json` reach a nested homework?** The root settings are folder-scoped and every homework sits inside the `root` workspace folder, so `editor.rulers` and `C_Cpp.formatting` may not be in effect for `homeworks/project-baseline/src/main.cpp`. Verifier finding `W-06`; belongs to Phase 5, which owns the editor and formatter contract.
 - **[Phase 2] The `/dev/cu.usbmodem*` glob is not socket-specific.** Both of the board's USB sockets enumerate under that prefix, so the pattern means "a node belonging to this board", never "the bridge". A flash is safe either way because both sockets reach the same chip, but a monitor opened on the native socket prints nothing, because the acceptance vehicle writes to UART0. The both-sockets-cabled case was never measured — only one socket was cabled at a time — and the pattern is verified on one machine against one board. Phase 5 owns the editor and formatter contract and Phase 8 the README index; neither may describe the glob as bridge-specific.
 - **[Phase 2] The board's COM socket needs the right USB-C orientation.** With a C-to-C cable and the plug the other way round the board receives no power at all, because the socket's CC pull-down is present on one line only. Recorded because it presents exactly as a dead board — a reflash, a re-seat or a driver reinstall cannot fix it — and every phase from here on flashes.
+- **[Phase 3] Two live warnings sit in the seam's own contract, un-triaged.** `03-REVIEW-DISPOSITION.md` carries 13 `open` findings (5 warning, 8 info). The two that matter: WR-01 — `EMB_LOG_LINE_MAX` is published as the caller's buffer size while the real text budget is 86 characters, so a long report is dropped silently rather than truncated; WR-02 — the baseline shim discards `emb_log_line`'s return value, so "dropped" and "delivered" are indistinguishable, which is the one failure mode the seam docs call the worst. Latent today. Phase 4 or 5 should triage the ledger before more code builds on the seam.
+- **[Phase 3] The seam check enforces a name list, not a rule.** `tools/check-hal-seam.mjs` catches `Arduino.h`, `esp_*`, `esp32-hal-*`, `driver/`, `freertos/`. `<Wire.h>`, `<SPI.h>`, `<WiFi.h>`, `<HardwareSerial.h>`, `<FS.h>`, `<soc/soc.h>`, `<nvs_flash.h>` and `<sdkconfig.h>` all pass green. The deliberate necessary-not-sufficient stance covers text-vs-compiler, not this list — it needs widening as the repository grows (review WR-03).
+- **[Phase 3] `platform = native` host tests remain unproven on this machine.** Unchanged from the standing note above; Phase 5 still owns the smoke test. Phase 3 measured a host compilation with `clang -std=gnu99 -Wall -Wextra -pedantic -Werror`, which is evidence that the pure-C modules are host-compilable, but not that PlatformIO's `native` platform resolves a host toolchain here.
+- **[Phase 3] `ROADMAP.md:108` cites the seam suite as "17 cases"; it holds 19.** Plan 03-03 appended two after that line was written. Cosmetic drift, noted so a reader does not treat the count as current.
 
 ### Quick Tasks Completed
 
@@ -148,6 +156,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-16T23:21:49.158Z
+Last session: 2026-10-17T00:45:00.000Z
 Stopped at: Phase 03 complete, ready to plan Phase 4
-Resume file: .planning/phases/03-shared-libraries-and-the-hardware-seam/03-CONTEXT.md
+Resume file: None

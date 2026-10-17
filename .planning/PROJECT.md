@@ -17,14 +17,14 @@ A personal coursework repository for an embedded-development course (C/C++, Plat
 - ✓ Every homework environment overrides the board for the N16R8 module — 16 MB flash, the 16 MB partition table, `qio_opi` memory type, the PSRAM build flag — Phase 2 (`HW-01`). The overrides live in ONE shared fragment, `shared/pio/base.ini`, consumed by each project through `extra_configs`; a clean build links the `qio_opi` IDF library set and yields a `6553600`-byte application partition against the stock board's `3342336`.
 - ✓ Every environment pins the platform to an exact version and names its console port explicitly — Phase 2 (`HW-04`). The pin is the literal `espressif32@7.1.3` with no range operator and no branch reference, all three console port keys are non-empty, and the versions the pin resolves to are recorded in `shared/pio/VERSIONS.md` beside it.
 - ✓ One dated on-hardware acceptance run goes build → flash → monitor on the real board, and the module reports 16 MB flash and 8 MB octal PSRAM — Phase 2. Read three independent ways: the flasher's connection banner (`Embedded PSRAM 8MB (AP_3v3)`), the flash die (`Detected flash size: 16MB`), and the firmware's own `flash=16777216 psram=1 psramSize=8386279`. The firmware reading is the only one that proves the *build* enabled PSRAM.
+- ✓ `shared/lib/` holds reusable modules as real PlatformIO libraries (each with `library.json`), consumed per homework via `lib_deps = Name=symlink://…` — Phase 3 (`SHARED-01`, `SHARED-02`). Three libraries (`emb_hal`, `emb_hal_arduino`, `emb_log`) consumed by the baseline through one comma-separated `lib_deps` line of `symlink://` specs; live edits propagate with no reinstall and no copy, measured.
+- ✓ Shared code keeps a hardware-abstraction seam so it survives the later migration from Arduino core to ESP-IDF — Phase 3 (`SHARED-03`). The seam is a C ABI in a framework-free header; exactly ONE shared directory may see a framework header, and both absences are structural (`emb_hal` has no `src/`, the backend has no `include/`). **Caveat carried forward:** the paired requirement `SHARED-04` — "a check fails the commit" — is delivered only as a *detector*. `tools/check-hal-seam.mjs` names each framework include with file and line and exits non-zero, and is falsified by 19 cases, but nothing invokes it on commit until `VERIFY-02` (Phase 6) wires it. `03-VALIDATION.md` carries `nyquist_compliant: false` for exactly this, and `REQUIREMENTS.md` carries a scope annotation on `SHARED-04`.
 
 ### Active
 
 - [ ] A scaffolding skill creates a new homework from a freeform description, in one of two explicit modes: `guide` (teaches, stops, never writes homework logic unprompted) or `auto` (one-shot, no questions)
 - [ ] Every homework ships a wiring artifact generated from ONE canonical `diagram.json`: a rendered SVG image, a pin-connection table, and a Mermaid overview
 - [ ] Wiring artifacts validate offline in pre-commit (`wokwi-cli lint --warnings-as-errors --offline`), and the same file drives local simulation
-- [ ] `shared/lib/` holds reusable modules as real PlatformIO libraries (each with `library.json`), consumed per homework via `lib_deps = Name=symlink://…`
-- [ ] Shared code keeps a hardware-abstraction seam so it survives the later migration from Arduino core to ESP-IDF
 - [ ] Pure logic in `shared/lib/` is unit-tested on the host via `platform = native`, with no hardware attached
 - [ ] Static checks are pinned once and enforced: clang-format, clang-tidy, cppcheck, compiler warnings
 - [ ] Pre-commit runs fast checks; pre-push builds only the changed homework projects; CI builds changed projects and lints everything
@@ -128,4 +128,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-17 after Phase 2*
+*Last updated: 2026-10-17 after Phase 3*
