@@ -14,6 +14,7 @@
 // `test.after`. Nothing here writes to `shared/lib/`; a fixture that leaked there would
 // be read as a real library by the check itself.
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import test from "node:test";
@@ -558,5 +559,237 @@ test("the consumer assertion turns red on a short dependency line and on an abse
   assert.ok(
     absentProblems.some((problem) => problem.includes("lib_deps")),
     `a consumer with no dependency key passed, or failed without naming the trap: ${JSON.stringify(absentProblems)} (${absent.root})`,
+  );
+});
+
+// ---------------------------------------------------------------------------------------
+// The repository-wide scan for a USE of the deprecated global-library directives.
+//
+// Why this case lives in THIS file rather than in a suite of its own: the repository pays
+// for every added file and check forever, and this suite is already the shared tree's
+// regression gate. A fourth suite would mean a fourth runner, a fourth cleanup hook and a
+// fourth place to look when the phase's regression gate goes red.
+//
+// Why the scan's subject is a USE and not a MENTION. The criterion's literal reading — that
+// no reference to either directive survives *anywhere* in the repository — is already false
+// at the moment it was written, and not by accident: `.planning/REQUIREMENTS.md`'s
+// out-of-scope table and `AGENTS.md`'s avoid table both name both directives on purpose,
+// because their job is to forbid them, and this phase's own dated research files name them
+// throughout. A mention-scan would force those documents to be edited so that a scan could
+// pass, which is the one thing this plan forbids. The scan therefore looks for the directive
+// where it would actually do something: on the left-hand side of an assignment — the shape
+// `lib_extra_dirs = ../../shared/libs` takes in a `platformio.ini`, and the shape an
+// assignment takes in a build script or a source file.
+//
+// The exception list below is the reviewed record of the files permitted to NAME a
+// directive. It is deliberately a literal list rather than a pattern: a new file that names
+// one of these strings is a failure to be looked at rather than a silent pass, and widening
+// the list costs the same review a new repository rule costs. It enumerates only what is
+// needed today — the two directories that carry the dated research and plan files are named
+// rather than the whole planning tree, so a NEW planning file elsewhere still fails.
+
+/** The two global-library directives PlatformIO deprecated in Core 6.0 and will remove. */
+const DEPRECATED_DIRECTIVES = ["lib_extra_dirs", "globallib_dir"];
+
+/** The reviewed literal list of tracked files permitted to NAME a deprecated directive. */
+const DIRECTIVE_MENTION_EXCEPTIONS = [
+  // The agent guide: its avoid table names both, and must keep naming them.
+  "AGENTS.md",
+  // The project brief: its constraint and key-decision tables name one of them.
+  ".planning/PROJECT.md",
+  // The requirement document: its out-of-scope table names both, by design.
+  ".planning/REQUIREMENTS.md",
+  // The roadmap: its criteria state the rule, and plan 03-03 records the readings beside it.
+  ".planning/ROADMAP.md",
+  // The dated research, plan, summary, verification and UAT files, by directory.
+  ".planning/phases/",
+  ".planning/research/",
+  // This scan's own source: it names both directives because it searches for them.
+  "tools/tests/check-hal-seam.test.mjs",
+];
+
+/**
+ * The lines of one file's text that USE a deprecated directive, as an empty list when the
+ * file names neither or mentions them only in prose.
+ *
+ * A use is a line whose left-hand side is the directive and whose separator is an equals
+ * sign. A prose sentence, a markdown table row, a `grep -E 'a|b'` argument and a JavaScript
+ * array literal are none of those — which is exactly the distinction this case rests on,
+ * and the reason the predicate is a shape test rather than a substring test.
+ *
+ * @param {string} text the file's contents
+ * @returns {Array<{line: number, text: string}>}
+ */
+function directiveUses(text) {
+  const offenders = [];
+  text.split("\n").forEach((line, index) => {
+    const assignment = /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=/.exec(line);
+    if (assignment !== null && DEPRECATED_DIRECTIVES.includes(assignment[1])) {
+      offenders.push({ line: index + 1, text: line.trim() });
+    }
+  });
+  return offenders;
+}
+
+/**
+ * Read a file as text, or null when it is not text at all.
+ *
+ * The tracked tree ships no binary today, but the scan reads EVERY tracked file, so a
+ * future image would otherwise be decoded as UTF-8 and matched against by accident. A NUL
+ * byte is the same heuristic git itself uses to call a blob binary.
+ *
+ * @param {string} absPath absolute path of the tracked file
+ * @returns {string | null}
+ */
+function readTrackedText(absPath) {
+  const buffer = readFileSync(absPath);
+  return buffer.includes(0) ? null : buffer.toString("utf8");
+}
+
+/** The tracked files that name either deprecated directive, in the order git returned them. */
+function filesNamingDirectives(root, files) {
+  return files.filter((file) => {
+    const text = readTrackedText(join(root, file));
+    return text !== null && DEPRECATED_DIRECTIVES.some((directive) => text.includes(directive));
+  });
+}
+
+/**
+ * Everything wrong with one file list, as an empty list when the tree is clean.
+ *
+ * Two questions are asked of the same list, and both must come back empty: does any file
+ * USE a directive, and does any file NAME one without being on the reviewed exception list.
+ *
+ * Returned rather than thrown, so the real-tree arm and the fixture arm run the SAME
+ * predicate. A fixture arm holding its own private check would prove nothing about the tree
+ * the repository is actually held to — the same reason `manifestProblems` and
+ * `consumerProblems` above return their findings.
+ *
+ * @param {string} root the tree the file names are relative to
+ * @param {string[]} files tracked file paths, relative to `root`
+ * @param {string[]} [exceptions] the reviewed list of files permitted to name a directive
+ * @returns {string[]}
+ */
+function directiveProblems(root, files, exceptions = DIRECTIVE_MENTION_EXCEPTIONS) {
+  const problems = [];
+
+  for (const file of files) {
+    let text;
+    try {
+      text = readTrackedText(join(root, file));
+    } catch (error) {
+      // Loud, not silent: a file the scan could not read must not read as a file that was
+      // clean, which is the same failure the seam check's zero-library branch exists for.
+      problems.push(`${file} is tracked but could not be read: ${error.message}`);
+      continue;
+    }
+    if (text === null) continue;
+
+    for (const offender of directiveUses(text)) {
+      problems.push(
+        `${file}:${offender.line} uses the deprecated directive ${JSON.stringify(offender.text)} — the live-path form is lib_deps = <Name>=symlink://../../shared/lib/<Name>`,
+      );
+    }
+
+    const named = DEPRECATED_DIRECTIVES.filter((directive) => text.includes(directive));
+    const permitted = exceptions.some((allowed) => file.startsWith(allowed));
+    if (named.length > 0 && !permitted) {
+      problems.push(
+        `${file} names ${named.join(" and ")} without being on the reviewed exception list — look at the file, then either widen the list in this case deliberately or remove the mention`,
+      );
+    }
+  }
+
+  return problems;
+}
+
+/**
+ * The repository's tracked file list as git reports it, or a loud failure.
+ *
+ * `--cached` is the index rather than the working tree — the set a clone actually inherits —
+ * and `-z` keeps a path holding a space or a quote intact. Resolved through the same spawn
+ * idiom `ignore-rules.test.mjs` uses, so a git failure is an assertion failure and never an
+ * empty list that reads as a clean repository.
+ *
+ * @returns {string[]}
+ */
+function trackedFiles() {
+  const result = spawnSync("git", ["ls-files", "--cached", "-z"], {
+    cwd: REPO_ROOT,
+    encoding: "utf8",
+  });
+  assert.equal(
+    result.status,
+    0,
+    `git ls-files failed in ${REPO_ROOT}: ${result.stderr || result.error?.message}`,
+  );
+  return result.stdout.split("\0").filter((path) => path !== "");
+}
+
+test("no tracked file uses a deprecated global-library directive, and only the reviewed list names one", () => {
+  const files = trackedFiles();
+
+  // A scan over nothing passes for the wrong reason. This is the same guard the seam check's
+  // zero-library branch carries, and it is the first thing a broken git invocation produces.
+  assert.ok(
+    files.length > 0,
+    `git reported no tracked file under ${REPO_ROOT}, so the scan below would pass vacuously`,
+  );
+
+  assert.deepEqual(
+    directiveProblems(REPO_ROOT, files),
+    [],
+    `the tracked tree is not clean — each line names a file and what to do about it`,
+  );
+
+  // The reading the plan records, asserted rather than left to a hand-written list: the tree
+  // must still contain files that name a directive, or the exception list has silently become
+  // an unfalsifiable claim about documents that no longer say what it says they say.
+  const naming = filesNamingDirectives(REPO_ROOT, files);
+  assert.ok(
+    naming.length > 0,
+    "no tracked file names either directive, so the exception list above guards nothing and a widened list would be invisible",
+  );
+});
+
+test("the directive scan reports a planted use, and reads the same string in prose as a mention", () => {
+  // The falsification arm. Without it the case above would pass on a scan that silently
+  // matched nothing — the failure mode the seam check's empty case exists to prevent, and
+  // the reason both live in this suite.
+  const root = makeTree();
+  const planted = writeFileAt(
+    root,
+    "homeworks/planted-directive/platformio.ini",
+    [
+      "[platformio]",
+      "; this comment names lib_extra_dirs, which is a mention and not a use",
+      "lib_extra_dirs = ../../shared/libs",
+      "",
+    ].join("\n"),
+  );
+
+  const problems = directiveProblems(root, ["homeworks/planted-directive/platformio.ini"]);
+  assert.ok(
+    problems.some(
+      (problem) =>
+        problem.includes("homeworks/planted-directive/platformio.ini") &&
+        problem.includes("uses the deprecated directive") &&
+        problem.includes("lib_extra_dirs"),
+    ),
+    `the planted use was not reported, so the predicate can match nothing: ${JSON.stringify(problems)} (${planted})`,
+  );
+
+  // The other half of the shape test: the same string in a sentence, in a file that is not on
+  // the exception list, is a *mention* — reported for review, never as a use. Both halves are
+  // asserted together because a scan that reported every mention would also pass the arm above.
+  const prose = writeFileAt(root, "notes.md", "Never write lib_extra_dirs in a project file.\n");
+  const proseProblems = directiveProblems(root, ["notes.md"]);
+  assert.ok(
+    proseProblems.some((problem) => problem.includes("reviewed exception list")),
+    `a mention outside the reviewed exception list went unreported: ${JSON.stringify(proseProblems)} (${prose})`,
+  );
+  assert.ok(
+    !proseProblems.some((problem) => problem.includes("uses the deprecated directive")),
+    `a prose mention was reported as a use, so the scan is a substring search: ${JSON.stringify(proseProblems)} (${prose})`,
   );
 });
