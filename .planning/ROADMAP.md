@@ -105,14 +105,14 @@ Plans:
   4. No `lib_extra_dirs` or `globallib_dir` reference survives anywhere in the repository.
   5. Once a homework declares `lib_deps = <name>=symlink://../../shared/lib/<name>`, moving that homework one level deeper makes its build fail to resolve the shared-library symlink dependency — PlatformIO's Library Manager resolves a `symlink://` path relative to the project directory, so the same relative path no longer reaches `shared/lib/` from a deeper folder. This is the observable build-failure half of the one-level depth rule that Phase 1 could enforce only by name, and one command (`pio run -d <deeper copy of the project>`) settles it: the failure arrives at library installation, before any translation unit is compiled.
 
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 **Wave 1**
 - [x] 03-01-PLAN.md — The seam end to end: three real libraries, one live-symlinked consumer, the contract, and the two hand-taken readings
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 03-02-PLAN.md — The seam check, its falsification suite, and the manifest and consumer invariants asserted together
+- [x] 03-02-PLAN.md — The seam check, its falsification suite, and the manifest and consumer invariants asserted together
 
 **Wave 3** *(blocked on Waves 1–2)*
 - [ ] 03-03-PLAN.md — Criterion 4's reading, the three-arm depth measurement, and the roadmap corrections
@@ -200,7 +200,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 |-------|----------------|--------|-----------|
 | 1. Repository Skeleton and Project Layout | 7/7 | Complete    | 2026-10-16 |
 | 2. Board and Environment Baseline (N16R8 Acceptance Gate) | 3/3 | Complete    | 2026-10-17 |
-| 3. Shared Libraries and the Hardware Seam | 1/3 | In Progress | - |
+| 3. Shared Libraries and the Hardware Seam | 2/3 | In Progress | - |
 | 4. Wiring Pipeline and Pin Safety | 0/TBD | Not started | - |
 | 5. Verification Layers and Pinned Static Checks | 0/TBD | Not started | - |
 | 6. Hook and CI Gates | 0/TBD | Not started | - |
