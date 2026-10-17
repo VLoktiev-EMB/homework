@@ -104,13 +104,16 @@ Plans:
   1. `shared/lib/<module>/` holds a library with a `library.json` carrying name and version, and one `lib_deps = <name>=symlink://../../shared/lib/<name>` line is enough to make that library's API available to a homework build.
   2. Editing a shared library's source is picked up by the next homework build with no reinstall and no stale copy — a change to shared code visibly changes the firmware.
   3. A framework include (`Arduino.h`, `esp_*`, `driver/`, `freertos/`) planted anywhere under `shared/lib` is named by the seam check, which exits non-zero on it.
+
 > **Correction to criterion 3, recorded 2026-10-17 (plan 03-03):** the implemented include set is not this criterion's literal list, and the divergence is recorded rather than smoothed over. The framework's own core header is matched by **exact trailing name** (`Arduino.h`), never by substring: a substring search for the framework's name falsely flags a popular third-party JSON header whose name merely contains it, while a comparison against the exact name does not. The platform's own prefix **and** the Arduino HAL prefix are both matched (`esp_*` **and** `esp32-hal-*`), because the chip's HAL headers begin with the chip name rather than the platform prefix and the literal wording would miss every one of them. The driver and real-time-system directories are matched as subpaths (`driver/`, `freertos/`). Both halves of the divergence are exercised by the seam check's own falsification suite (`tools/tests/check-hal-seam.test.mjs`, 17 cases, plan 03-02), which names each include with its file and line and exits non-zero.
   4. No `lib_extra_dirs` or `globallib_dir` reference survives anywhere in the repository.
+
 > **Reading for criterion 4, recorded 2026-10-17 (plan 03-03):** the criterion's literal word — that no reference to either directive survives *anywhere* in the repository — is already false at the moment it was written, and by design rather than by oversight: `.planning/REQUIREMENTS.md`'s out-of-scope table and `AGENTS.md`'s avoid table both name both directives because their whole job is to forbid them, and the dated research files name them throughout. The discharge is therefore a scan **for a use**, not for a mention: a tracked file that writes either directive as a configuration key or an assignment is a failure, while a prose mention is not. The reading is 103 tracked files read, 26 of which legitimately name a directive and are enumerated as a reviewed literal exception list in the scan itself, so a new file naming one is a failure to be looked at rather than a silent pass. The scan lives in `tools/tests/check-hal-seam.test.mjs`, and its full reading — the command, the exit status and the list — is recorded in `03-03-SUMMARY.md`.
   5. Once a homework declares `lib_deps = <name>=symlink://../../shared/lib/<name>`, moving that homework one level deeper makes its build fail — PlatformIO resolves both of the consumer's project-relative paths against the project directory, so neither of them reaches the shared tree from a deeper folder. This is the observable build-failure half of the one-level depth rule that Phase 1 could enforce only by name, and one command (`pio run -d <deeper copy of the project>`) settles it: measured on the committed tree, the failure arrives **first at environment assembly**, because `extra_configs = ../../shared/pio/base.ini` stops resolving before the dependency does and takes the platform pin with it. The Library Manager's own refusal to create the symlinked dependency is reproduced by correcting the fragment path alone, and that refusal too arrives before any translation unit is compiled.
+
 > **Correction to criterion 5, recorded 2026-10-17 (plan 03-03), with both arms and the control:** arm A, the deeper copy exactly as copied, prints `UndefinedEnvPlatformError: Please specify platform for 'projectbaseline_s3' environment`, exit 1, zero object files — an error that names the platform rather than a path, which is the warning sign `03-RESEARCH.md` lists for exactly this confusion, not the resolution failure the wording used to predict. Arm B, the same copy with the fragment path corrected to depth three while the dependency path stays at depth two, assembles the environment and then prints ``Library Manager: Installing symlink://../../shared/lib/emb_hal`` followed by ``PackageException: Can not create a symbolic link for `../../shared/lib/emb_hal`, not a directory``, exit 1, zero object files: this is the criterion's own mechanism, isolated, and it is what proves the live path's resolution semantics. Arm C, the control, corrects both paths and builds — `[SUCCESS]`, 49 object files — which is what shows the deeper failure is path arithmetic rather than a prohibition on depth as such. All three arms, with their exact commands, exit statuses and verbatim output, are recorded in `03-03-SUMMARY.md`.
 
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans executed
 
 Plans:
 **Wave 1**
@@ -120,7 +123,7 @@ Plans:
 - [x] 03-02-PLAN.md — The seam check, its falsification suite, and the manifest and consumer invariants asserted together
 
 **Wave 3** *(blocked on Waves 1–2)*
-- [ ] 03-03-PLAN.md — Criterion 4's reading, the three-arm depth measurement, and the roadmap corrections
+- [x] 03-03-PLAN.md — Criterion 4's reading, the three-arm depth measurement, and the roadmap corrections
 
 ### Phase 4: Wiring Pipeline and Pin Safety
 
@@ -205,7 +208,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 |-------|----------------|--------|-----------|
 | 1. Repository Skeleton and Project Layout | 7/7 | Complete    | 2026-10-16 |
 | 2. Board and Environment Baseline (N16R8 Acceptance Gate) | 3/3 | Complete    | 2026-10-17 |
-| 3. Shared Libraries and the Hardware Seam | 2/3 | In Progress | - |
+| 3. Shared Libraries and the Hardware Seam | 3/3 | In Progress | - |
 | 4. Wiring Pipeline and Pin Safety | 0/TBD | Not started | - |
 | 5. Verification Layers and Pinned Static Checks | 0/TBD | Not started | - |
 | 6. Hook and CI Gates | 0/TBD | Not started | - |
