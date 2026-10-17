@@ -1,11 +1,22 @@
-// Fixture builder shared by every test file.
+// Fixture builders shared by every test file.
 //
 // No test may run against the repository root: exercising the generator there
 // would find the real baseline and dirty `.pio/` in the act of testing the rule
 // that says the tree must stay clean. Every fixture therefore lives under
 // `os.tmpdir()` and is removed when the run ends.
+//
+// The `.ini` reader lives here too, so there is exactly one of it: two copies
+// would drift, and the one that drifts is the one a reader trusts.
 import { spawnSync } from "node:child_process";
-import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import {
+  appendFileSync,
+  cpSync,
+  mkdirSync,
+  mkdtempSync,
+  renameSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -19,6 +30,18 @@ const REPO_ROOT = join(TOOLS_DIR, "..");
 
 /** Absolute path of the sweep under test. */
 export const SWEEP_PATH = join(TOOLS_DIR, "sweep-homeworks.mjs");
+
+/** Absolute path of the seam check under test. */
+export const SEAM_CHECK_PATH = join(TOOLS_DIR, "check-hal-seam.mjs");
+
+/** The directory under a scanned root that holds the shared libraries. */
+export const SHARED_LIB_DIR = "shared/lib";
+
+/** The three libraries the repository ships, in the order the phase decided them. */
+export const DEFAULT_SHARED_LIBS = ["emb_hal", "emb_hal_arduino", "emb_log"];
+
+/** The one directory the seam check exempts by name. */
+export const EXEMPT_BACKEND = "emb_hal_arduino";
 
 const created = [];
 
@@ -107,6 +130,54 @@ export function makeDepthViolation(root, homeId, nested = "deeper") {
 }
 
 /**
+ * Split an `.ini` file into its `[section]` blocks, the way PlatformIO addresses them.
+ *
+ * Returns a Map from section name to a Map of key to value. Whole-line `;` or `#`
+ * comments are skipped, and an inline `;` or `#` ends the value — PlatformIO builds its
+ * reader with `configparser(inline_comment_prefixes=("#", ";"))`, which strips the marker
+ * at its first occurrence with no whitespace required, so `platform = espressif32@7.1.3 ; x`
+ * resolves to the pin and not to the whole annotated line. This is the opposite of the
+ * `.gitignore` rule `ignore-rules.test.mjs` guards: there an inline marker is not a comment,
+ * here it is.
+ *
+ * Multi-line (indented continuation) values are not modelled; PlatformIO accepts them, so an
+ * indented `build_flags` list reads as the empty string here and fails loudly rather than
+ * silently — flagged, not hidden. The one place that limit is load-bearing is `lib_deps`,
+ * where a value written across several lines reads as empty AND leaves one phantom key per
+ * continuation line, so the assertion built on it must name the trap rather than pass for an
+ * empty value.
+ *
+ * @param {string} text the file's contents
+ * @returns {Map<string, Map<string, string>>}
+ */
+export function sections(text) {
+  const out = new Map();
+  let heading = null;
+
+  for (const raw of text.split("\n")) {
+    const line = raw.trim();
+    if (line === "" || line.startsWith(";") || line.startsWith("#")) continue;
+
+    const header = /^\[([^\]]+)\]$/.exec(line);
+    if (header) {
+      heading = header[1].trim();
+      if (!out.has(heading)) out.set(heading, new Map());
+      continue;
+    }
+
+    if (heading === null) continue;
+    const eq = line.indexOf("=");
+    if (eq === -1) continue;
+    // PlatformIO reads this file with configparser(inline_comment_prefixes=("#", ";")),
+    // so an inline marker ends the value. Keep this in step with that, not with .gitignore.
+    const value = line.slice(eq + 1).split(/[;#]/)[0].trim();
+    out.get(heading).set(line.slice(0, eq).trim(), value);
+  }
+
+  return out;
+}
+
+/**
  * Install one shared environment fragment and one project that consumes it, so the
  * fragment's location can be exercised without touching the repository's own tree.
  *
@@ -168,6 +239,149 @@ export function makeFragmentConsumer(root, id, options = {}) {
  */
 export function runSweep(root, args = [], env = {}) {
   return spawnSync(process.execPath, [SWEEP_PATH, "--root", root, ...args], {
+    cwd: REPO_ROOT,
+    encoding: "utf8",
+    env: { ...process.env, ...env },
+  });
+}
+
+/** The dependency spec a consumer writes for one shared library, as the contract spells it. */
+export function sharedLibSpec(name) {
+  return `${name}=symlink://../../shared/lib/${name}`;
+}
+
+/** The one near-miss directory name a `renameBackend` fixture plants. */
+const NEAR_MISS_BACKEND = `${EXEMPT_BACKEND}_alt`;
+
+/** Normalise an option that accepts a single value or a list of them. */
+function asList(value) {
+  if (value === undefined) return [];
+  return Array.isArray(value) ? value : [value];
+}
+
+/**
+ * Plant a shared library tree under a fixture root, in the layout the repository
+ * ships: `shared/lib/<name>/library.json`, `include/<name>.h` and `src/<name>.c`.
+ *
+ * The options are what make an assertion built on this **falsifiable** rather than
+ * merely passable, in the idiom `makeFragmentConsumer` established: each one
+ * plants a layout that is visibly wrong, or content that is visibly wrong, so a
+ * caller can show the assertion failing instead of only succeeding.
+ *
+ * @param {string} root fixture root
+ * @param {string[]} [names] library directory names; defaults to the three the
+ *   repository ships, in the order the phase decided them
+ * @param {{
+ *   omitVersionIn?: string | string[],
+ *   wrongNameIn?: string | string[],
+ *   omitManifest?: string | string[],
+ *   plantInclude?: {in: string, include: string, form?: "angle" | "quote"}
+ *     | Array<{in: string, include: string, form?: "angle" | "quote"}>,
+ *   renameBackend?: boolean | string,
+ *   consumer?: {id?: string, specs?: string[] | null} | null,
+ * }} [options] `wrongNameIn` uppercases the directory name, so the mismatch is one
+ *   a case-folded comparison would wrongly accept; `consumer.specs` of `null` omits
+ *   the `lib_deps` key entirely, while omitting `specs` writes the full three.
+ * @returns {{root: string, sharedLibDir: string, manifests: Record<string, string>,
+ *   consumerIni: string | null}} `manifests` is keyed by the directory name as it
+ *   stands after any rename; `consumerIni` is the fixture consumer's ini path, or
+ *   null when none was asked for
+ */
+export function makeSharedLibTree(root, names = DEFAULT_SHARED_LIBS, options = {}) {
+  const { omitVersionIn, wrongNameIn, omitManifest, renameBackend = false, consumer = null } =
+    options;
+
+  const omitVersions = asList(omitVersionIn);
+  const wrongNames = asList(wrongNameIn);
+  const omitManifests = asList(omitManifest);
+  const plants = asList(options.plantInclude);
+
+  const sharedLibDir = join(root, SHARED_LIB_DIR);
+  const manifests = {};
+
+  for (const name of names) {
+    const dir = join(sharedLibDir, name);
+    mkdirSync(join(dir, "include"), { recursive: true });
+    mkdirSync(join(dir, "src"), { recursive: true });
+
+    if (!omitManifests.includes(name)) {
+      const manifest = { name: wrongNames.includes(name) ? name.toUpperCase() : name };
+      if (!omitVersions.includes(name)) manifest.version = "0.1.0";
+      const manifestPath = join(dir, "library.json");
+      writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+      manifests[name] = manifestPath;
+    }
+
+    writeFileSync(
+      join(dir, "include", `${name}.h`),
+      `/* fixture library ${name} — written by the test fixture, never by the repository */\n#pragma once\n`,
+    );
+    const sourcePath = join(dir, "src", `${name}.c`);
+    writeFileSync(
+      sourcePath,
+      `/* fixture library ${name} — written by the test fixture, never by the repository */\n#include "${name}.h"\n`,
+    );
+
+    for (const plant of plants.filter((entry) => entry.in === name)) {
+      const opening = (plant.form ?? "angle") === "quote" ? '"' : "<";
+      const closing = opening === '"' ? '"' : ">";
+      appendFileSync(sourcePath, `#include ${opening}${plant.include}${closing}\n`);
+    }
+  }
+
+  // The exemption's falsification: the same directory under a name that merely
+  // resembles the exempt one. A pattern-shaped exemption would pass this over; an
+  // exact-name list reports it, which is what the paired cases prove.
+  if (renameBackend && names.includes(EXEMPT_BACKEND)) {
+    const to = typeof renameBackend === "string" ? renameBackend : NEAR_MISS_BACKEND;
+    renameSync(join(sharedLibDir, EXEMPT_BACKEND), join(sharedLibDir, to));
+    if (manifests[EXEMPT_BACKEND] !== undefined) {
+      manifests[to] = manifests[EXEMPT_BACKEND];
+      delete manifests[EXEMPT_BACKEND];
+    }
+  }
+
+  let consumerIni = null;
+  if (consumer !== null) {
+    const id = consumer.id ?? "project-baseline";
+    const specs =
+      consumer.specs === undefined ? DEFAULT_SHARED_LIBS.map(sharedLibSpec) : consumer.specs;
+    const homeDir = join(root, "homeworks", id);
+    mkdirSync(homeDir, { recursive: true });
+    consumerIni = join(homeDir, "platformio.ini");
+    const lines = [
+      "[platformio]",
+      "extra_configs = ../../shared/pio/base.ini",
+      "",
+      `[env:${envNames(id).s3}]`,
+      "board = esp32-s3-devkitc-1",
+      "framework = arduino",
+    ];
+    if (specs !== null) lines.push(`lib_deps = ${specs.join(", ")}`);
+    writeFileSync(consumerIni, `${lines.join("\n")}\n`);
+  }
+
+  if (!created.includes(root)) created.push(root);
+
+  return { root, sharedLibDir, manifests, consumerIni };
+}
+
+/**
+ * Spawn the real seam check against a fixture root and return its status, stdout
+ * and stderr separately.
+ *
+ * The check takes an explicit `--root`, so the script under test never has to be
+ * copied into the fixture and the repository is never the scanned tree. Its
+ * working directory is the checkout that owns it, not the fixture: the check must
+ * derive nothing from where it happens to run.
+ *
+ * @param {string} root fixture root to scan
+ * @param {string[]} [args] extra flags
+ * @param {Record<string, string>} [env] environment overrides
+ * @returns {import("node:child_process").SpawnSyncReturns<string>}
+ */
+export function runSeamCheck(root, args = [], env = {}) {
+  return spawnSync(process.execPath, [SEAM_CHECK_PATH, "--root", root, ...args], {
     cwd: REPO_ROOT,
     encoding: "utf8",
     env: { ...process.env, ...env },
