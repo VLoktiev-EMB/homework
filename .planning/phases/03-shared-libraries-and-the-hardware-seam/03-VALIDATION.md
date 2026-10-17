@@ -4,7 +4,7 @@ slug: "shared-libraries-and-the-hardware-seam"
 # status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6)
 # audit-milestone §5.5 distinguishes NOT-VALIDATED (draft) from PARTIAL (validated + nyquist_compliant: false) (#2117)
 status: validated
-nyquist_compliant: true
+nyquist_compliant: false
 wave_0_complete: true
 created: "2026-10-17"
 validated: "2026-10-17"
@@ -100,9 +100,9 @@ The roadmap's literal `PackageException` at library installation appears only on
 - [x] Wave 0 covers all MISSING references
 - [x] No watch-mode flags
 - [x] Feedback latency < 5s
-- [x] `nyquist_compliant: true` set in frontmatter
+- [ ] `nyquist_compliant: true` set in frontmatter — **deliberately left `false`**
 
-**Approval:** validated 2026-10-17 — no fillable gaps; two manual-only items discharged with verbatim evidence, one half of SHARED-04 honestly deferred to Phase 6.
+**Approval:** validated 2026-10-17 (PARTIAL) — no fillable gaps; two manual-only items discharged with verbatim evidence. `nyquist_compliant` is left **false** because one declared requirement, `SHARED-04`, is automated only in its *detector* half: the literal behaviour it names — a check that **fails the commit** — is not wired to anything, and the plans declare any pre-commit hook out of scope for this phase. `VERIFY-02` (Phase 6) owns that wiring. Marking this phase compliant would assert a commit-time refusal that does not exist. Re-running `/gsd-validate-phase 3` will not change this: the missing half is Phase 6's deliverable, not a gap this phase can fill.
 
 ## Validation Audit 2026-10-17
 
