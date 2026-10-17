@@ -28,6 +28,8 @@ The first milestone proves the whole loop on one real homework. Scope below was 
 - [x] **SHARED-03**: Shared code contains no Arduino or ESP-IDF includes; hardware is reached only through a narrow HAL interface, so the later IDF migration is a backend swap
 - [x] **SHARED-04**: A check fails the commit if a framework include appears under `shared/lib`, keeping the seam real as the repository grows
 
+  > **Scope annotation, recorded 2026-10-17 after phase-3 verification.** Marked `Complete` for the **detector** half only. `tools/check-hal-seam.mjs` exists, names every framework include with file and line, exits non-zero, and is falsified by 19 cases in `tools/tests/check-hal-seam.test.mjs`. **Nothing invokes it on commit** — there is no `.pre-commit-config.yaml`, no `.github/`, and no other caller anywhere in the tree, so the literal words "fails the commit" are not yet true. The phase contract is nevertheless met: roadmap criterion 3 deliberately states only "is named by the seam check, which exits non-zero on it". All three of this phase's plans declare any pre-commit hook out of scope, `03-VALIDATION.md` carries `nyquist_compliant: false` for exactly this, and `VERIFY-02` (Phase 6 — Hook and CI Gates, whose criterion 1 names "seam grep" among the pre-commit checks) owns the wiring. Do not read this row as a claim that commits are blocked today.
+
 ### Wiring artifacts
 
 - [ ] **WIRE-01**: Each homework carries exactly one canonical `diagram.json`, agent-authored and committed
