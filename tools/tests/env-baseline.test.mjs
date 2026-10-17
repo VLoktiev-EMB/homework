@@ -21,7 +21,7 @@ import { dirname, join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { cleanupAll, makeFragmentConsumer, makeTree } from "./helpers.mjs";
+import { cleanupAll, makeFragmentConsumer, makeTree, sections } from "./helpers.mjs";
 
 test.after(cleanupAll);
 
@@ -33,48 +33,6 @@ const BASELINE_DIR = join(REPO_ROOT, "homeworks", "project-baseline");
 const BASELINE_INI = join(BASELINE_DIR, "platformio.ini");
 const FRAGMENT_PATH = join(REPO_ROOT, "shared", "pio", "base.ini");
 const RECORD_PATH = join(REPO_ROOT, "shared", "pio", "VERSIONS.md");
-
-/**
- * Split an `.ini` file into its `[section]` blocks, the way PlatformIO addresses them.
- *
- * Returns a Map from section name to a Map of key to value. Whole-line `;` or `#`
- * comments are skipped, and an inline `;` or `#` ends the value — PlatformIO builds its
- * reader with `configparser(inline_comment_prefixes=("#", ";"))`, which strips the marker
- * at its first occurrence with no whitespace required, so `platform = espressif32@7.1.3 ; x`
- * resolves to the pin and not to the whole annotated line. This is the opposite of the
- * `.gitignore` rule `ignore-rules.test.mjs` guards: there an inline marker is not a comment,
- * here it is.
- *
- * Multi-line (indented continuation) values are not modelled; PlatformIO accepts them, so an
- * indented `build_flags` list reads as the empty string here and fails loudly rather than
- * silently — flagged, not hidden.
- */
-function sections(text) {
-  const out = new Map();
-  let heading = null;
-
-  for (const raw of text.split("\n")) {
-    const line = raw.trim();
-    if (line === "" || line.startsWith(";") || line.startsWith("#")) continue;
-
-    const header = /^\[([^\]]+)\]$/.exec(line);
-    if (header) {
-      heading = header[1].trim();
-      if (!out.has(heading)) out.set(heading, new Map());
-      continue;
-    }
-
-    if (heading === null) continue;
-    const eq = line.indexOf("=");
-    if (eq === -1) continue;
-    // PlatformIO reads this file with configparser(inline_comment_prefixes=("#", ";")),
-    // so an inline marker ends the value. Keep this in step with that, not with .gitignore.
-    const value = line.slice(eq + 1).split(/[;#]/)[0].trim();
-    out.get(heading).set(line.slice(0, eq).trim(), value);
-  }
-
-  return out;
-}
 
 /** The `extra-configs` value a project declares, exactly as the file writes it. */
 function extraConfigsValue(iniPath) {
