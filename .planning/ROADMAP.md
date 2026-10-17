@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Repository Skeleton and Project Layout** - The decided tree, one VS Code workspace, the depth rule, and ignore rules frozen before anything is built on them (completed 2026-10-16)
 - [x] **Phase 2: Board and Environment Baseline (N16R8 Acceptance Gate)** - The N16R8 module proven end-to-end from a pinned, explicitly-ported environment (completed 2026-10-17)
-- [ ] **Phase 3: Shared Libraries and the Hardware Seam** - Reusable modules as real libraries, consumed by live symlink, with no framework include above a narrow HAL
+- [x] **Phase 3: Shared Libraries and the Hardware Seam** - Reusable modules as real libraries, consumed by live symlink, with no framework include above a narrow HAL (completed 2026-10-17)
 - [ ] **Phase 4: Wiring Pipeline and Pin Safety** - One canonical `diagram.json` drives the image, the pin table and the lint gate; illegal nets are rejected
 - [ ] **Phase 5: Verification Layers and Pinned Static Checks** - Pure logic proven on the host; format, lint and analyze pinned once and validated
 - [ ] **Phase 6: Hook and CI Gates** - Pre-commit, pre-push and CI run the same checks, and a shared change builds every consumer
@@ -113,7 +113,7 @@ Plans:
 
 > **Correction to criterion 5, recorded 2026-10-17 (plan 03-03), with both arms and the control:** arm A, the deeper copy exactly as copied, prints `UndefinedEnvPlatformError: Please specify platform for 'projectbaseline_s3' environment`, exit 1, zero object files — an error that names the platform rather than a path, which is the warning sign `03-RESEARCH.md` lists for exactly this confusion, not the resolution failure the wording used to predict. Arm B, the same copy with the fragment path corrected to depth three while the dependency path stays at depth two, assembles the environment and then prints ``Library Manager: Installing symlink://../../shared/lib/emb_hal`` followed by ``PackageException: Can not create a symbolic link for `../../shared/lib/emb_hal`, not a directory``, exit 1, zero object files: this is the criterion's own mechanism, isolated, and it is what proves the live path's resolution semantics. Arm C, the control, corrects both paths and builds — `[SUCCESS]`, 49 object files — which is what shows the deeper failure is path arithmetic rather than a prohibition on depth as such. All three arms, with their exact commands, exit statuses and verbatim output, are recorded in `03-03-SUMMARY.md`.
 
-**Plans:** 3/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 **Wave 1**
@@ -208,7 +208,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 |-------|----------------|--------|-----------|
 | 1. Repository Skeleton and Project Layout | 7/7 | Complete    | 2026-10-16 |
 | 2. Board and Environment Baseline (N16R8 Acceptance Gate) | 3/3 | Complete    | 2026-10-17 |
-| 3. Shared Libraries and the Hardware Seam | 3/3 | In Progress | - |
+| 3. Shared Libraries and the Hardware Seam | 3/3 | Complete    | 2026-10-17 |
 | 4. Wiring Pipeline and Pin Safety | 0/TBD | Not started | - |
 | 5. Verification Layers and Pinned Static Checks | 0/TBD | Not started | - |
 | 6. Hook and CI Gates | 0/TBD | Not started | - |
