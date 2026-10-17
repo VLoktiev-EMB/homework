@@ -23,10 +23,10 @@ The first milestone proves the whole loop on one real homework. Scope below was 
 
 ### Shared libraries & the hardware seam
 
-- [ ] **SHARED-01**: `shared/lib/<module>/` holds one real PlatformIO library per module, each with a `library.json` carrying name and version
+- [x] **SHARED-01**: `shared/lib/<module>/` holds one real PlatformIO library per module, each with a `library.json` carrying name and version
 - [ ] **SHARED-02**: Homework projects consume them through `lib_deps = <name>=symlink://../../shared/lib/<name>` — one line per library, including transitive ones
-- [ ] **SHARED-03**: Shared code contains no Arduino or ESP-IDF includes; hardware is reached only through a narrow HAL interface, so the later IDF migration is a backend swap
-- [ ] **SHARED-04**: A check fails the commit if a framework include appears under `shared/lib`, keeping the seam real as the repository grows
+- [x] **SHARED-03**: Shared code contains no Arduino or ESP-IDF includes; hardware is reached only through a narrow HAL interface, so the later IDF migration is a backend swap
+- [x] **SHARED-04**: A check fails the commit if a framework include appears under `shared/lib`, keeping the seam real as the repository grows
 
 ### Wiring artifacts
 
@@ -122,10 +122,10 @@ Which phases cover which requirements. Populated during roadmap creation.
 | HW-02 | Phase 4 | Pending |
 | HW-03 | Phase 4 | Pending |
 | HW-04 | Phase 2 | Complete |
-| SHARED-01 | Phase 3 | Pending |
+| SHARED-01 | Phase 3 | Complete |
 | SHARED-02 | Phase 3 | Pending |
-| SHARED-03 | Phase 3 | Pending |
-| SHARED-04 | Phase 3 | Pending |
+| SHARED-03 | Phase 3 | Complete |
+| SHARED-04 | Phase 3 | Complete |
 | WIRE-01 | Phase 4 | Pending |
 | WIRE-02 | Phase 4 | Pending |
 | WIRE-03 | Phase 4 | Pending |
