@@ -55,6 +55,21 @@ homework/
     └── project-baseline/         # the build-proof project — not a course homework
 ```
 
+### Reusable code lives in `shared/lib/`
+
+Every module under `shared/lib/` is a real PlatformIO library. A homework consumes the ones it
+needs with one `lib_deps` line per library, transitive ones included:
+
+    lib_deps = <Name>=symlink://../../shared/lib/<Name>
+
+The path is relative to the consuming project, and `symlink://` compiles the library's source in
+place: an edit is reflected by the next build, nothing is copied into the project and nothing goes
+stale. That arithmetic is also why every homework sits exactly one level below `homeworks/`.
+
+The conventions that bind the tree — the language rule, the layout, the manifest invariants and
+the one directory allowed to see the framework — live in
+[`shared/lib/README.md`](shared/lib/README.md).
+
 ## Prerequisites
 
 | Tool | Purpose |
