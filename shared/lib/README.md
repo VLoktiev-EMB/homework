@@ -3,6 +3,51 @@
 One directory per reusable module, each a real PlatformIO library: `shared/lib/<name>/` carrying a
 `library.json` with `name` and `version`.
 
+## How the seam is joined — the part that is not an `#include`
+
+This tree inverts the usual direction of dependency. Ordinary code *calls the framework*:
+`Serial.println("hi")` binds a homework to Arduino, and the framework change rewrites every line
+that touched it. Here, every module above the seam calls **four functions this repository
+invented**, and exactly one directory answers that call:
+
+```
+homeworks/<id>/src/main.cpp     C++ shim — the framework's own entry points live here
+        │  #include <emb_log.h>
+        ▼
+shared/lib/emb_log/             pure C — does not know the word "Arduino"
+        │  #include <emb_hal.h>
+        ▼
+shared/lib/emb_hal/             the interface: four declarations, no translation unit
+        ▲
+        │  (defines them — with no #include between the two)
+        │
+shared/lib/emb_hal_arduino/     the only directory in this tree that sees a framework header
+```
+
+**The upward arrow is the linker, not a preprocessor include, and that is the whole mechanism.**
+`emb_log.c` never includes the backend, and the backend never includes `emb_log`. What happens
+instead:
+
+1. `emb_log.c` compiles to an object file carrying an **undefined** symbol, `emb_hal_write_line`.
+   The compiler records "something will define this" and moves on.
+2. `emb_hal_arduino.c` compiles to an object file carrying the **definition** of that same symbol.
+3. The linker joins the two **by name**, at the end. Neither source names the other.
+
+Three consequences follow, and each is the reason for a rule stated further down:
+
+- **The name must survive both compilers**, which is what the C++ guard rule protects. Without
+  `extern "C"`, a C++ translation unit emits a mangled name that the C definition cannot match, and
+  the linker reports an undefined reference naming the symbol rather than the missing guard.
+- **The interface directory has no `src/`**, because a declaration has nothing to compile. An
+  interface that owned a translation unit would be a second place the seam could be implemented,
+  and the seam would stop being singular.
+- **The backend directory has no `include/`**, because a public header there could re-export the
+  framework header it is allowed to see. The split makes the leak structurally impossible rather
+  than merely forbidden.
+
+A reader who takes one thing from this document: **swapping frameworks replaces the directory at
+the bottom of that diagram and edits one consumer line. It touches no logic.**
+
 ## The language rule
 
 **This tree is pure C.** Every translation unit under `shared/lib/` is a `.c` file, and no header
@@ -41,10 +86,12 @@ reference` errors that point away from the cause.
 ## The manifest invariants
 
 - **`name` and `version` are both required.** `name` is enforced by the tool, because the
-  dependency finder reads the manifest to build the graph. `version` is **enforced by review,
-  not by the tool**: a manifest without one still installs, at a version the tool synthesises
-  from the clock, so the dependency graph stops being reproducible and a listing diff churns on
-  every install. No gate in this repository checks it today.
+  dependency finder reads the manifest to build the graph. `version` is **enforced by this
+  repository's own suite, not by the tool**: a manifest without one still installs, at a version
+  the tool synthesises from the clock, so the dependency graph stops being reproducible and a
+  listing diff churns on every install. `tools/tests/check-hal-seam.test.mjs` asserts it against
+  the real tree and is falsified against a manifest with an omitted version — so the rule is
+  checked, but only where the suite runs.
 - **`name` must be byte-identical to the left-hand side of the consumer's dependency line.** The
   left-hand side overrides the installed folder name while the dependency scanner reads the
   manifest, so a mismatch creates two names for one library: a storage folder named after the
@@ -75,6 +122,28 @@ this phase; wiring it into a gate is a later phase's to do.
 `emb_hal_arduino`'s manifest also declares `"frameworks": ["arduino"]`. That is a plain
 compatibility statement and nothing more: it is not the exemption mechanism, and it does not keep
 a framework header out of any other directory.
+
+## Swapping the framework
+
+The migration this tree exists to absorb is Arduino core → ESP-IDF. It is a backend swap, and the
+whole of it is four steps:
+
+1. **Add the new backend directory** — `shared/lib/emb_hal_espidf/src/emb_hal_espidf.c`. The same
+   four functions with the same signatures against the same `emb_hal.h`, reached through
+   `driver/uart.h` and `esp_timer_get_time()` instead of `esp32-hal-uart.h` and `millis()`.
+2. **In the consuming project's `platformio.ini`,** replace one entry of the `lib_deps` line:
+   `emb_hal_arduino=…` out, `emb_hal_espidf=…` in.
+3. **In the same file,** `framework = arduino` → `framework = espidf`.
+4. **Add the new directory** to the exemption list inside `tools/check-hal-seam.mjs`.
+
+**What does not move:** `emb_hal.h`, every file under `emb_log/`, every consumer's `src/`, and the
+whole of the repository's test suite. That is not a hope — it is what the C ABI and the linker
+mechanism described at the top of this document buy, and it is why the shared layer is C rather
+than C++.
+
+Step 4 is deliberate rather than incidental. A new framework-touching directory does not slip in
+silently; it must be named. Because the exemption is a reviewed literal list, the act of adding a
+backend is also the act of recording it.
 
 ## Consumption
 

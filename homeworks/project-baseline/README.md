@@ -42,6 +42,14 @@ up by the next build, with no reinstall and no stale copy. The rules that bind t
 `src/main.cpp` remains a thin C++ shim for the framework's sake, and hands its report to `emb_log`,
 which writes it through the `emb_hal` console seam — everything below the shim is C.
 
+That seam is joined by the **linker, not by an `#include`**: nothing here includes
+`emb_hal_arduino`, and `emb_hal_arduino` includes nothing of ours. `emb_log` compiles to an object
+file with an undefined `emb_hal_write_line`, the backend compiles to one that defines it, and the
+linker matches them by name. That is what makes the framework swappable — the swap replaces the
+backend directory and one `lib_deps` entry, and no file named on this page changes. The full
+mechanism, and the four-step swap, are in
+[`shared/lib/README.md`](../../shared/lib/README.md#how-the-seam-is-joined--the-part-that-is-not-an-include).
+
 ## Why exactly one environment
 
 `pio run -d` with no `-e` builds **every** environment in the file. This source tree is
